@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<title>Housing Data · Fast Mode</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+body { background: linear-gradient(135deg, #0f0c29 0%, #1a1a3e 30%, #24243e 60%, #1a1a3e 100%); min-height: 100vh; padding: 10px; display: flex; justify-content: center; overflow-x: hidden; }
+body::before { content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(99,179,237,0.08) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(183,148,244,0.08) 0%, transparent 50%); animation: floatBg 20s ease-in-out infinite alternate; z-index: 0; }
+@keyframes floatBg { 0% { transform: translate(0,0) rotate(0deg); } 100% { transform: translate(2%,1%) rotate(3deg); } }
+
+.container { background: rgba(255,255,255,0.06); backdrop-filter: blur(20px); max-width: 720px; width: 100%; border-radius: 24px; padding: 18px 16px 22px; box-shadow: 0 8px 40px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.06); position: relative; z-index: 1; }
+
+.header { text-align: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid rgba(255,255,255,0.06); }
+.header h1 { background: linear-gradient(135deg, #63b3ed, #b794f4, #f6ad55, #f6e05e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 22px; font-weight: 800; }
+.header p { color: #a0aec0; font-size: 13px; margin-top: 4px; }
+
+.dash-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: rgba(255,255,255,0.05); border-radius: 14px; margin-bottom: 12px; }
+.user-info { display: flex; align-items: center; gap: 12px; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg,#63b3ed,#b794f4); display: flex; align-items: center; justify-content: center; color: #0f0c29; font-weight: 800; font-size: 18px; }
+.user-name { font-weight: 700; color: #fff; font-size: 15px; }
+.user-contact { font-size: 12px; color: #a0aec0; }
+.logout-btn { padding: 8px 14px; background: linear-gradient(135deg,#fc8181,#e53e3e); color: #fff; border: none; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; }
+.refresh-btn { padding: 8px 12px; background: linear-gradient(135deg,#48bb78,#38a169); color: #fff; border: none; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; margin-right: 6px; }
+.header-actions { display: flex; gap: 6px; }
+
+.tabs { display: flex; background: rgba(255,255,255,0.05); border-radius: 14px; padding: 4px; margin-bottom: 16px; }
+.tab { flex: 1; padding: 12px; text-align: center; border: none; background: transparent; font-size: 15px; font-weight: 700; color: #a0aec0; cursor: pointer; border-radius: 10px; transition: all 0.3s; }
+.tab.active { background: linear-gradient(135deg, rgba(99,179,237,0.3), rgba(183,148,244,0.3)); color: #fff; }
+
+.form-group { margin-bottom: 14px; }
+label { display: block; font-size: 14px; font-weight: 700; color: #e2e8f0; margin-bottom: 6px; }
+.required { color: #fc8181; }
+input, select { width: 100%; padding: 13px 15px; font-size: 15px; border: 2px solid rgba(255,255,255,0.08); border-radius: 12px; background: rgba(255,255,255,0.05); color: #fff; font-weight: 500; transition: all 0.2s; }
+input::placeholder { color: rgba(255,255,255,0.4); }
+select option { background: #1a1a3e; color: #fff; }
+input:focus, select:focus { outline: none; border-color: rgba(99,179,237,0.4); background: rgba(255,255,255,0.08); }
+input:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.submit-btn { width: 100%; padding: 14px; background: linear-gradient(135deg,#667eea,#764ba2); color: #fff; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 8px; transition: all 0.3s; }
+.submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(102,126,234,0.4); }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-cancel { padding: 12px 18px; background: rgba(255,255,255,0.05); color: #a0aec0; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+.message { display: none; padding: 12px 16px; border-radius: 12px; text-align: center; font-weight: 700; margin-top: 12px; white-space: pre-line; font-size: 14px; animation: slideUp 0.3s ease; }
+.message.success { background: rgba(72,187,120,0.15); color: #68d391; border: 1px solid rgba(72,187,120,0.2); }
+.message.error { background: rgba(229,62,62,0.15); color: #fc8181; border: 1px solid rgba(229,62,62,0.2); }
+.message.info { background: rgba(66,153,225,0.15); color: #63b3ed; border: 1px solid rgba(66,153,225,0.2); }
+.message.warning { background: rgba(237,137,54,0.15); color: #f6ad55; border: 1px solid rgba(237,137,54,0.2); }
+@keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.hidden { display: none !important; }
+.loading { display: inline-block; width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.2); border-radius: 50%; border-top-color: #fff; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* SYNC BANNER */
+.sync-banner { background: rgba(72,187,120,0.12); border: 1px solid rgba(72,187,120,0.3); border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; font-size: 12px; color: #68d391; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+.sync-banner .refresh-link { color: #63b3ed; cursor: pointer; text-decoration: underline; font-weight: 700; }
+.sync-banner.stale { background: rgba(237,137,54,0.12); border-color: rgba(237,137,54,0.3); color: #f6ad55; }
+
+/* SEARCH BOX */
+.search-box { position: relative; display: flex; align-items: center; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0 14px; transition: all 0.2s; margin-bottom: 8px; }
+.search-box:focus-within { border-color: rgba(99,179,237,0.5); background: rgba(255,255,255,0.08); box-shadow: 0 0 0 4px rgba(99,179,237,0.06); }
+.search-icon { font-size: 16px; color: rgba(255,255,255,0.5); margin-right: 8px; flex-shrink: 0; }
+.search-box input { flex: 1; background: transparent; border: none; padding: 13px 0; color: #fff; font-size: 15px; font-weight: 500; outline: none; width: 100%; }
+.search-box input::placeholder { color: rgba(255,255,255,0.35); font-size: 14px; }
+.search-clear { background: rgba(229,62,62,0.2); color: #fc8181; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.search-meta { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #a0aec0; padding: 0 4px 8px 4px; min-height: 18px; }
+#searchResultCount { color: #63b3ed; font-weight: 600; }
+#searchHint { color: #f6e05e; font-weight: 600; animation: pulse 1.5s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+
+/* RECORD CARDS */
+.records-container { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
+.record-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 14px; transition: all 0.25s ease; }
+.record-card:hover { border-color: rgba(99,179,237,0.3); }
+.records-container.has-active .record-card:not(.editing) { display: none !important; }
+.record-card.editing { border-color: rgba(99,179,237,0.6); box-shadow: 0 0 0 3px rgba(99,179,237,0.15), 0 12px 40px rgba(0,0,0,0.4); background: rgba(99,179,237,0.06); animation: cardExpand 0.3s ease; }
+@keyframes cardExpand { from { opacity: 0.5; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+.editing-banner { background: linear-gradient(135deg, rgba(99,179,237,0.15), rgba(183,148,244,0.15)); border: 1px solid rgba(99,179,237,0.3); border-radius: 12px; padding: 10px 14px; margin-bottom: 12px; color: #63b3ed; font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+.editing-banner .btn-back { background: rgba(255,255,255,0.1); color: #fff; border: none; border-radius: 8px; padding: 5px 12px; font-size: 12px; font-weight: 700; cursor: pointer; }
+
+.record-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.08); }
+.record-beneficiary { font-size: 16px; font-weight: 800; color: #fff; }
+.record-ref { font-size: 11px; color: #f6e05e; font-weight: 700; margin-top: 2px; }
+
+.edit-btn { padding: 6px 14px; background: linear-gradient(135deg,#63b3ed,#4299e1); color: #fff; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.edit-btn:hover { transform: scale(1.05); }
+.edit-btn.active { background: linear-gradient(135deg,#fc8181,#e53e3e); }
+
+.readonly-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin-bottom: 10px; }
+.ro-item { font-size: 12px; }
+.ro-label { color: #a0aec0; font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px; }
+.ro-value { color: #e2e8f0; font-weight: 600; word-break: break-word; }
+
+.edit-panel { margin-top: 12px; padding-top: 12px; border-top: 2px solid rgba(99,179,237,0.2); animation: slideDown 0.25s ease; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+.edit-panel h4 { color: #63b3ed; font-size: 13px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.edit-field { display: flex; flex-direction: column; }
+.edit-field.full { grid-column: 1 / -1; }
+.edit-field label { font-size: 11px; color: #a0aec0; margin-bottom: 4px; font-weight: 600; }
+.edit-field input, .edit-field select { padding: 9px 12px; font-size: 14px; }
+.edit-field input[readonly] { background: rgba(246,224,94,0.08); color: #f6e05e; font-weight: 700; font-family: monospace; letter-spacing: 0.5px; }
+
+.photo-upload { border: 1.5px dashed rgba(255,255,255,0.15); border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; background: rgba(255,255,255,0.02); position: relative; min-height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s ease; overflow: hidden; }
+.photo-upload:hover { border-color: rgba(99,179,237,0.4); background: rgba(99,179,237,0.04); }
+.photo-upload.uploading { border-color: #f6ad55; background: rgba(237,137,54,0.06); pointer-events: none; }
+.photo-upload.success { border-color: #48bb78; background: rgba(72,187,120,0.08); animation: successPulse 0.6s ease; }
+.photo-upload.success .ph-text { color: #68d391; font-weight: 700; }
+@keyframes successPulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(72,187,120,0.4); } 50% { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(72,187,120,0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(72,187,120,0); } }
+.photo-upload img { max-width: 100%; max-height: 90px; border-radius: 6px; animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+.photo-upload .ph-icon { font-size: 22px; }
+.photo-upload .ph-text { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 3px; }
+.photo-remove { position: absolute; top: -6px; right: -6px; background: rgba(229,62,62,0.9); color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; cursor: pointer; font-weight: 700; display: flex; align-items: center; justify-content: center; z-index: 3; }
+.upload-progress-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: rgba(255,255,255,0.08); overflow: hidden; }
+.upload-progress-bar .fill { width: 0%; height: 100%; background: linear-gradient(90deg, #f6ad55, #48bb78); transition: width 0.3s ease; }
+.upload-spinner { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 32px; height: 32px; border: 3px solid rgba(246,224,94,0.2); border-top-color: #f6e05e; border-radius: 50%; animation: spin 0.8s linear infinite; z-index: 2; }
+.upload-check { position: absolute; top: 6px; right: 6px; background: #48bb78; color: #fff; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; animation: checkBounce 0.5s ease; z-index: 3; }
+@keyframes checkBounce { 0% { transform: scale(0) rotate(-180deg); opacity: 0; } 60% { transform: scale(1.3) rotate(0deg); opacity: 1; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
+
+.mandatory-photo-label { display: flex; align-items: center; gap: 4px; }
+.mandatory-photo-label .dot { width: 6px; height: 6px; border-radius: 50%; background: #fc8181; animation: dotPulse 1.5s ease infinite; }
+.mandatory-photo-label .dot.ok { background: #48bb78; animation: none; }
+@keyframes dotPulse { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(252,129,129,0.6); } 50% { opacity: 0.7; box-shadow: 0 0 0 5px rgba(252,129,129,0); } }
+
+.required-banner { background: rgba(237,137,54,0.12); border: 1px solid rgba(237,137,54,0.3); border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 12px; color: #f6ad55; font-weight: 600; }
+
+.meta-info { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.06); display: flex; justify-content: space-between; }
+
+.save-row { display: flex; gap: 8px; margin-top: 12px; }
+.save-row .submit-btn { margin-top: 0; flex: 1; font-size: 14px; padding: 11px; }
+.save-row .btn-cancel { padding: 11px 16px; font-size: 13px; }
+
+.no-records { text-align: center; padding: 30px; color: #a0aec0; }
+.no-records .icon { font-size: 40px; margin-bottom: 10px; }
+.no-results-search { text-align: center; padding: 30px 20px; color: #a0aec0; }
+.no-results-search .icon { font-size: 40px; margin-bottom: 10px; }
+.no-results-search .query { color: #f6e05e; font-weight: 700; }
+
+.shake { animation: shake 0.5s ease; }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
+
+@media (max-width: 480px) {
+  .edit-grid { grid-template-columns: 1fr; }
+  .readonly-grid { grid-template-columns: 1fr; }
+  .header-actions { flex-direction: column; gap: 4px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- AUTH -->
+  <div id="authSection">
+    <div class="header">
+      <h1>🏠 Housing Data Management</h1>
+      <p>Bhagabanpur Gram Panchayat</p>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('signin')" id="signinTab">Sign In</button>
+      <button class="tab" onclick="switchTab('signup')" id="signupTab">Sign Up</button>
+    </div>
+    <div id="signinForm">
+      <form onsubmit="return handleSignIn(event)">
+        <div class="form-group">
+          <label>📱 Mobile Number <span class="required">*</span></label>
+          <input type="tel" id="signinMobile" maxlength="10" placeholder="10-digit mobile" required>
+        </div>
+        <div class="form-group">
+          <label>🔒 Password <span class="required">*</span></label>
+          <input type="password" id="signinPassword" placeholder="Password" required>
+        </div>
+        <button type="submit" class="submit-btn" id="signinBtn"><span id="signinBtnText">🚀 Sign In</span></button>
+      </form>
+    </div>
+    <div id="signupForm" class="hidden">
+      <form onsubmit="return handleSignUp(event)">
+        <div class="form-group"><label>👤 Full Name <span class="required">*</span></label><input type="text" id="signupName" required></div>
+        <div class="form-group"><label>📱 Contact <span class="required">*</span></label><input type="tel" id="signupContact" maxlength="10" required></div>
+        <div class="form-group"><label>🔒 Password <span class="required">*</span></label><input type="password" id="signupPassword" minlength="6" required></div>
+        <button type="submit" class="submit-btn" id="signupBtn"><span id="signupBtnText">✨ Create Account</span></button>
+      </form>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboardSection" class="hidden">
+    <div class="dash-header">
+      <div class="user-info">
+        <div class="avatar" id="userAvatar">U</div>
+        <div>
+          <div class="user-name" id="userName">User</div>
+          <div class="user-contact" id="userContact">📱 -</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="refresh-btn" onclick="syncFromServer(true)" title="Refresh data">🔄</button>
+        <button class="logout-btn" onclick="handleSignOut()">🚪</button>
+      </div>
+    </div>
+
+    <!-- SYNC STATUS -->
+    <div class="sync-banner" id="syncBanner">
+      <span id="syncText"><span class="loading"></span> Loading all data from server...</span>
+      <span class="refresh-link" onclick="syncFromServer(true)">Refresh</span>
+    </div>
+
+    <div class="form-group">
+      <label>📍 Select Location <span class="required">*</span></label>
+      <select id="locationSelect" onchange="onLocationChange()">
+        <option value="">-- Select Location --</option>
+      </select>
+    </div>
+
+    <div id="searchWrapper" class="hidden">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search by name, ID, mobile, job card..." oninput="onSearchInput()" autocomplete="off">
+        <button class="search-clear hidden" id="searchClear" onclick="clearSearch()">✕</button>
+      </div>
+      <div class="search-meta">
+        <span id="searchResultCount"></span>
+        <span id="searchHint" class="hidden">⚡ Instant local search</span>
+      </div>
+    </div>
+
+    <div id="editingBanner" class="editing-banner hidden">
+      <span>✏️ <strong>Editing Mode</strong> — Other records hidden</span>
+      <button class="btn-back" onclick="closeAllEdits()">← Back to list</button>
+    </div>
+
+    <div id="recordsContainer" class="records-container"></div>
+    <div id="noRecords" class="hidden no-records">
+      <div class="icon">📭</div>
+      <div>No records found for this location.</div>
+    </div>
+  </div>
+
+  <div id="message" class="message"></div>
+</div>
+
+<script>
+// ============================================================
+// CONFIG — ⚠️ REPLACE WITH YOUR DEPLOYED URL
+// ============================================================
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxfkXRSgkvJXabp4pCxNxXflH__W5E3M5r8sF1Ks9xTEN6jsgGHwrQctJNahpHqya3B/exec';
+
+// ============================================================
+// APP STATE — All data cached in browser memory
+// ============================================================
+const APP = {
+  currentUser: null,
+  sessionToken: null,
+  allRecords: [],          // 🔥 All records loaded once
+  existingJobCards: new Set(),
+  filteredRecords: [],     // Currently displayed records
+  currentLocation: '',
+  currentQuery: '',
+  editingRow: null,
+  lastSynced: null,
+  isSyncing: false
+};
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const t = localStorage.getItem('sessionToken');
+  const u = localStorage.getItem('currentUser');
+  if (t && u) {
+    APP.sessionToken = t;
+    APP.currentUser = JSON.parse(u);
+    showDashboard();
+    syncFromServer(false);   // Auto-load on session restore
+  }
+  ['signupContact','signinMobile'].forEach(id => {
+    document.getElementById(id).addEventListener('input', e => {
+      e.target.value = e.target.value.replace(/\D/g,'').slice(0,10);
+    });
+  });
+});
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+function switchTab(tab) {
+  document.getElementById('signinTab').classList.toggle('active', tab === 'signin');
+  document.getElementById('signupTab').classList.toggle('active', tab === 'signup');
+  document.getElementById('signinForm').classList.toggle('hidden', tab !== 'signin');
+  document.getElementById('signupForm').classList.toggle('hidden', tab !== 'signup');
+  hideMessage();
+}
+
+function showMessage(text, type = 'info') {
+  const m = document.getElementById('message');
+  m.textContent = text;
+  m.className = 'message ' + type;
+  m.style.display = 'block';
+  clearTimeout(m._t);
+  m._t = setTimeout(() => m.style.display = 'none', 6000);
+}
+
+function hideMessage() { document.getElementById('message').style.display = 'none'; }
+
+function showLoading(bid, tid, txt) {
+  document.getElementById(bid).disabled = true;
+  document.getElementById(tid).innerHTML = '<span class="loading"></span> ' + txt;
+}
+
+function hideLoading(bid, tid, txt) {
+  document.getElementById(bid).disabled = false;
+  document.getElementById(tid).textContent = txt;
+}
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+function formatSyncTime(date) {
+  const d = date || new Date();
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mm = String(d.getMinutes()).padStart(2,'0');
+  return hh + ':' + mm;
+}
+
+// ============================================================
+// AUTH
+// ============================================================
+async function handleSignUp(e) {
+  e.preventDefault();
+  showLoading('signupBtn','signupBtnText','Creating...');
+  hideMessage();
+  const name = document.getElementById('signupName').value.trim();
+  const contact = document.getElementById('signupContact').value.trim();
+  const password = document.getElementById('signupPassword').value;
+
+  if (!name || !contact || !password || contact.length !== 10 || password.length < 6) {
+    showMessage('❌ Fill all fields correctly.', 'error');
+    hideLoading('signupBtn','signupBtnText','Create Account');
+    return;
+  }
+  try {
+    const r = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ action: 'signup', name, contact, password })
+    });
+    const res = await r.json();
+    showMessage(res.success ? '✅ Account created! Pending approval.' : '❌ ' + res.message, res.success ? 'success' : 'error');
+  } catch (err) { showMessage('❌ ' + err.message, 'error'); }
+  hideLoading('signupBtn','signupBtnText','Create Account');
+}
+
+async function handleSignIn(e) {
+  e.preventDefault();
+  showLoading('signinBtn','signinBtnText','Signing In...');
+  hideMessage();
+  const contact = document.getElementById('signinMobile').value.trim();
+  const password = document.getElementById('signinPassword').value;
+  if (!contact || !password) {
+    showMessage('❌ Enter mobile and password.', 'error');
+    hideLoading('signinBtn','signinBtnText','Sign In');
+    return;
+  }
+  try {
+    const r = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ action: 'signin', contact, password })
+    });
+    const res = await r.json();
+    if (!res.success) {
+      showMessage('❌ ' + res.message, 'error');
+      hideLoading('signinBtn','signinBtnText','Sign In');
+      return;
+    }
+    APP.currentUser = { name: res.data.name, contact: res.data.contact, status: res.data.status };
+    APP.sessionToken = res.data.sessionToken;
+    localStorage.setItem('sessionToken', APP.sessionToken);
+    localStorage.setItem('currentUser', JSON.stringify(APP.currentUser));
+    showDashboard();
+    syncFromServer(false);
+    showMessage('✅ Welcome, ' + res.data.name, 'success');
+  } catch (err) { showMessage('❌ ' + err.message, 'error'); }
+  hideLoading('signinBtn','signinBtnText','Sign In');
+}
+
+function showDashboard() {
+  document.getElementById('authSection').classList.add('hidden');
+  document.getElementById('dashboardSection').classList.remove('hidden');
+  if (APP.currentUser) {
+    document.getElementById('userAvatar').textContent = APP.currentUser.name.charAt(0).toUpperCase();
+    document.getElementById('userName').textContent = APP.currentUser.name;
+    document.getElementById('userContact').textContent = '📱 ' + APP.currentUser.contact;
+  }
+}
+
+function handleSignOut() {
+  if (!confirm('Logout and clear cached data?')) return;
+  localStorage.removeItem('sessionToken');
+  localStorage.removeItem('currentUser');
+  APP.currentUser = null; APP.sessionToken = null;
+  APP.allRecords = []; APP.filteredRecords = [];
+  APP.existingJobCards = new Set();
+  document.getElementById('dashboardSection').classList.add('hidden');
+  document.getElementById('authSection').classList.remove('hidden');
+  document.getElementById('recordsContainer').innerHTML = '';
+  document.getElementById('signinMobile').value = '';
+  document.getElementById('signinPassword').value = '';
+  showMessage('👋 Signed out.', 'info');
+}
+
+// ============================================================
+// 🚀 SYNC — Fetch ALL data ONCE and cache in browser
+// ============================================================
+async function syncFromServer(showToast) {
+  if (APP.isSyncing) return;
+  APP.isSyncing = true;
+
+  const banner = document.getElementById('syncBanner');
+  const text = document.getElementById('syncText');
+  banner.classList.remove('stale');
+  text.innerHTML = '<span class="loading"></span> Loading all data from server...';
+
+  try {
+    const r = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        action: 'get_all_housing_data',
+        sessionToken: APP.sessionToken
+      })
+    });
+    const res = await r.json();
+
+    if (!res.success) {
+      banner.classList.add('stale');
+      text.textContent = '❌ Failed to load: ' + (res.message || 'Unknown error');
+      showMessage('❌ Sync failed: ' + res.message, 'error');
+      APP.isSyncing = false;
+      return;
+    }
+
+    APP.allRecords = res.data || [];
+    APP.existingJobCards = new Set(res.existingJobCards || []);
+    APP.lastSynced = new Date();
+
+    // Rebuild location dropdown
+    populateLocationDropdown(res.locations || []);
+
+    // Re-apply current filters
+    if (APP.currentLocation) {
+      applyFilters();
+      document.getElementById('searchWrapper').classList.remove('hidden');
+    }
+
+    // Update banner
+    banner.classList.remove('stale');
+    text.innerHTML = `✅ <strong>${res.count}</strong> records loaded · Synced at ${formatSyncTime(APP.lastSynced)} · ⚡ Instant search`;
+
+    if (showToast) showMessage('✅ Data synced successfully!', 'success');
+  } catch (err) {
+    banner.classList.add('stale');
+    text.textContent = '❌ Network error: ' + err.message;
+    showMessage('❌ Sync failed: ' + err.message, 'error');
+  }
+
+  APP.isSyncing = false;
+}
+
+function populateLocationDropdown(locations) {
+  const sel = document.getElementById('locationSelect');
+  const currentVal = sel.value;
+  sel.innerHTML = '<option value="">-- Select Location --</option>';
+  locations.forEach(loc => {
+    const o = document.createElement('option');
+    o.value = loc; o.textContent = loc;
+    sel.appendChild(o);
+  });
+  if (currentVal && locations.includes(currentVal)) sel.value = currentVal;
+}
+
+// ============================================================
+// LOCATION CHANGE — Filter from local cache (INSTANT)
+// ============================================================
+function onLocationChange() {
+  const location = document.getElementById('locationSelect').value;
+  APP.currentLocation = location;
+  APP.currentQuery = '';
+  APP.editingRow = null;
+
+  // Reset UI
+  const container = document.getElementById('recordsContainer');
+  container.innerHTML = '';
+  container.classList.remove('has-active');
+  document.getElementById('editingBanner').classList.add('hidden');
+  document.getElementById('noRecords').classList.add('hidden');
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchClear').classList.add('hidden');
+  document.getElementById('searchHint').classList.add('hidden');
+
+  if (!location) {
+    document.getElementById('searchWrapper').classList.add('hidden');
+    document.getElementById('searchResultCount').textContent = '';
+    return;
+  }
+
+  document.getElementById('searchWrapper').classList.remove('hidden');
+  applyFilters();
+}
+
+// ============================================================
+// FILTER (LOCAL, INSTANT)
+// ============================================================
+function applyFilters() {
+  const location = APP.currentLocation;
+  const query = APP.currentQuery.toLowerCase().trim();
+
+  // Step 1: filter by location
+  let filtered = APP.allRecords.filter(r => r.location === location);
+
+  // Step 2: filter by search query (partial match)
+  if (query) {
+    filtered = filtered.filter(rec => {
+      const haystack = [
+        rec.beneficiaryName, rec.referenceId, rec.mobileNumber,
+        rec.fatherHusbandName, rec.jobCardNo, rec.sansad,
+        rec.epicNo, rec.aadharNo, rec.nameAsPerJobCard,
+        rec.guardianAsPerJobCard, rec.jobCardVbGram
+      ].filter(Boolean).join(' ').toLowerCase();
+      return haystack.includes(query);
+    });
+  }
+
+  APP.filteredRecords = filtered;
+  renderRecords(filtered);
+
+  // Update count
+  const countEl = document.getElementById('searchResultCount');
+  const totalForLocation = APP.allRecords.filter(r => r.location === location).length;
+
+  if (query) {
+    countEl.textContent = filtered.length === 0
+      ? `❌ No matches for "${APP.currentQuery}"`
+      : `🔍 Found ${filtered.length} of ${totalForLocation} record${filtered.length !== 1 ? 's' : ''}`;
+  } else {
+    countEl.textContent = `📊 ${filtered.length} record${filtered.length !== 1 ? 's' : ''}`;
+  }
+
+  if (filtered.length === 0 && !query) {
+    document.getElementById('noRecords').classList.remove('hidden');
+  } else {
+    document.getElementById('noRecords').classList.add('hidden');
+  }
+}
+
+// ============================================================
+// SEARCH (LOCAL — no server call!)
+// ============================================================
+let searchDebounceTimer = null;
+
+function onSearchInput() {
+  const query = document.getElementById('searchInput').value.trim();
+  APP.currentQuery = query;
+  document.getElementById('searchClear').classList.toggle('hidden', !query);
+  document.getElementById('searchHint').classList.toggle('hidden', !query);
+
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(() => applyFilters(), 80); // Faster — local filter
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  APP.currentQuery = '';
+  document.getElementById('searchClear').classList.add('hidden');
+  document.getElementById('searchHint').classList.add('hidden');
+  applyFilters();
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function renderRecords(records) {
+  const c = document.getElementById('recordsContainer');
+  c.innerHTML = '';
+  c.classList.remove('has-active');
+  if (records.length === 0) {
+    const noRes = document.createElement('div');
+    noRes.className = 'no-results-search';
+    noRes.innerHTML = `
+      <div class="icon">🔍</div>
+      <div class="msg">No records match <span class="query">"${esc(APP.currentQuery)}"</span></div>
+    `;
+    c.appendChild(noRes);
+    return;
+  }
+  records.forEach(rec => c.appendChild(buildCard(rec)));
+}
+
+// ============================================================
+// BUILD CARD
+// ============================================================
+function buildCard(rec) {
+  const card = document.createElement('div');
+  card.className = 'record-card';
+  card.id = 'card-' + rec.rowIndex;
+
+  const hasEpic = !!rec.epicPhotoLink;
+  const hasAadhar = !!rec.aadharPhotoLink;
+
+  const epicPreview = hasEpic
+    ? `<img src="${esc(rec.epicPhotoLink)}" alt="EPIC">
+       <button class="photo-remove" onclick="event.stopPropagation();removePhoto(${rec.rowIndex},'epic')">✕</button>
+       <div class="upload-check">✓</div>`
+    : `<span class="ph-icon">📷</span><span class="ph-text">Tap to upload EPIC Photo</span>`;
+
+  const aadharPreview = hasAadhar
+    ? `<img src="${esc(rec.aadharPhotoLink)}" alt="Aadhar">
+       <button class="photo-remove" onclick="event.stopPropagation();removePhoto(${rec.rowIndex},'aadhar')">✕</button>
+       <div class="upload-check">✓</div>`
+    : `<span class="ph-icon">📷</span><span class="ph-text">Tap to upload Aadhar Photo</span>`;
+
+  const sansadMatch = (rec.sansad || '').match(/(\d+)/);
+  const sansadNumVal = sansadMatch ? sansadMatch[1] : '';
+  const serialVal = extractSerial(rec.jobCardNo);
+
+  card.innerHTML = `
+    <div class="record-header">
+      <div>
+        <div class="record-beneficiary">${esc(rec.beneficiaryName)}</div>
+        <div class="record-ref">🆔 ${esc(rec.referenceId)}</div>
+      </div>
+      <button class="edit-btn" id="editbtn-${rec.rowIndex}" onclick="toggleEdit(${rec.rowIndex})">✏️ Edit</button>
+    </div>
+
+    <div class="readonly-grid">
+      <div class="ro-item"><div class="ro-label">Location</div><div class="ro-value">${esc(rec.location)}</div></div>
+      <div class="ro-item"><div class="ro-label">Father/Husband</div><div class="ro-value">${esc(rec.fatherHusbandName)}</div></div>
+      <div class="ro-item"><div class="ro-label">Mobile</div><div class="ro-value">${esc(rec.mobileNumber)}</div></div>
+      <div class="ro-item"><div class="ro-label">Job Card VB-G-RAM-G</div><div class="ro-value">${esc(rec.jobCardVbGram)}</div></div>
+      <div class="ro-item" style="grid-column:1/-1;"><div class="ro-label">Status of Job Card After Table top</div><div class="ro-value">${esc(rec.statusJobCard)}</div></div>
+    </div>
+
+    <div class="edit-panel hidden" id="editpanel-${rec.rowIndex}">
+      <h4>✏️ Editable Fields</h4>
+      <div class="required-banner">
+        ⚠️ Both <strong>EPIC Photo</strong> and <strong>Aadhar Photo</strong> are mandatory to save.
+      </div>
+      <div class="edit-grid">
+        <div class="edit-field">
+          <label>SANSAD <span style="color:#fc8181;">*</span></label>
+          <select id="sansadsel-${rec.rowIndex}" onchange="onSansadSelectChange(${rec.rowIndex})">
+            <option value="">-- Select SANSAD --</option>
+            ${buildSansadOptions(sansadNumVal)}
+          </select>
+        </div>
+        <div class="edit-field">
+          <label>SERIAL NO <span style="color:#fc8181;">*</span></label>
+          <input type="number" min="1" id="serialnum-${rec.rowIndex}" value="${esc(serialVal)}" placeholder="e.g. 15, 352" oninput="onSerialChange(${rec.rowIndex})">
+        </div>
+        <div class="edit-field full">
+          <label>JOB CARD NO (Auto-generated)</label>
+          <input type="text" id="jobcard-${rec.rowIndex}" value="${esc(rec.jobCardNo)}" readonly>
+        </div>
+        <div class="edit-field"><label>NAME AS PER JOB CARD</label><input type="text" id="namejc-${rec.rowIndex}" value="${esc(rec.nameAsPerJobCard)}"></div>
+        <div class="edit-field"><label>GURDIAN AS PER JOB CARD</label><input type="text" id="guardianjc-${rec.rowIndex}" value="${esc(rec.guardianAsPerJobCard)}"></div>
+        <div class="edit-field"><label>EPIC NO</label><input type="text" id="epicno-${rec.rowIndex}" value="${esc(rec.epicNo)}"></div>
+        <div class="edit-field"><label>AADHAR NO</label><input type="text" id="aadharno-${rec.rowIndex}" value="${esc(rec.aadharNo)}"></div>
+        <div class="edit-field">
+          <label class="mandatory-photo-label">EPIC PHOTO <span style="color:#fc8181;">*</span><span class="dot ${hasEpic ? 'ok' : ''}" id="epicdot-${rec.rowIndex}"></span></label>
+          <div class="photo-upload ${hasEpic ? 'success' : ''}" id="epicarea-${rec.rowIndex}" onclick="triggerPhotoUpload(${rec.rowIndex}, 'epic')">
+            ${epicPreview}
+            <input type="file" id="epicinput-${rec.rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rec.rowIndex},'epic')" style="display:none;">
+          </div>
+        </div>
+        <div class="edit-field">
+          <label class="mandatory-photo-label">AADHAR PHOTO <span style="color:#fc8181;">*</span><span class="dot ${hasAadhar ? 'ok' : ''}" id="aadhardot-${rec.rowIndex}"></span></label>
+          <div class="photo-upload ${hasAadhar ? 'success' : ''}" id="aadhararea-${rec.rowIndex}" onclick="triggerPhotoUpload(${rec.rowIndex}, 'aadhar')">
+            ${aadharPreview}
+            <input type="file" id="aadharinput-${rec.rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rec.rowIndex},'aadhar')" style="display:none;">
+          </div>
+        </div>
+      </div>
+      <div class="meta-info">
+        <span>👤 ${esc(rec.userName) || 'N/A'}</span>
+        <span>🕐 ${esc(rec.timestamp) || 'N/A'}</span>
+      </div>
+      <div class="save-row">
+        <button class="btn-cancel" onclick="cancelEdit(${rec.rowIndex})">Cancel</button>
+        <button class="submit-btn" onclick="saveRecord(${rec.rowIndex})">💾 Save</button>
+      </div>
+    </div>
+  `;
+
+  card.dataset.epicPhoto = rec.epicPhotoLink || '';
+  card.dataset.aadharPhoto = rec.aadharPhotoLink || '';
+  return card;
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function buildSansadOptions(selectedNum) {
+  let html = '';
+  for (let i = 1; i <= 30; i++) {
+    const sel = String(selectedNum) === String(i) ? ' selected' : '';
+    html += `<option value="${i}"${sel}>SANSAD/${i}</option>`;
+  }
+  return html;
+}
+function extractSerial(jobCardNo) {
+  if (!jobCardNo) return '';
+  const m = String(jobCardNo).match(/\/(\d+)$/);
+  return m ? m[1] : '';
+}
+
+// ============================================================
+// EDIT TOGGLE (hides others)
+// ============================================================
+function toggleEdit(rowIndex) {
+  const panel = document.getElementById('editpanel-' + rowIndex);
+  const btn = document.getElementById('editbtn-' + rowIndex);
+  const card = document.getElementById('card-' + rowIndex);
+  const container = document.getElementById('recordsContainer');
+  const banner = document.getElementById('editingBanner');
+  const isCurrentlyOpen = !panel.classList.contains('hidden');
+
+  document.querySelectorAll('.edit-panel').forEach(p => p.classList.add('hidden'));
+  document.querySelectorAll('.edit-btn').forEach(b => { b.classList.remove('active'); b.textContent = '✏️ Edit'; });
+  document.querySelectorAll('.record-card').forEach(c => c.classList.remove('editing'));
+
+  if (!isCurrentlyOpen) {
+    panel.classList.remove('hidden');
+    btn.classList.add('active');
+    btn.textContent = '✖ Close';
+    card.classList.add('editing');
+    container.classList.add('has-active');
+    banner.classList.remove('hidden');
+    APP.editingRow = rowIndex;
+    setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  } else {
+    container.classList.remove('has-active');
+    banner.classList.add('hidden');
+    APP.editingRow = null;
+  }
+}
+
+function cancelEdit(rowIndex) {
+  document.getElementById('editpanel-' + rowIndex).classList.add('hidden');
+  const btn = document.getElementById('editbtn-' + rowIndex);
+  btn.classList.remove('active');
+  btn.textContent = '✏️ Edit';
+  document.getElementById('card-' + rowIndex).classList.remove('editing');
+  document.getElementById('recordsContainer').classList.remove('has-active');
+  document.getElementById('editingBanner').classList.add('hidden');
+  APP.editingRow = null;
+}
+
+function closeAllEdits() {
+  document.querySelectorAll('.edit-panel').forEach(p => p.classList.add('hidden'));
+  document.querySelectorAll('.edit-btn').forEach(b => { b.classList.remove('active'); b.textContent = '✏️ Edit'; });
+  document.querySelectorAll('.record-card').forEach(c => c.classList.remove('editing'));
+  document.getElementById('recordsContainer').classList.remove('has-active');
+  document.getElementById('editingBanner').classList.add('hidden');
+  APP.editingRow = null;
+  setTimeout(() => document.getElementById('recordsContainer').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+}
+
+// ============================================================
+// SANSAD/SERIAL → Generate Job Card (LOCAL!)
+// ============================================================
+function onSansadSelectChange(rowIndex) {
+  const sansadNum = document.getElementById('sansadsel-' + rowIndex).value;
+  const serialInput = document.getElementById('serialnum-' + rowIndex);
+  if (!sansadNum) { document.getElementById('jobcard-' + rowIndex).value = ''; return; }
+  if (serialInput.value) generateJobCard(rowIndex);
+}
+
+function onSerialChange(rowIndex) {
+  const sansadNum = document.getElementById('sansadsel-' + rowIndex).value;
+  const serialNum = document.getElementById('serialnum-' + rowIndex).value;
+  if (!sansadNum || !serialNum) { document.getElementById('jobcard-' + rowIndex).value = ''; return; }
+  generateJobCard(rowIndex);
+}
+
+function generateJobCard(rowIndex) {
+  // ⚡ LOCAL generation — no server call!
+  const sansadNum = parseInt(document.getElementById('sansadsel-' + rowIndex).value);
+  const serialNum = parseInt(document.getElementById('serialnum-' + rowIndex).value);
+  if (!sansadNum || !serialNum) return;
+
+  const sansadPadded = String(sansadNum).padStart(3, '0');
+  const jobCard = `WB-09-003-002-${sansadPadded}/${serialNum}`;
+  document.getElementById('jobcard-' + rowIndex).value = jobCard;
+
+  // ⚡ LOCAL duplicate check
+  const jcInput = document.getElementById('jobcard-' + rowIndex);
+  let duplicateRow = null;
+  for (const rec of APP.allRecords) {
+    if (rec.rowIndex === rowIndex) continue;
+    if (rec.jobCardNo === jobCard) { duplicateRow = rec.rowIndex; break; }
+  }
+  if (duplicateRow) {
+    showMessage('⚠️ This Job Card already exists (Row ' + duplicateRow + ')', 'warning');
+    jcInput.style.borderColor = '#fc8181';
+  } else {
+    jcInput.style.borderColor = '';
+  }
+}
+
+// ============================================================
+// PHOTO UPLOAD
+// ============================================================
+function triggerPhotoUpload(rowIndex, type) {
+  const input = document.getElementById((type === 'epic' ? 'epicinput-' : 'aadharinput-') + rowIndex);
+  if (input) input.click();
+}
+
+async function handlePhoto(event, rowIndex, type) {
+  const file = event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { showMessage('❌ Please select an image file.', 'error'); return; }
+
+  const areaId = type === 'epic' ? 'epicarea-' : 'aadhararea-';
+  const dotId = type === 'epic' ? 'epicdot-' : 'aadhardot-';
+  const area = document.getElementById(areaId + rowIndex);
+  const dot = document.getElementById(dotId + rowIndex);
+
+  const rec = APP.allRecords.find(r => r.rowIndex === rowIndex);
+  const referenceId = rec ? rec.referenceId : 'UNKNOWN';
+  const photoType = type === 'epic' ? 'EPIC' : 'AADHAR';
+
+  area.classList.remove('success');
+  area.classList.add('uploading');
+  area.innerHTML = `
+    <div class="upload-spinner"></div>
+    <span class="ph-icon" style="opacity:0.3;">📷</span>
+    <span class="ph-text" style="color:#f6ad55;font-weight:700;">Uploading ${photoType}...</span>
+    <div class="upload-progress-bar"><div class="fill" id="progress-${rowIndex}-${type}"></div></div>
+    <input type="file" id="${type}input-${rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rowIndex},'${type}')" style="display:none;">
+  `;
+
+  const progressFill = document.getElementById(`progress-${rowIndex}-${type}`);
+  let prog = 0;
+  const progressInterval = setInterval(() => {
+    if (prog < 85) { prog += Math.random() * 12; progressFill.style.width = Math.min(prog, 85) + '%'; }
+  }, 100);
+
+  const reader = new FileReader();
+  reader.onload = async function(ev) {
+    const base64 = ev.target.result.split(',')[1];
+    try {
+      const r = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          action: 'upload_photo',
+          fileData: base64,
+          fileType: 'image/jpeg',
+          referenceId: referenceId,
+          photoType: photoType,
+          sessionToken: APP.sessionToken
+        })
+      });
+      const res = await r.json();
+      clearInterval(progressInterval);
+      if (res.success) {
+        if (progressFill) progressFill.style.width = '100%';
+        setTimeout(() => {
+          area.classList.remove('uploading');
+          area.classList.add('success');
+          area.innerHTML = `
+            <img src="${res.fileUrl}" alt="${photoType}">
+            <button class="photo-remove" onclick="event.stopPropagation();removePhoto(${rowIndex},'${type}')">✕</button>
+            <div class="upload-check">✓</div>
+            <input type="file" id="${type}input-${rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rowIndex},'${type}')" style="display:none;">
+          `;
+          if (dot) dot.classList.add('ok');
+          const card = document.getElementById('card-' + rowIndex);
+          card.dataset[type + 'Photo'] = res.fileUrl;
+          showMessage(`✅ ${photoType} uploaded as "${res.fileName}"`, 'success');
+          setTimeout(hideMessage, 2500);
+        }, 350);
+      } else {
+        area.classList.remove('uploading');
+        area.innerHTML = `<span class="ph-icon">📷</span><span class="ph-text">Tap to upload ${photoType}</span><input type="file" id="${type}input-${rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rowIndex},'${type}')" style="display:none;">`;
+        showMessage('❌ Upload failed: ' + (res.error || res.message), 'error');
+      }
+    } catch (err) {
+      clearInterval(progressInterval);
+      area.classList.remove('uploading');
+      area.innerHTML = `<span class="ph-icon">📷</span><span class="ph-text">Tap to upload ${photoType}</span><input type="file" id="${type}input-${rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rowIndex},'${type}')" style="display:none;">`;
+      showMessage('❌ Upload failed: ' + err.message, 'error');
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function removePhoto(rowIndex, type) {
+  const area = document.getElementById((type === 'epic' ? 'epicarea-' : 'aadhararea-') + rowIndex);
+  const dot = document.getElementById((type === 'epic' ? 'epicdot-' : 'aadhardot-') + rowIndex);
+  const label = type === 'epic' ? 'EPIC Photo' : 'Aadhar Photo';
+  area.classList.remove('success', 'uploading');
+  area.innerHTML = `<span class="ph-icon">📷</span><span class="ph-text">Tap to upload ${label}</span><input type="file" id="${type}input-${rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rowIndex},'${type}')" style="display:none;">`;
+  if (dot) dot.classList.remove('ok');
+  document.getElementById('card-' + rowIndex).dataset[type + 'Photo'] = '';
+}
+
+// ============================================================
+// SAVE RECORD (only network call — then update LOCAL cache)
+// ============================================================
+async function saveRecord(rowIndex) {
+  const sansadNum = document.getElementById('sansadsel-' + rowIndex).value;
+  const serialNum = document.getElementById('serialnum-' + rowIndex).value;
+  const jobCardNo = document.getElementById('jobcard-' + rowIndex).value;
+
+  if (!sansadNum) { showMessage('❌ Please select SANSAD.', 'error'); return; }
+  if (!serialNum) { showMessage('❌ Please enter serial number.', 'error'); return; }
+  if (!jobCardNo) { showMessage('❌ Job Card not generated.', 'error'); return; }
+
+  const card = document.getElementById('card-' + rowIndex);
+  const epicUrl = card.dataset.epicPhoto || '';
+  const aadharUrl = card.dataset.aadharPhoto || '';
+
+  if (!epicUrl && !aadharUrl) { shakeBoth(rowIndex); showMessage('⚠️ Both EPIC & Aadhar photos are mandatory!', 'error'); return; }
+  if (!epicUrl) { shakePhoto(rowIndex, 'epic'); showMessage('⚠️ EPIC Photo is mandatory!', 'error'); return; }
+  if (!aadharUrl) { shakePhoto(rowIndex, 'aadhar'); showMessage('⚠️ Aadhar Photo is mandatory!', 'error'); return; }
+
+  const rec = APP.allRecords.find(r => r.rowIndex === rowIndex);
+  const payload = {
+    rowIndex: rowIndex,
+    referenceId: rec.referenceId,
+    sansad: 'SANSAD/' + sansadNum,
+    jobCardNo: jobCardNo,
+    nameAsPerJobCard: document.getElementById('namejc-' + rowIndex).value.trim(),
+    guardianAsPerJobCard: document.getElementById('guardianjc-' + rowIndex).value.trim(),
+    epicNo: document.getElementById('epicno-' + rowIndex).value.trim(),
+    epicPhotoLink: epicUrl,
+    aadharNo: document.getElementById('aadharno-' + rowIndex).value.trim(),
+    aadharPhotoLink: aadharUrl
+  };
+
+  const saveBtn = document.querySelector(`#editpanel-${rowIndex} .submit-btn`);
+  const originalText = saveBtn.innerHTML;
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = '<span class="loading"></span> Saving...';
+
+  try {
+    const r = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        action: 'update_housing_record',
+        data: JSON.stringify(payload),
+        sessionToken: APP.sessionToken,
+        userName: APP.currentUser.name
+      })
+    });
+    const res = await r.json();
+
+    if (res.success) {
+      // ✅ UPDATE LOCAL CACHE — no need to refetch!
+      const idx = APP.allRecords.findIndex(r => r.rowIndex === rowIndex);
+      if (idx !== -1) {
+        Object.assign(APP.allRecords[idx], res.data.updatedFields);
+      }
+      // Add to existing job cards set
+      if (res.data.updatedFields.jobCardNo) APP.existingJobCards.add(res.data.updatedFields.jobCardNo);
+
+      // Close edit
+      closeAllEdits();
+
+      showMessage('✅ ' + res.message + '\n👤 ' + APP.currentUser.name, 'success');
+
+      // Re-render from LOCAL cache (instant!)
+      applyFilters();
+
+      // Highlight updated card
+      setTimeout(() => {
+        const newCard = document.getElementById('card-' + rowIndex);
+        if (newCard) {
+          newCard.style.transition = 'box-shadow 0.3s';
+          newCard.style.boxShadow = '0 0 0 2px rgba(72,187,120,0.6)';
+          setTimeout(() => { newCard.style.boxShadow = ''; }, 1500);
+        }
+      }, 100);
+    } else {
+      showMessage('❌ ' + res.message, 'error');
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = originalText;
+    }
+  } catch (err) {
+    showMessage('❌ ' + err.message, 'error');
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = originalText;
+  }
+}
+
+// Shake helpers
+function shakePhoto(rowIndex, type) {
+  const el = document.getElementById((type === 'epic' ? 'epicarea-' : 'aadhararea-') + rowIndex);
+  if (!el) return;
+  el.classList.add('shake');
+  setTimeout(() => el.classList.remove('shake'), 500);
+}
+function shakeBoth(rowIndex) {
+  shakePhoto(rowIndex, 'epic');
+  setTimeout(() => shakePhoto(rowIndex, 'aadhar'), 150);
+}
+
+console.log('✅ Housing Data App v3.3 — Local cache mode active');
+</script>
+</body>
+</html>
