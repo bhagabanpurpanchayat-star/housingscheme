@@ -36,7 +36,7 @@ body::before { content: ''; position: fixed; top: -50%; left: -50%; width: 200%;
 .sync-banner .refresh-link { color: #63b3ed; cursor: pointer; text-decoration: underline; font-weight: 700; flex-shrink: 0; }
 .sync-banner #syncText { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* DASHBOARD STAMP (no chart) */
+/* DASHBOARD STAMP */
 .stamp-dash { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 10px 10px 10px; margin-bottom: 12px; }
 .stamp-title { font-size: 10px; color: #a0aec0; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
 .stamp-title .badge-mini { background: rgba(237,137,54,0.2); color: #f6ad55; font-size: 9px; padding: 1px 7px; border-radius: 20px; font-weight: 800; }
@@ -233,7 +233,6 @@ input:disabled { opacity: 0.6; cursor: not-allowed; }
     <span class="refresh-link" onclick="syncFromServer(true)">Refresh</span>
   </div>
 
-  <!-- DASHBOARD STAMP (Stats + Pending Batches only) -->
   <div class="stamp-dash">
     <div class="stamp-title">
       <span>📊 Dashboard</span>
@@ -257,7 +256,6 @@ input:disabled { opacity: 0.6; cursor: not-allowed; }
     </div>
   </div>
 
-  <!-- LOCATION SELECT -->
   <div class="form-group">
     <label>📍 Select Location <span class="required">*</span></label>
     <select id="locationSelect" onchange="onLocationChange()">
@@ -265,7 +263,6 @@ input:disabled { opacity: 0.6; cursor: not-allowed; }
     </select>
   </div>
 
-  <!-- SEARCH -->
   <div id="searchWrapper" class="hidden">
     <div class="search-box">
       <span class="search-icon">🔍</span>
@@ -315,17 +312,61 @@ const APP = {
 };
 
 // ============================================================
-// FETCH HELPER
+// FETCH HELPER (with timeout — prevents infinite hang)
 // ============================================================
-async function apiCall(params) {
-  const query = new URLSearchParams(params).toString();
-  const url = SCRIPT_URL + '?' + query;
-  const r = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams(params)
+async function apiCall(params, timeoutMs = 45000) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const r = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(params),
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    return await r.json();
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (err.name === 'AbortError') {
+      throw new Error('Request timed out after ' + Math.round(timeoutMs / 1000) + 's. Please check your connection and try again.');
+    }
+    throw err;
+  }
+}
+
+// ============================================================
+// IMAGE COMPRESSION — reduces upload size by 60-80%
+// ============================================================
+function compressImage(file, maxWidth = 1280, quality = 0.72) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          let { width, height } = img;
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob((blob) => {
+            if (blob) resolve(blob);
+            else reject(new Error('Image compression failed'));
+          }, 'image/jpeg', quality);
+        } catch (err) { reject(err); }
+      };
+      img.onerror = () => reject(new Error('Invalid image file'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsDataURL(file);
   });
-  return r.json();
 }
 
 // ============================================================
@@ -513,7 +554,7 @@ function populateLocationDropdown(locations) {
 }
 
 // ============================================================
-// DASHBOARD RENDER (no chart)
+// DASHBOARD RENDER
 // ============================================================
 function renderDashboardStamp() {
   const records = APP.allRecords;
@@ -869,7 +910,7 @@ function generateJobCard(rowIndex) {
 }
 
 // ============================================================
-// PHOTO UPLOAD
+// PHOTO UPLOAD — FIXED VERSION
 // ============================================================
 function triggerPhotoUpload(rowIndex, type) {
   const input = document.getElementById((type === 'epic' ? 'epicinput-' : 'aadharinput-') + rowIndex);
@@ -880,7 +921,17 @@ async function handlePhoto(event, rowIndex, type) {
   const file = event.target.files[0];
   event.target.value = '';
   if (!file) return;
-  if (!file.type.startsWith('image/')) { showMessage('❌ Select an image file.', 'error'); return; }
+
+  if (!file.type.startsWith('image/')) {
+    showMessage('❌ Please select an image file.', 'error');
+    return;
+  }
+
+  // ⚠️ CRITICAL: Reject large files before upload starts (prevents hang)
+  if (file.size > 8 * 1024 * 1024) {
+    showMessage('❌ Image too large (' + (file.size / 1024 / 1024).toFixed(1) + 'MB). Max 8MB. Please use a smaller photo.', 'error');
+    return;
+  }
 
   const areaId = type === 'epic' ? 'epicarea-' : 'aadhararea-';
   const dotId = type === 'epic' ? 'epicdot-' : 'aadhardot-';
@@ -896,7 +947,7 @@ async function handlePhoto(event, rowIndex, type) {
   area.innerHTML = `
     <div class="upload-spinner"></div>
     <span class="ph-icon" style="opacity:0.3;">📷</span>
-    <span class="ph-text" style="color:#f6ad55;font-weight:700;">Uploading...</span>
+    <span class="ph-text" style="color:#f6ad55;font-weight:700;">Compressing & uploading...</span>
     <div class="upload-progress-bar"><div class="fill" id="progress-${rowIndex}-${type}"></div></div>
     <input type="file" id="${type}input-${rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rowIndex},'${type}')" style="display:none;">
   `;
@@ -904,52 +955,73 @@ async function handlePhoto(event, rowIndex, type) {
   const progressFill = document.getElementById(`progress-${rowIndex}-${type}`);
   let prog = 0;
   const progressInterval = setInterval(() => {
-    if (prog < 85) { prog += Math.random() * 12; progressFill.style.width = Math.min(prog, 85) + '%'; }
-  }, 100);
-
-  const reader = new FileReader();
-  reader.onload = async function(ev) {
-    const base64 = ev.target.result.split(',')[1];
-    try {
-      const res = await apiCall({
-        action: 'upload_photo',
-        fileData: base64,
-        fileType: 'image/jpeg',
-        referenceId: referenceId,
-        photoType: photoType,
-        sessionToken: APP.sessionToken
-      });
-      clearInterval(progressInterval);
-      if (res.success) {
-        if (progressFill) progressFill.style.width = '100%';
-        setTimeout(() => {
-          area.classList.remove('uploading');
-          area.classList.add('success');
-          area.innerHTML = `
-            <img src="${res.fileUrl}" alt="${photoType}">
-            <button class="photo-remove" onclick="event.stopPropagation();removePhoto(${rowIndex},'${type}')">✕</button>
-            <div class="upload-check">✓</div>
-            <input type="file" id="${type}input-${rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rowIndex},'${type}')" style="display:none;">
-          `;
-          if (dot) dot.classList.add('ok');
-          const card = document.getElementById('card-' + rowIndex);
-          card.dataset[type + 'Photo'] = res.fileUrl;
-          showMessage(`✅ ${photoType} uploaded`, 'success');
-          setTimeout(hideMessage, 2000);
-        }, 350);
-      } else {
-        area.classList.remove('uploading');
-        area.innerHTML = `<span class="ph-icon">📷</span><span class="ph-text">Tap for ${photoType}</span><input type="file" id="${type}input-${rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rowIndex},'${type}')" style="display:none;">`;
-        showMessage('❌ Upload failed: ' + (res.error || res.message), 'error');
-      }
-    } catch (err) {
-      clearInterval(progressInterval);
-      area.classList.remove('uploading');
-      area.innerHTML = `<span class="ph-icon">📷</span><span class="ph-text">Tap for ${photoType}</span><input type="file" id="${type}input-${rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rowIndex},'${type}')" style="display:none;">`;
-      showMessage('❌ Upload failed: ' + err.message, 'error');
+    if (prog < 85 && progressFill) {
+      prog += Math.random() * 8;
+      progressFill.style.width = Math.min(prog, 85) + '%';
     }
-  };
-  reader.readAsDataURL(file);
+  }, 150);
+
+  // Helper: ALWAYS restores upload UI on any failure — prevents "stuck uploading"
+  function resetUploadArea(errMsg) {
+    clearInterval(progressInterval);
+    area.classList.remove('uploading', 'success');
+    area.innerHTML = `
+      <span class="ph-icon">📷</span>
+      <span class="ph-text">Tap for ${photoType} Photo</span>
+      <input type="file" id="${type}input-${rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rowIndex},'${type}')" style="display:none;">
+    `;
+    if (dot) dot.classList.remove('ok');
+    if (errMsg) showMessage('❌ ' + errMsg, 'error');
+  }
+
+  try {
+    // 1. Compress image client-side (reduces 3-4MB → ~400KB)
+    const compressedBlob = await compressImage(file, 1280, 0.72);
+
+    // 2. Read compressed blob as base64
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => resolve(ev.target.result.split(',')[1]);
+      reader.onerror = () => reject(new Error('Failed to read compressed image'));
+      reader.readAsDataURL(compressedBlob);
+    });
+
+    // 3. Upload with 90s timeout (images can be slow on mobile)
+    const res = await apiCall({
+      action: 'upload_photo',
+      fileData: base64,
+      fileType: 'image/jpeg',
+      referenceId: referenceId,
+      photoType: photoType,
+      sessionToken: APP.sessionToken
+    }, 90000);
+
+    clearInterval(progressInterval);
+
+    if (res && res.success && res.fileUrl) {
+      if (progressFill) progressFill.style.width = '100%';
+      setTimeout(() => {
+        area.classList.remove('uploading');
+        area.classList.add('success');
+        area.innerHTML = `
+          <img src="${res.fileUrl}" alt="${photoType}">
+          <button class="photo-remove" onclick="event.stopPropagation();removePhoto(${rowIndex},'${type}')">✕</button>
+          <div class="upload-check">✓</div>
+          <input type="file" id="${type}input-${rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rowIndex},'${type}')" style="display:none;">
+        `;
+        if (dot) dot.classList.add('ok');
+        const card = document.getElementById('card-' + rowIndex);
+        if (card) card.dataset[type + 'Photo'] = res.fileUrl;
+        showMessage(`✅ ${photoType} uploaded`, 'success');
+        setTimeout(hideMessage, 2000);
+      }, 300);
+    } else {
+      resetUploadArea((res && (res.error || res.message)) || 'Server rejected the upload');
+    }
+  } catch (err) {
+    console.error('Photo upload error:', err);
+    resetUploadArea(err.message || 'Network error');
+  }
 }
 
 function removePhoto(rowIndex, type) {
@@ -1052,7 +1124,7 @@ function shakeBoth(rowIndex) {
   setTimeout(() => shakePhoto(rowIndex, 'aadhar'), 150);
 }
 
-console.log('✅ Banglar Bari Job Card Mapping — v3.5 (no chart)');
+console.log('✅ Banglar Bari Job Card Mapping — v3.6 (upload fixed + compression)');
 </script>
 </body>
 </html>
