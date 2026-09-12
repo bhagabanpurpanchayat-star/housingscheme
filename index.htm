@@ -1,175 +1,797 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-<title>Banglar Bari · App</title>
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow: hidden; }
-body { background: linear-gradient(135deg, #0f0c29 0%, #1a1a3e 30%, #24243e 60%, #1a1a3e 100%); display: flex; justify-content: center; color: #fff; }
-body::before { content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(99,179,237,0.08) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(183,148,244,0.08) 0%, transparent 50%); animation: floatBg 20s ease-in-out infinite alternate; z-index: 0; }
-@keyframes floatBg { 0% { transform: translate(0,0) rotate(0deg); } 100% { transform: translate(2%,1%) rotate(3deg); } }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Banglar Bari · 3D App</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-.app-shell { width: 100%; max-width: 480px; height: 100vh; height: 100dvh; display: flex; flex-direction: column; position: relative; z-index: 1; overflow: hidden; }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
 
-.screen { position: absolute; inset: 0; display: flex; flex-direction: column; transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease; will-change: transform, opacity; }
-.screen.hidden { display: none !important; }
-.screen.slide-in { transform: translateX(0); opacity: 1; }
-.screen.slide-out { transform: translateX(100%); opacity: 0; }
+    /* SOFTER base: muted navy + subtle teal, no harsh contrast */
+    body {
+      background: radial-gradient(ellipse at 30% 20%, #16213e 0%, #0f172a 45%, #0a0f1c 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #e8eef7;
+      perspective: 1200px;
+    }
 
-.topbar { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: linear-gradient(135deg, rgba(99,179,237,0.15), rgba(183,148,244,0.15)); border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; backdrop-filter: blur(14px); z-index: 5; }
-.topbar .back-btn { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
-.topbar .back-btn:hover { background: rgba(255,255,255,0.15); transform: scale(1.05); }
-.topbar .back-btn.hidden { display: none; }
-.topbar-title { flex: 1; min-width: 0; }
-.topbar-title h2 { font-size: 16px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.topbar-title p { font-size: 11px; color: #a0aec0; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.topbar .avatar-mini { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg,#63b3ed,#b794f4); display: flex; align-items: center; justify-content: center; color: #0f0c29; font-weight: 800; font-size: 15px; flex-shrink: 0; }
+    /* Gentle ambient glow, much softer */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background:
+        radial-gradient(circle at 30% 40%, rgba(120, 170, 255, 0.07) 0%, transparent 45%),
+        radial-gradient(circle at 75% 70%, rgba(140, 180, 255, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 15% 80%, rgba(100, 200, 220, 0.05) 0%, transparent 45%);
+      animation: floatBg 30s ease-in-out infinite alternate;
+      z-index: 0;
+      pointer-events: none;
+    }
 
-#authScreen { padding: 0; overflow-y: auto; }
-.auth-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 24px 20px; }
-.auth-logo { text-align: center; margin-bottom: 22px; }
-.auth-logo .ico { font-size: 54px; line-height: 1; margin-bottom: 6px; }
-.auth-logo h1 { background: linear-gradient(135deg, #63b3ed, #b794f4, #f6ad55, #f6e05e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
-.auth-logo p { color: #a0aec0; font-size: 12px; margin-top: 4px; font-weight: 600; }
+    @keyframes floatBg {
+      0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+      100% { transform: translate(2%, 1%) rotate(2deg) scale(1.02); }
+    }
 
-.auth-tabs { display: flex; background: rgba(255,255,255,0.05); border-radius: 14px; padding: 4px; margin-bottom: 20px; }
-.auth-tab { flex: 1; padding: 11px; text-align: center; border: none; background: transparent; font-size: 14px; font-weight: 700; color: #a0aec0; cursor: pointer; border-radius: 10px; transition: all 0.3s; }
-.auth-tab.active { background: linear-gradient(135deg, rgba(99,179,237,0.3), rgba(183,148,244,0.3)); color: #fff; }
+    .app-shell {
+      width: 100%;
+      max-width: 430px;
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      transform-style: preserve-3d;
+    }
 
-.form-group { margin-bottom: 14px; }
-.form-group label { display: block; font-size: 12px; font-weight: 700; color: #e2e8f0; margin-bottom: 6px; }
-.form-group input { width: 100%; padding: 13px 15px; font-size: 15px; border: 2px solid rgba(255,255,255,0.08); border-radius: 12px; background: rgba(255,255,255,0.05); color: #fff; font-weight: 500; transition: all 0.2s; }
-.form-group input::placeholder { color: rgba(255,255,255,0.35); }
-.form-group input:focus { outline: none; border-color: rgba(99,179,237,0.5); background: rgba(255,255,255,0.08); }
-.form-group input:disabled { opacity: 0.6; }
+    /* ---------- SCREENS ---------- */
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.3s ease;
+      will-change: transform, opacity;
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+    }
 
-.btn-primary { width: 100%; padding: 14px; background: linear-gradient(135deg,#667eea,#764ba2); color: #fff; border: none; border-radius: 14px; font-size: 15px; font-weight: 800; cursor: pointer; margin-top: 6px; transition: all 0.3s; box-shadow: 0 6px 20px rgba(102,126,234,0.3); }
-.btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(102,126,234,0.45); }
-.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .screen.hidden { display: none !important; }
 
-.note-info { text-align: center; font-size: 11.5px; color: #a0aec0; margin-top: 14px; font-weight: 600; line-height: 1.5; padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
+    .screen.slide-in {
+      transform: translateX(0) rotateY(0deg);
+      opacity: 1;
+    }
 
-#homeScreen { overflow: hidden; }
-.menu-area { flex: 1; overflow-y: auto; padding: 16px 14px 24px; }
-.menu-area::-webkit-scrollbar { width: 5px; }
-.menu-area::-webkit-scrollbar-thumb { background: rgba(99,179,237,0.3); border-radius: 10px; }
-.menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
-.menu-tile { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 18px 12px 16px; text-align: center; cursor: pointer; transition: all 0.25s ease; display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; overflow: hidden; }
-.menu-tile:hover, .menu-tile:active { transform: translateY(-3px); background: rgba(255,255,255,0.08); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
-.menu-tile .tile-ico { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 26px; box-shadow: 0 4px 14px rgba(0,0,0,0.25); flex-shrink: 0; }
-.menu-tile .tile-title { font-size: 13px; font-weight: 800; color: #fff; line-height: 1.2; }
-.menu-tile .tile-sub { font-size: 10px; color: #a0aec0; font-weight: 600; line-height: 1.2; }
-.ico-blue { background: linear-gradient(135deg,#63b3ed,#3182ce); }
-.ico-green { background: linear-gradient(135deg,#48bb78,#2f855a); }
-.ico-orange { background: linear-gradient(135deg,#f6ad55,#dd6b20); }
-.ico-purple { background: linear-gradient(135deg,#b794f4,#805ad5); }
-.ico-pink { background: linear-gradient(135deg,#f687b3,#d53f8c); }
-.ico-teal { background: linear-gradient(135deg,#4fd1c5,#319795); }
-.ico-red { background: linear-gradient(135deg,#fc8181,#c53030); }
-.ico-yellow { background: linear-gradient(135deg,#f6e05e,#d69e2e); }
-.ico-indigo { background: linear-gradient(135deg,#7f9cf5,#4c51bf); }
-.section-head { display: flex; align-items: center; gap: 8px; margin: 20px 4px 10px; }
-.section-head .bar { width: 4px; height: 16px; border-radius: 2px; background: linear-gradient(180deg,#63b3ed,#b794f4); }
-.section-head h3 { font-size: 12px; font-weight: 800; color: #a0aec0; text-transform: uppercase; letter-spacing: 0.8px; }
+    .screen.slide-out {
+      transform: translateX(100%) rotateY(12deg);
+      opacity: 0;
+    }
 
-#iframeScreen { overflow: hidden; }
-.iframe-body { flex: 1; background: #0f0c29; position: relative; overflow: hidden; }
-.iframe-body iframe { width: 100%; height: 100%; border: none; display: block; background: #0f0c29; }
-.iframe-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: #0f0c29; color: #a0aec0; font-size: 13px; font-weight: 600; z-index: 2; transition: opacity 0.3s ease; }
-.iframe-loading.gone { opacity: 0; pointer-events: none; }
+    /* ========== AUTH SCREEN ========== */
+    #authScreen {
+      padding: 0;
+      overflow-y: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+    }
 
-.bottom-nav { display: flex; background: rgba(15,12,41,0.95); border-top: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(14px); flex-shrink: 0; padding: 6px 4px 8px; z-index: 5; }
-.bottom-nav .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px; border: none; background: transparent; color: #718096; font-size: 9.5px; font-weight: 700; cursor: pointer; border-radius: 10px; transition: all 0.2s; }
-.bottom-nav .nav-item .nav-ico { font-size: 18px; line-height: 1; }
-.bottom-nav .nav-item:hover { color: #cbd5e0; }
-.bottom-nav .nav-item.active { color: #63b3ed; background: rgba(99,179,237,0.1); }
+    .auth-wrap {
+      width: 100%;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: panelFloat 7s ease-in-out infinite;
+    }
 
-.message { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(120%); padding: 11px 18px; border-radius: 12px; text-align: center; font-weight: 700; font-size: 12.5px; max-width: 90%; z-index: 9999; transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s; white-space: pre-line; box-shadow: 0 8px 28px rgba(0,0,0,0.4); opacity: 0; }
-.message.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-.message.success { background: #2f855a; color: #c6f6d5; border: 1px solid #48bb78; }
-.message.error { background: #9b2c2c; color: #fed7d7; border: 1px solid #fc8181; }
-.message.info { background: #2c5282; color: #bee3f8; border: 1px solid #63b3ed; }
-.message.warning { background: #9c4221; color: #feebc8; border: 1px solid #f6ad55; }
+    @keyframes panelFloat {
+      0% { transform: translateY(0) rotateY(0deg); }
+      50% { transform: translateY(-4px) rotateY(0.6deg); }
+      100% { transform: translateY(0) rotateY(0deg); }
+    }
 
-.spinner { width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.15); border-top-color: #63b3ed; border-radius: 50%; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
+    /* Softer glow ring — muted blue/teal, less intense */
+    .auth-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 38px;
+      background: linear-gradient(135deg, #3b82f6, #60a5fa, #38bdf8, #2563eb);
+      background-size: 300% 300%;
+      animation: glowRotate 10s ease infinite;
+      z-index: -2;
+      filter: blur(18px);
+      opacity: 0.45;
+      transition: opacity 0.4s;
+    }
 
-.hidden { display: none !important; }
+    .auth-wrap::after {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 36px;
+      background: linear-gradient(135deg, rgba(150, 190, 255, 0.15), rgba(100, 150, 220, 0.05));
+      z-index: -1;
+      backdrop-filter: blur(3px);
+      border: 1px solid rgba(160, 200, 255, 0.18);
+    }
 
-@media (min-width: 500px) { .menu-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 340px) { .menu-tile { padding: 14px 8px 12px; } .menu-tile .tile-ico { width: 48px; height: 48px; font-size: 22px; } .menu-tile .tile-title { font-size: 11.5px; } }
-</style>
+    @keyframes glowRotate {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Glass card — softer, muted navy-blue, no harsh black */
+    .auth-card {
+      background: linear-gradient(150deg, rgba(30, 48, 88, 0.82) 0%, rgba(18, 32, 62, 0.9) 100%);
+      backdrop-filter: blur(22px);
+      border-radius: 34px;
+      padding: 30px 22px 32px;
+      box-shadow:
+        0 20px 45px -15px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(160, 200, 255, 0.1) inset,
+        0 0 35px rgba(80, 150, 255, 0.15);
+      transform: translateZ(25px);
+      transition: transform 0.35s ease, box-shadow 0.35s;
+      position: relative;
+      z-index: 2;
+      border: 1px solid rgba(160, 200, 255, 0.12);
+    }
+
+    .auth-wrap:hover .auth-card {
+      transform: translateZ(35px);
+      box-shadow:
+        0 25px 50px -15px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(160, 200, 255, 0.15) inset,
+        0 0 45px rgba(80, 150, 255, 0.22);
+    }
+
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 22px;
+      transform: translateZ(12px);
+    }
+
+    .auth-logo .ico {
+      font-size: 58px;
+      line-height: 1;
+      margin-bottom: 4px;
+      filter: drop-shadow(0 6px 14px rgba(100, 160, 255, 0.4));
+      animation: iconPulse 4s infinite alternate;
+    }
+
+    @keyframes iconPulse {
+      0% { transform: scale(1); filter: drop-shadow(0 6px 14px rgba(100, 160, 255, 0.35)); }
+      100% { transform: scale(1.04); filter: drop-shadow(0 10px 22px rgba(120, 180, 255, 0.55)); }
+    }
+
+    /* Clear, calm white heading */
+    .auth-logo h1 {
+      color: #f0f6ff;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.2px;
+      text-shadow: 0 2px 12px rgba(80, 140, 220, 0.35);
+    }
+
+    /* Soft, readable subtitle */
+    .auth-logo p {
+      color: #b8cce8;
+      font-size: 12px;
+      margin-top: 6px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 18px;
+      padding: 5px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(160, 200, 255, 0.1);
+      backdrop-filter: blur(10px);
+      transform: translateZ(6px);
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      border: none;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 700;
+      color: #a4bce0;
+      cursor: pointer;
+      border-radius: 14px;
+      transition: all 0.3s;
+      letter-spacing: 0.2px;
+    }
+
+    .auth-tab.active {
+      background: linear-gradient(145deg, rgba(90, 150, 240, 0.45), rgba(60, 110, 200, 0.3));
+      color: #ffffff;
+      box-shadow: 0 3px 14px rgba(70, 130, 230, 0.3), 0 0 0 1px rgba(180, 210, 255, 0.15) inset;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+      transform: translateZ(4px);
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #c8daf5;
+      margin-bottom: 8px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    /* Smooth input fields — muted, easy on eyes */
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 15px;
+      border: 1.5px solid rgba(140, 180, 240, 0.22);
+      border-radius: 16px;
+      background: rgba(12, 24, 46, 0.65);
+      color: #eaf2ff;
+      font-weight: 500;
+      transition: all 0.25s;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 6px 14px -8px rgba(0, 0, 0, 0.5);
+    }
+
+    .form-group input::placeholder {
+      color: rgba(160, 190, 230, 0.45);
+      font-weight: 400;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #6a9eff;
+      background: rgba(18, 36, 68, 0.75);
+      box-shadow: 0 0 0 4px rgba(90, 150, 255, 0.13), 0 8px 18px -8px #000;
+    }
+
+    .form-group input:disabled {
+      opacity: 0.55;
+    }
+
+    /* Smooth primary button — softer blue gradient */
+    .btn-primary {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(145deg, #4a7fe0, #5fa8f5);
+      color: #ffffff;
+      border: none;
+      border-radius: 18px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+      box-shadow: 0 10px 26px -10px rgba(70, 130, 220, 0.6), 0 0 0 1px rgba(200, 220, 255, 0.18) inset;
+      letter-spacing: 0.4px;
+      position: relative;
+      overflow: hidden;
+      transform: translateZ(10px);
+    }
+
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+      transition: left 0.7s;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateZ(15px) translateY(-2px);
+      box-shadow: 0 16px 34px -10px rgba(80, 150, 240, 0.7), 0 0 0 1px rgba(220, 235, 255, 0.25) inset;
+    }
+
+    .btn-primary:hover:not(:disabled)::after {
+      left: 100%;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: translateZ(6px);
+    }
+
+    /* Soft info note */
+    .note-info {
+      text-align: center;
+      font-size: 12px;
+      color: #bcd2ee;
+      margin-top: 20px;
+      font-weight: 600;
+      line-height: 1.6;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(60, 110, 190, 0.14);
+      border: 1px solid rgba(140, 180, 240, 0.18);
+      backdrop-filter: blur(8px);
+      transform: translateZ(4px);
+      box-shadow: 0 6px 16px -10px #000;
+    }
+
+    /* ========== HOME SCREEN ========== */
+    #homeScreen {
+      overflow: hidden;
+      background: linear-gradient(150deg, #0f172a, #131f38);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      background: linear-gradient(135deg, rgba(70, 120, 200, 0.15), rgba(50, 90, 160, 0.1));
+      border-bottom: 1px solid rgba(140, 180, 240, 0.15);
+      flex-shrink: 0;
+      backdrop-filter: blur(20px);
+      z-index: 5;
+      box-shadow: 0 6px 18px -10px #000;
+    }
+
+    .topbar .back-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(90, 140, 220, 0.18);
+      border: 1px solid rgba(150, 190, 250, 0.3);
+      color: #eaf2ff;
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s;
+      flex-shrink: 0;
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar .back-btn:hover {
+      background: rgba(110, 170, 250, 0.35);
+      transform: scale(1.05);
+      box-shadow: 0 0 18px rgba(100, 160, 255, 0.5);
+    }
+
+    .topbar .back-btn.hidden { display: none; }
+
+    .topbar-title {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .topbar-title h2 {
+      font-size: 17px;
+      font-weight: 800;
+      color: #f0f6ff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-shadow: 0 1px 8px rgba(80, 140, 220, 0.4);
+    }
+
+    .topbar-title p {
+      font-size: 11.5px;
+      color: #a8c2e0;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 600;
+    }
+
+    .topbar .avatar-mini {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #4a7fe0, #5fa8f5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 16px;
+      flex-shrink: 0;
+      box-shadow: 0 6px 16px -6px rgba(70, 130, 220, 0.7), 0 0 0 2px rgba(200, 220, 255, 0.12) inset;
+    }
+
+    .menu-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px 14px 24px;
+      background: radial-gradient(circle at 30% 20%, rgba(70, 130, 220, 0.05), transparent 70%);
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    /* Softer tiles — muted, easy on eyes */
+    .menu-tile {
+      background: linear-gradient(150deg, rgba(32, 52, 90, 0.75), rgba(18, 32, 60, 0.85));
+      border: 1px solid rgba(140, 180, 240, 0.15);
+      border-radius: 22px;
+      padding: 20px 12px 18px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+      transform-style: preserve-3d;
+    }
+
+    .menu-tile::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(100, 160, 255, 0.12), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.35s;
+    }
+
+    .menu-tile:hover, .menu-tile:active {
+      transform: translateY(-5px) rotateX(1.5deg) rotateY(-0.8deg) scale(1.015);
+      background: linear-gradient(150deg, rgba(42, 68, 115, 0.85), rgba(24, 42, 78, 0.9));
+      border-color: rgba(120, 180, 255, 0.35);
+      box-shadow: 0 20px 36px -16px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(140, 190, 255, 0.25) inset, 0 0 24px rgba(80, 150, 255, 0.2);
+    }
+
+    .menu-tile:hover::before {
+      opacity: 1;
+    }
+
+    .menu-tile .tile-ico {
+      width: 58px;
+      height: 58px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 27px;
+      box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+      flex-shrink: 0;
+      transition: transform 0.3s;
+    }
+
+    .menu-tile:hover .tile-ico {
+      transform: scale(1.04);
+    }
+
+    .menu-tile .tile-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #eaf2ff;
+      line-height: 1.25;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+    }
+
+    .menu-tile .tile-sub {
+      font-size: 10.5px;
+      color: #a8c2e0;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+
+    /* Softer icon gradients */
+    .ico-blue { background: linear-gradient(145deg, #4a90e2, #2c6bc0); }
+    .ico-green { background: linear-gradient(145deg, #42b883, #2d8a62); }
+    .ico-orange { background: linear-gradient(145deg, #e8a04c, #c07a2e); }
+    .ico-purple { background: linear-gradient(145deg, #9575cd, #6a4ea8); }
+    .ico-pink { background: linear-gradient(145deg, #e07a9a, #b85a78); }
+    .ico-teal { background: linear-gradient(145deg, #4db6ac, #358f86); }
+    .ico-red { background: linear-gradient(145deg, #e57373, #c0504e); }
+    .ico-yellow { background: linear-gradient(145deg, #e8c455, #c0a030); }
+    .ico-indigo { background: linear-gradient(145deg, #7986cb, #5560a8); }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 22px 6px 12px;
+    }
+
+    .section-head .bar {
+      width: 4px;
+      height: 18px;
+      border-radius: 3px;
+      background: linear-gradient(180deg, #6a9eff, #4a7fe0);
+      box-shadow: 0 0 10px rgba(90, 150, 255, 0.6);
+    }
+
+    .section-head h3 {
+      font-size: 12px;
+      font-weight: 700;
+      color: #b0c8e8;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+    }
+
+    .bottom-nav {
+      display: flex;
+      background: rgba(15, 23, 42, 0.92);
+      border-top: 1px solid rgba(140, 180, 240, 0.15);
+      backdrop-filter: blur(20px);
+      flex-shrink: 0;
+      padding: 8px 4px 10px;
+      z-index: 5;
+      box-shadow: 0 -6px 18px -10px #000;
+    }
+
+    .bottom-nav .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 6px 4px;
+      border: none;
+      background: transparent;
+      color: #8aa4c8;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 14px;
+      transition: all 0.25s;
+    }
+
+    .bottom-nav .nav-item .nav-ico {
+      font-size: 20px;
+      line-height: 1;
+      transition: transform 0.25s;
+    }
+
+    .bottom-nav .nav-item:hover {
+      color: #b8d0f0;
+      background: rgba(90, 150, 240, 0.06);
+    }
+
+    .bottom-nav .nav-item.active {
+      color: #6aa8ff;
+      background: rgba(90, 150, 240, 0.12);
+      box-shadow: 0 0 18px rgba(90, 150, 240, 0.2);
+    }
+
+    .bottom-nav .nav-item.active .nav-ico {
+      transform: translateY(-2px) scale(1.08);
+      filter: drop-shadow(0 0 6px rgba(106, 168, 255, 0.7));
+    }
+
+    /* ========== IFRAME SCREEN ========== */
+    #iframeScreen {
+      overflow: hidden;
+      background: #0f172a;
+    }
+
+    .iframe-body {
+      flex: 1;
+      background: #0f172a;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .iframe-body iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      background: #0f172a;
+    }
+
+    .iframe-loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      background: #0f172a;
+      color: #b8d0f0;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 2;
+      transition: opacity 0.35s ease;
+      backdrop-filter: blur(6px);
+    }
+
+    .iframe-loading.gone {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .spinner {
+      width: 34px;
+      height: 34px;
+      border: 3px solid rgba(140, 180, 240, 0.15);
+      border-top-color: #6aa8ff;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+      box-shadow: 0 0 16px rgba(106, 168, 255, 0.35);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ========== TOAST MESSAGES (softer colors) ========== */
+    .message {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(120%) scale(0.95);
+      padding: 14px 22px;
+      border-radius: 18px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 13px;
+      max-width: 90%;
+      z-index: 9999;
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.3s;
+      white-space: pre-line;
+      box-shadow: 0 16px 34px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+      opacity: 0;
+      backdrop-filter: blur(16px);
+    }
+
+    .message.show {
+      transform: translateX(-50%) translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    .message.success {
+      background: rgba(52, 145, 100, 0.92);
+      color: #f0fff6;
+      border: 1px solid rgba(120, 220, 170, 0.5);
+      box-shadow: 0 16px 34px -12px rgba(0, 0, 0, 0.6), 0 0 24px rgba(80, 200, 140, 0.3);
+    }
+
+    .message.error {
+      background: rgba(180, 70, 70, 0.92);
+      color: #fff5f5;
+      border: 1px solid rgba(255, 150, 150, 0.5);
+      box-shadow: 0 16px 34px -12px rgba(0, 0, 0, 0.6), 0 0 24px rgba(255, 120, 120, 0.3);
+    }
+
+    .message.info {
+      background: rgba(60, 110, 200, 0.92);
+      color: #f0f6ff;
+      border: 1px solid rgba(150, 190, 255, 0.5);
+      box-shadow: 0 16px 34px -12px rgba(0, 0, 0, 0.6), 0 0 24px rgba(100, 160, 255, 0.3);
+    }
+
+    .message.warning {
+      background: rgba(180, 120, 40, 0.92);
+      color: #fffaf0;
+      border: 1px solid rgba(255, 200, 120, 0.5);
+      box-shadow: 0 16px 34px -12px rgba(0, 0, 0, 0.6), 0 0 24px rgba(255, 180, 90, 0.3);
+    }
+
+    .hidden { display: none !important; }
+
+    @media (min-width: 500px) {
+      .menu-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 380px) {
+      .auth-card { padding: 24px 18px 26px; }
+      .auth-logo h1 { font-size: 22px; }
+      .menu-tile .tile-ico { width: 50px; height: 50px; font-size: 24px; }
+    }
+  </style>
 </head>
 <body>
 
 <div class="app-shell">
 
-  <!-- ================================================= -->
-  <!-- SCREEN 1: AUTH (SIGN IN + SIGN UP)                -->
-  <!-- ================================================= -->
+  <!-- ========== AUTH SCREEN ========== -->
   <div class="screen slide-in" id="authScreen">
     <div class="auth-wrap">
-      <div class="auth-logo">
-        <div class="ico">🏠</div>
-        <h1>Banglar Bari</h1>
-        <p>Job Card Mapping · Vill-Arbara, Chanchal, Malda</p>
-      </div>
+      <div class="auth-card">
+        <div class="auth-logo">
+          <div class="ico">🏠</div>
+          <h1>Banglar Bari</h1>
+          <p>Job Card Mapping · Vill-Arbara, Chanchal, Malda</p>
+        </div>
 
-      <div class="auth-tabs">
-        <button class="auth-tab active" id="signinTab" onclick="switchAuthTab('signin')">Sign In</button>
-        <button class="auth-tab" id="signupTab" onclick="switchAuthTab('signup')">Sign Up</button>
-      </div>
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="signinTab" onclick="switchAuthTab('signin')">Sign In</button>
+          <button class="auth-tab" id="signupTab" onclick="switchAuthTab('signup')">Sign Up</button>
+        </div>
 
-      <!-- SIGN IN FORM -->
-      <div id="signinForm">
-        <form onsubmit="return handleSignIn(event)">
-          <div class="form-group">
-            <label>📱 Mobile Number</label>
-            <input type="tel" id="signinMobile" maxlength="10" placeholder="10-digit mobile" required>
-          </div>
-          <div class="form-group">
-            <label>🔒 Password</label>
-            <input type="password" id="signinPassword" placeholder="Password" required>
-          </div>
-          <button type="submit" class="btn-primary" id="signinBtn">
-            <span id="signinBtnText">🚀 Sign In</span>
-          </button>
-        </form>
-      </div>
+        <!-- SIGN IN -->
+        <div id="signinForm">
+          <form onsubmit="return handleSignIn(event)">
+            <div class="form-group">
+              <label>📱 Mobile Number</label>
+              <input type="tel" id="signinMobile" maxlength="10" placeholder="10-digit mobile" required>
+            </div>
+            <div class="form-group">
+              <label>🔒 Password</label>
+              <input type="password" id="signinPassword" placeholder="Password" required>
+            </div>
+            <button type="submit" class="btn-primary" id="signinBtn">
+              <span id="signinBtnText">🚀 Sign In</span>
+            </button>
+          </form>
+        </div>
 
-      <!-- SIGN UP FORM -->
-      <div id="signupForm" class="hidden">
-        <form onsubmit="return handleSignUp(event)">
-          <div class="form-group">
-            <label>👤 Full Name</label>
-            <input type="text" id="signupName" placeholder="Your name" required>
-          </div>
-          <div class="form-group">
-            <label>📱 Contact</label>
-            <input type="tel" id="signupContact" maxlength="10" placeholder="10-digit mobile" required>
-          </div>
-          <div class="form-group">
-            <label>🔒 Password</label>
-            <input type="password" id="signupPassword" minlength="6" placeholder="Min 6 characters" required>
-          </div>
-          <button type="submit" class="btn-primary" id="signupBtn">
-            <span id="signupBtnText">✨ Create Account</span>
-          </button>
-        </form>
-      </div>
+        <!-- SIGN UP -->
+        <div id="signupForm" class="hidden">
+          <form onsubmit="return handleSignUp(event)">
+            <div class="form-group">
+              <label>👤 Full Name</label>
+              <input type="text" id="signupName" placeholder="Your name" required>
+            </div>
+            <div class="form-group">
+              <label>📱 Contact</label>
+              <input type="tel" id="signupContact" maxlength="10" placeholder="10-digit mobile" required>
+            </div>
+            <div class="form-group">
+              <label>🔒 Password</label>
+              <input type="password" id="signupPassword" minlength="6" placeholder="Min 6 characters" required>
+            </div>
+            <button type="submit" class="btn-primary" id="signupBtn">
+              <span id="signupBtnText">✨ Create Account</span>
+            </button>
+          </form>
+        </div>
 
-      <!-- Info note -->
-      <div class="note-info" id="authNote">
-        📝 New accounts must be <b>Approved by Admin</b> before you can sign in.
+        <div class="note-info" id="authNote">
+          📝 New accounts must be <b>Approved by Admin</b> before you can sign in.
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ================================================= -->
-  <!-- SCREEN 2: HOME                                    -->
-  <!-- ================================================= -->
+  <!-- ========== HOME SCREEN ========== -->
   <div class="screen hidden" id="homeScreen">
     <div class="topbar">
       <button class="back-btn hidden" id="homeBackBtn" onclick="goBackFromIframe()">←</button>
@@ -233,9 +855,7 @@ body::before { content: ''; position: fixed; top: -50%; left: -50%; width: 200%;
     </div>
   </div>
 
-  <!-- ================================================= -->
-  <!-- SCREEN 3: IFRAME MODULE VIEWER                    -->
-  <!-- ================================================= -->
+  <!-- ========== IFRAME SCREEN ========== -->
   <div class="screen hidden" id="iframeScreen">
     <div class="topbar">
       <button class="back-btn" onclick="goBackFromIframe()">←</button>
@@ -259,272 +879,269 @@ body::before { content: ''; position: fixed; top: -50%; left: -50%; width: 200%;
 <div id="message" class="message"></div>
 
 <script>
-// ============================================================
-// CONFIG
-// ============================================================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwi8dn4OFCAeDQ2jV7HFs2FkY5n9KdC3SBQ9Qrc4zsUhYDE_DYqDId8h0BPk1kbzHg0sg/exec';
+  // ============================================================
+  // CONFIG
+  // ============================================================
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwi8dn4OFCAeDQ2jV7HFs2FkY5n9KdC3SBQ9Qrc4zsUhYDE_DYqDId8h0BPk1kbzHg0sg/exec';
 
-// ============================================================
-// MODULE MAP
-// ============================================================
-const MODULES = {
-  field_survey:   { url: 'field_survey.htm',    title: 'Field Survey',    sub: 'Data collection' },
-  housing_data:   { url: 'housing_data.htm',    title: 'Housing Data',    sub: 'Job card mapping' },
-  report:         { url: 'reports.htm',         title: 'Reports',         sub: 'Analytics & statistics' },
-  beneficiary:    { url: 'beneficiaries.htm',   title: 'Beneficiaries',   sub: 'List & search' },
-  documents:      { url: 'documents.htm',       title: 'Documents',       sub: 'Photo uploads' },
-  sync:           { url: 'sync.htm',            title: 'Sync Center',     sub: 'Cloud sync' },
-  profile:        { url: 'profile.htm',         title: 'My Profile',      sub: 'Account details' },
-  settings:       { url: 'settings.htm',        title: 'Settings',        sub: 'App preferences' }
-};
+  const MODULES = {
+    field_survey:   { url: 'field_survey.htm',    title: 'Field Survey',    sub: 'Data collection' },
+    housing_data:   { url: 'housing_data.htm',    title: 'Housing Data',    sub: 'Job card mapping' },
+    report:         { url: 'reports.htm',         title: 'Reports',         sub: 'Analytics & statistics' },
+    beneficiary:    { url: 'beneficiaries.htm',   title: 'Beneficiaries',   sub: 'List & search' },
+    documents:      { url: 'documents.htm',       title: 'Documents',       sub: 'Photo uploads' },
+    sync:           { url: 'sync.htm',            title: 'Sync Center',     sub: 'Cloud sync' },
+    profile:        { url: 'profile.htm',         title: 'My Profile',      sub: 'Account details' },
+    settings:       { url: 'settings.htm',        title: 'Settings',        sub: 'App preferences' }
+  };
 
-const APP = {
-  currentUser: null,
-  sessionToken: null,
-  currentScreen: 'auth'
-};
+  const APP = {
+    currentUser: null,
+    sessionToken: null,
+    currentScreen: 'auth'
+  };
 
-// ============================================================
-// INIT
-// ============================================================
-document.addEventListener('DOMContentLoaded', () => {
-  ['signinMobile','signupContact'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('input', e => {
-      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+  // ============================================================
+  // INIT
+  // ============================================================
+  document.addEventListener('DOMContentLoaded', () => {
+    ['signinMobile','signupContact'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', e => {
+        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+      });
+    });
+
+    const t = localStorage.getItem('sessionToken');
+    const u = localStorage.getItem('currentUser');
+    if (t && u) {
+      APP.sessionToken = t;
+      APP.currentUser = JSON.parse(u);
+      gotoHome();
+    } else {
+      showScreen('auth');
+    }
+
+    window.addEventListener('popstate', () => {
+      if (APP.currentScreen === 'iframe') goBackFromIframe();
+      else if (APP.currentScreen === 'home') history.back();
     });
   });
 
-  const t = localStorage.getItem('sessionToken');
-  const u = localStorage.getItem('currentUser');
-  if (t && u) {
-    APP.sessionToken = t;
-    APP.currentUser = JSON.parse(u);
-    gotoHome();
-  } else {
-    showScreen('auth');
+  // ============================================================
+  // SCREEN NAVIGATION
+  // ============================================================
+  function showScreen(name) {
+    ['authScreen','homeScreen','iframeScreen'].forEach(id => {
+      document.getElementById(id).classList.add('hidden');
+    });
+    if (name === 'auth') {
+      document.getElementById('authScreen').classList.remove('hidden');
+      APP.currentScreen = 'auth';
+    } else if (name === 'home') {
+      document.getElementById('homeScreen').classList.remove('hidden');
+      document.getElementById('homeBackBtn').classList.add('hidden');
+      APP.currentScreen = 'home';
+      updateNavHome();
+    } else if (name === 'iframe') {
+      document.getElementById('iframeScreen').classList.remove('hidden');
+      APP.currentScreen = 'iframe';
+    }
   }
 
-  window.addEventListener('popstate', () => {
-    if (APP.currentScreen === 'iframe') goBackFromIframe();
-    else if (APP.currentScreen === 'home') history.back();
-  });
-});
-
-// ============================================================
-// SCREEN NAVIGATION
-// ============================================================
-function showScreen(name) {
-  ['authScreen','homeScreen','iframeScreen'].forEach(id => {
-    document.getElementById(id).classList.add('hidden');
-  });
-  if (name === 'auth') {
-    document.getElementById('authScreen').classList.remove('hidden');
-    APP.currentScreen = 'auth';
-  } else if (name === 'home') {
-    document.getElementById('homeScreen').classList.remove('hidden');
-    document.getElementById('homeBackBtn').classList.add('hidden');
-    APP.currentScreen = 'home';
-    updateNavHome();
-  } else if (name === 'iframe') {
-    document.getElementById('iframeScreen').classList.remove('hidden');
-    APP.currentScreen = 'iframe';
+  function gotoHome() {
+    if (APP.currentUser) {
+      document.getElementById('homeGreeting').textContent = 'Hi, ' + APP.currentUser.name;
+      const initial = APP.currentUser.name.charAt(0).toUpperCase();
+      document.getElementById('homeAvatar').textContent = initial;
+      document.getElementById('iframeAvatar').textContent = initial;
+    }
+    showScreen('home');
+    document.getElementById('moduleFrame').src = 'about:blank';
+    document.getElementById('iframeLoading').classList.remove('gone');
   }
-}
 
-function gotoHome() {
-  if (APP.currentUser) {
-    document.getElementById('homeGreeting').textContent = 'Hi, ' + APP.currentUser.name;
-    const initial = APP.currentUser.name.charAt(0).toUpperCase();
-    document.getElementById('homeAvatar').textContent = initial;
-    document.getElementById('iframeAvatar').textContent = initial;
+  // ============================================================
+  // AUTH TABS
+  // ============================================================
+  function switchAuthTab(tab) {
+    document.getElementById('signinTab').classList.toggle('active', tab === 'signin');
+    document.getElementById('signupTab').classList.toggle('active', tab === 'signup');
+    document.getElementById('signinForm').classList.toggle('hidden', tab !== 'signin');
+    document.getElementById('signupForm').classList.toggle('hidden', tab !== 'signup');
+    hideMessage();
   }
-  showScreen('home');
-  document.getElementById('moduleFrame').src = 'about:blank';
-  document.getElementById('iframeLoading').classList.remove('gone');
-}
 
-// ============================================================
-// AUTH TABS
-// ============================================================
-function switchAuthTab(tab) {
-  document.getElementById('signinTab').classList.toggle('active', tab === 'signin');
-  document.getElementById('signupTab').classList.toggle('active', tab === 'signup');
-  document.getElementById('signinForm').classList.toggle('hidden', tab !== 'signin');
-  document.getElementById('signupForm').classList.toggle('hidden', tab !== 'signup');
-  hideMessage();
-}
+  // ============================================================
+  // API CALL
+  // ============================================================
+  async function apiCall(params) {
+    const r = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(params)
+    });
+    return r.json();
+  }
 
-// ============================================================
-// API CALL
-// ============================================================
-async function apiCall(params) {
-  const r = await fetch(SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams(params)
-  });
-  return r.json();
-}
+  // ============================================================
+  // SIGN IN
+  // ============================================================
+  async function handleSignIn(e) {
+    e.preventDefault();
+    hideMessage();
+    const contact = document.getElementById('signinMobile').value.trim();
+    const password = document.getElementById('signinPassword').value;
+    if (!contact || !password) { showMessage('❌ Enter mobile and password.', 'error'); return; }
 
-// ============================================================
-// SIGN IN
-// ============================================================
-async function handleSignIn(e) {
-  e.preventDefault();
-  hideMessage();
-  const contact = document.getElementById('signinMobile').value.trim();
-  const password = document.getElementById('signinPassword').value;
-  if (!contact || !password) { showMessage('❌ Enter mobile and password.', 'error'); return; }
+    const btn = document.getElementById('signinBtn');
+    const btnText = document.getElementById('signinBtnText');
+    btn.disabled = true;
+    btnText.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:6px;"></span> Signing In...';
 
-  const btn = document.getElementById('signinBtn');
-  const btnText = document.getElementById('signinBtnText');
-  btn.disabled = true;
-  btnText.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:6px;"></span> Signing In...';
+    try {
+      const res = await apiCall({ action: 'signin', contact, password });
 
-  try {
-    const res = await apiCall({ action: 'signin', contact, password });
+      if (!res.success) {
+        const st = (res.status || '').toLowerCase();
+        if (st === 'pending') {
+          showMessage('⏳ Your account is pending Admin approval.\nPlease wait or contact the Admin.', 'warning');
+        } else if (st === 'rejected') {
+          showMessage('❌ Your account has been rejected by Admin.', 'error');
+        } else {
+          showMessage('❌ ' + res.message, 'error');
+        }
+        btn.disabled = false;
+        btnText.textContent = '🚀 Sign In';
+        return;
+      }
 
-    if (!res.success) {
-      const st = (res.status || '').toLowerCase();
-      if (st === 'pending') {
-        showMessage('⏳ Your account is pending Admin approval.\nPlease wait or contact the Admin.', 'warning');
-      } else if (st === 'rejected') {
-        showMessage('❌ Your account has been rejected by Admin.', 'error');
+      APP.currentUser = { name: res.data.name, contact: res.data.contact, status: res.data.status };
+      APP.sessionToken = res.data.sessionToken;
+      localStorage.setItem('sessionToken', APP.sessionToken);
+      localStorage.setItem('currentUser', JSON.stringify(APP.currentUser));
+
+      document.getElementById('signinMobile').value = '';
+      document.getElementById('signinPassword').value = '';
+      gotoHome();
+      showMessage('✅ Welcome, ' + res.data.name, 'success');
+    } catch (err) {
+      showMessage('❌ ' + err.message, 'error');
+      btn.disabled = false;
+      btnText.textContent = '🚀 Sign In';
+    }
+  }
+
+  // ============================================================
+  // SIGN UP
+  // ============================================================
+  async function handleSignUp(e) {
+    e.preventDefault();
+    hideMessage();
+    const name = document.getElementById('signupName').value.trim();
+    const contact = document.getElementById('signupContact').value.trim();
+    const password = document.getElementById('signupPassword').value;
+
+    if (!name || !contact || !password) { showMessage('❌ Fill all fields.', 'error'); return; }
+    if (contact.length !== 10) { showMessage('❌ Enter 10-digit mobile.', 'error'); return; }
+    if (password.length < 6) { showMessage('❌ Password must be at least 6 characters.', 'error'); return; }
+
+    const btn = document.getElementById('signupBtn');
+    const btnText = document.getElementById('signupBtnText');
+    btn.disabled = true;
+    btnText.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:6px;"></span> Creating...';
+
+    try {
+      const res = await apiCall({ action: 'signup', name, contact, password });
+      if (res.success) {
+        showMessage('✅ Account created!\n⏳ Pending Admin approval. You can sign in once approved.', 'success');
+        document.getElementById('signupName').value = '';
+        document.getElementById('signupContact').value = '';
+        document.getElementById('signupPassword').value = '';
+        setTimeout(() => switchAuthTab('signin'), 1500);
       } else {
         showMessage('❌ ' + res.message, 'error');
       }
-      btn.disabled = false;
-      btnText.textContent = '🚀 Sign In';
-      return;
+    } catch (err) {
+      showMessage('❌ ' + err.message, 'error');
     }
-
-    APP.currentUser = { name: res.data.name, contact: res.data.contact, status: res.data.status };
-    APP.sessionToken = res.data.sessionToken;
-    localStorage.setItem('sessionToken', APP.sessionToken);
-    localStorage.setItem('currentUser', JSON.stringify(APP.currentUser));
-
-    document.getElementById('signinMobile').value = '';
-    document.getElementById('signinPassword').value = '';
-    gotoHome();
-    showMessage('✅ Welcome, ' + res.data.name, 'success');
-  } catch (err) {
-    showMessage('❌ ' + err.message, 'error');
     btn.disabled = false;
-    btnText.textContent = '🚀 Sign In';
+    btnText.textContent = '✨ Create Account';
   }
-}
 
-// ============================================================
-// SIGN UP
-// ============================================================
-async function handleSignUp(e) {
-  e.preventDefault();
-  hideMessage();
-  const name = document.getElementById('signupName').value.trim();
-  const contact = document.getElementById('signupContact').value.trim();
-  const password = document.getElementById('signupPassword').value;
-
-  if (!name || !contact || !password) { showMessage('❌ Fill all fields.', 'error'); return; }
-  if (contact.length !== 10) { showMessage('❌ Enter 10-digit mobile.', 'error'); return; }
-  if (password.length < 6) { showMessage('❌ Password must be at least 6 characters.', 'error'); return; }
-
-  const btn = document.getElementById('signupBtn');
-  const btnText = document.getElementById('signupBtnText');
-  btn.disabled = true;
-  btnText.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:6px;"></span> Creating...';
-
-  try {
-    const res = await apiCall({ action: 'signup', name, contact, password });
-    if (res.success) {
-      showMessage('✅ Account created!\n⏳ Pending Admin approval. You can sign in once approved.', 'success');
-      document.getElementById('signupName').value = '';
-      document.getElementById('signupContact').value = '';
-      document.getElementById('signupPassword').value = '';
-      setTimeout(() => switchAuthTab('signin'), 1500);
-    } else {
-      showMessage('❌ ' + res.message, 'error');
-    }
-  } catch (err) {
-    showMessage('❌ ' + err.message, 'error');
+  // ============================================================
+  // SIGN OUT
+  // ============================================================
+  function handleSignOut() {
+    if (!confirm('Logout and clear session?')) return;
+    localStorage.removeItem('sessionToken');
+    localStorage.removeItem('currentUser');
+    APP.currentUser = null;
+    APP.sessionToken = null;
+    document.getElementById('moduleFrame').src = 'about:blank';
+    showScreen('auth');
+    showMessage('👋 Signed out.', 'info');
   }
-  btn.disabled = false;
-  btnText.textContent = '✨ Create Account';
-}
 
-// ============================================================
-// SIGN OUT
-// ============================================================
-function handleSignOut() {
-  if (!confirm('Logout and clear session?')) return;
-  localStorage.removeItem('sessionToken');
-  localStorage.removeItem('currentUser');
-  APP.currentUser = null;
-  APP.sessionToken = null;
-  document.getElementById('moduleFrame').src = 'about:blank';
-  showScreen('auth');
-  showMessage('👋 Signed out.', 'info');
-}
+  // ============================================================
+  // MODULE OPENER (IFRAME)
+  // ============================================================
+  function openModule(moduleKey, fallbackTitle) {
+    const mod = MODULES[moduleKey];
+    if (!mod) { showMessage('❌ Module "' + moduleKey + '" not configured yet.', 'warning'); return; }
 
-// ============================================================
-// MODULE OPENER (IFRAME)
-// ============================================================
-function openModule(moduleKey, fallbackTitle) {
-  const mod = MODULES[moduleKey];
-  if (!mod) { showMessage('❌ Module "' + moduleKey + '" not configured yet.', 'warning'); return; }
+    document.getElementById('iframeTitle').textContent = mod.title || fallbackTitle || 'Module';
+    document.getElementById('iframeSub').textContent = mod.sub || '';
 
-  document.getElementById('iframeTitle').textContent = mod.title || fallbackTitle || 'Module';
-  document.getElementById('iframeSub').textContent = mod.sub || '';
+    const loader = document.getElementById('iframeLoading');
+    loader.classList.remove('gone');
+    loader.innerHTML = '<div class="spinner"></div><div>Loading ' + (mod.title || 'module') + '…</div>';
 
-  const loader = document.getElementById('iframeLoading');
-  loader.classList.remove('gone');
-  loader.innerHTML = '<div class="spinner"></div><div>Loading ' + (mod.title || 'module') + '…</div>';
+    const frame = document.getElementById('moduleFrame');
+    frame.src = mod.url;
 
-  const frame = document.getElementById('moduleFrame');
-  frame.src = mod.url;
+    frame.onload = () => {
+      if (frame.src && frame.src !== 'about:blank') {
+        setTimeout(() => loader.classList.add('gone'), 250);
+      }
+    };
+    setTimeout(() => loader.classList.add('gone'), 8000);
 
-  frame.onload = () => {
-    if (frame.src && frame.src !== 'about:blank') {
-      setTimeout(() => loader.classList.add('gone'), 250);
-    }
-  };
-  setTimeout(() => loader.classList.add('gone'), 8000);
+    showScreen('iframe');
+    history.pushState({ screen: 'iframe', module: moduleKey }, '', '#' + moduleKey);
+  }
 
-  showScreen('iframe');
-  history.pushState({ screen: 'iframe', module: moduleKey }, '', '#' + moduleKey);
-}
+  function goBackFromIframe() {
+    document.getElementById('moduleFrame').src = 'about:blank';
+    gotoHome();
+    try { history.replaceState({ screen: 'home' }, '', location.pathname); } catch(e){}
+  }
 
-function goBackFromIframe() {
-  document.getElementById('moduleFrame').src = 'about:blank';
-  gotoHome();
-  try { history.replaceState({ screen: 'home' }, '', location.pathname); } catch(e){}
-}
+  function showHomeMenu() { gotoHome(); }
 
-function showHomeMenu() { gotoHome(); }
+  function updateNavHome() {
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
+    const home = document.getElementById('navHome');
+    if (home) home.classList.add('active');
+  }
 
-function updateNavHome() {
-  document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
-  const home = document.getElementById('navHome');
-  if (home) home.classList.add('active');
-}
+  // ============================================================
+  // TOAST
+  // ============================================================
+  function showMessage(text, type = 'info') {
+    const m = document.getElementById('message');
+    m.textContent = text;
+    m.className = 'message ' + type;
+    void m.offsetWidth;
+    m.classList.add('show');
+    clearTimeout(m._t);
+    m._t = setTimeout(() => m.classList.remove('show'), 4500);
+  }
+  function hideMessage() {
+    document.getElementById('message').classList.remove('show');
+  }
 
-// ============================================================
-// TOAST
-// ============================================================
-function showMessage(text, type = 'info') {
-  const m = document.getElementById('message');
-  m.textContent = text;
-  m.className = 'message ' + type;
-  void m.offsetWidth;
-  m.classList.add('show');
-  clearTimeout(m._t);
-  m._t = setTimeout(() => m.classList.remove('show'), 4500);
-}
-function hideMessage() {
-  document.getElementById('message').classList.remove('show');
-}
-
-console.log('✅ Banglar Bari App Shell v1.2 — Sign Up allowed, Sign In needs Admin approval');
+  console.log('✅ Banglar Bari · Smooth Color Edition');
 </script>
 </body>
 </html>
