@@ -11,177 +11,56 @@ body { background: linear-gradient(135deg, #0f0c29 0%, #1a1a3e 30%, #24243e 60%,
 body::before { content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(99,179,237,0.08) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(183,148,244,0.08) 0%, transparent 50%); animation: floatBg 20s ease-in-out infinite alternate; z-index: 0; }
 @keyframes floatBg { 0% { transform: translate(0,0) rotate(0deg); } 100% { transform: translate(2%,1%) rotate(3deg); } }
 
-/* APP SHELL — phone-like frame */
-.app-shell {
-  width: 100%;
-  max-width: 480px;
-  height: 100vh;
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
-}
+.app-shell { width: 100%; max-width: 480px; height: 100vh; height: 100dvh; display: flex; flex-direction: column; position: relative; z-index: 1; overflow: hidden; }
 
-/* ============ SCREEN SYSTEM ============ */
-.screen {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
-  will-change: transform, opacity;
-}
+.screen { position: absolute; inset: 0; display: flex; flex-direction: column; transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease; will-change: transform, opacity; }
 .screen.hidden { display: none !important; }
 .screen.slide-in { transform: translateX(0); opacity: 1; }
 .screen.slide-out { transform: translateX(100%); opacity: 0; }
 
-/* ============ COMMON BACKDROP ============ */
-.backdrop { background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); }
-
-/* ============ TOP BAR (Android-style) ============ */
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  background: linear-gradient(135deg, rgba(99,179,237,0.15), rgba(183,148,244,0.15));
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  flex-shrink: 0;
-  backdrop-filter: blur(14px);
-  z-index: 5;
-}
-.topbar .back-btn {
-  width: 38px; height: 38px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: #fff;
-  font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
+.topbar { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: linear-gradient(135deg, rgba(99,179,237,0.15), rgba(183,148,244,0.15)); border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; backdrop-filter: blur(14px); z-index: 5; }
+.topbar .back-btn { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
 .topbar .back-btn:hover { background: rgba(255,255,255,0.15); transform: scale(1.05); }
 .topbar .back-btn.hidden { display: none; }
 .topbar-title { flex: 1; min-width: 0; }
 .topbar-title h2 { font-size: 16px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .topbar-title p { font-size: 11px; color: #a0aec0; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.topbar .avatar-mini {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg,#63b3ed,#b794f4);
-  display: flex; align-items: center; justify-content: center;
-  color: #0f0c29; font-weight: 800; font-size: 15px;
-  flex-shrink: 0;
-}
+.topbar .avatar-mini { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg,#63b3ed,#b794f4); display: flex; align-items: center; justify-content: center; color: #0f0c29; font-weight: 800; font-size: 15px; flex-shrink: 0; }
 
-/* ============ AUTH SCREEN ============ */
 #authScreen { padding: 0; overflow-y: auto; }
 .auth-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 24px 20px; }
 .auth-logo { text-align: center; margin-bottom: 22px; }
 .auth-logo .ico { font-size: 54px; line-height: 1; margin-bottom: 6px; }
-.auth-logo h1 {
-  background: linear-gradient(135deg, #63b3ed, #b794f4, #f6ad55, #f6e05e);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  font-size: 22px; font-weight: 800; letter-spacing: -0.3px;
-}
+.auth-logo h1 { background: linear-gradient(135deg, #63b3ed, #b794f4, #f6ad55, #f6e05e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
 .auth-logo p { color: #a0aec0; font-size: 12px; margin-top: 4px; font-weight: 600; }
 
 .auth-tabs { display: flex; background: rgba(255,255,255,0.05); border-radius: 14px; padding: 4px; margin-bottom: 20px; }
-.auth-tab {
-  flex: 1; padding: 11px; text-align: center;
-  border: none; background: transparent;
-  font-size: 14px; font-weight: 700; color: #a0aec0;
-  cursor: pointer; border-radius: 10px; transition: all 0.3s;
-}
+.auth-tab { flex: 1; padding: 11px; text-align: center; border: none; background: transparent; font-size: 14px; font-weight: 700; color: #a0aec0; cursor: pointer; border-radius: 10px; transition: all 0.3s; }
 .auth-tab.active { background: linear-gradient(135deg, rgba(99,179,237,0.3), rgba(183,148,244,0.3)); color: #fff; }
 
 .form-group { margin-bottom: 14px; }
 .form-group label { display: block; font-size: 12px; font-weight: 700; color: #e2e8f0; margin-bottom: 6px; }
-.form-group input {
-  width: 100%; padding: 13px 15px; font-size: 15px;
-  border: 2px solid rgba(255,255,255,0.08); border-radius: 12px;
-  background: rgba(255,255,255,0.05); color: #fff;
-  font-weight: 500; transition: all 0.2s;
-}
+.form-group input { width: 100%; padding: 13px 15px; font-size: 15px; border: 2px solid rgba(255,255,255,0.08); border-radius: 12px; background: rgba(255,255,255,0.05); color: #fff; font-weight: 500; transition: all 0.2s; }
 .form-group input::placeholder { color: rgba(255,255,255,0.35); }
 .form-group input:focus { outline: none; border-color: rgba(99,179,237,0.5); background: rgba(255,255,255,0.08); }
 .form-group input:disabled { opacity: 0.6; }
 
-.btn-primary {
-  width: 100%; padding: 14px;
-  background: linear-gradient(135deg,#667eea,#764ba2);
-  color: #fff; border: none; border-radius: 14px;
-  font-size: 15px; font-weight: 800;
-  cursor: pointer; margin-top: 6px;
-  transition: all 0.3s;
-  box-shadow: 0 6px 20px rgba(102,126,234,0.3);
-}
+.btn-primary { width: 100%; padding: 14px; background: linear-gradient(135deg,#667eea,#764ba2); color: #fff; border: none; border-radius: 14px; font-size: 15px; font-weight: 800; cursor: pointer; margin-top: 6px; transition: all 0.3s; box-shadow: 0 6px 20px rgba(102,126,234,0.3); }
 .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(102,126,234,0.45); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* ============ HOME SCREEN ============ */
-#homeScreen { overflow: hidden; }
+.note-info { text-align: center; font-size: 11.5px; color: #a0aec0; margin-top: 14px; font-weight: 600; line-height: 1.5; padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
 
-/* Menu grid */
+#homeScreen { overflow: hidden; }
 .menu-area { flex: 1; overflow-y: auto; padding: 16px 14px 24px; }
 .menu-area::-webkit-scrollbar { width: 5px; }
 .menu-area::-webkit-scrollbar-thumb { background: rgba(99,179,237,0.3); border-radius: 10px; }
-
-.menu-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.menu-tile {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 18px;
-  padding: 18px 12px 16px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  position: relative;
-  overflow: hidden;
-}
-.menu-tile::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 18px;
-  padding: 1px;
-  background: linear-gradient(135deg, rgba(99,179,237,0.4), rgba(183,148,244,0.4));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.25s;
-}
+.menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
+.menu-tile { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 18px 12px 16px; text-align: center; cursor: pointer; transition: all 0.25s ease; display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; overflow: hidden; }
 .menu-tile:hover, .menu-tile:active { transform: translateY(-3px); background: rgba(255,255,255,0.08); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
-.menu-tile:hover::before, .menu-tile:active::before { opacity: 1; }
-
-.menu-tile .tile-ico {
-  width: 56px; height: 56px;
-  border-radius: 16px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 26px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
-  flex-shrink: 0;
-}
+.menu-tile .tile-ico { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 26px; box-shadow: 0 4px 14px rgba(0,0,0,0.25); flex-shrink: 0; }
 .menu-tile .tile-title { font-size: 13px; font-weight: 800; color: #fff; line-height: 1.2; }
 .menu-tile .tile-sub { font-size: 10px; color: #a0aec0; font-weight: 600; line-height: 1.2; }
-
-/* Icon color variants */
 .ico-blue { background: linear-gradient(135deg,#63b3ed,#3182ce); }
 .ico-green { background: linear-gradient(135deg,#48bb78,#2f855a); }
 .ico-orange { background: linear-gradient(135deg,#f6ad55,#dd6b20); }
@@ -191,119 +70,36 @@ body::before { content: ''; position: fixed; top: -50%; left: -50%; width: 200%;
 .ico-red { background: linear-gradient(135deg,#fc8181,#c53030); }
 .ico-yellow { background: linear-gradient(135deg,#f6e05e,#d69e2e); }
 .ico-indigo { background: linear-gradient(135deg,#7f9cf5,#4c51bf); }
-
-/* Section heading */
 .section-head { display: flex; align-items: center; gap: 8px; margin: 20px 4px 10px; }
 .section-head .bar { width: 4px; height: 16px; border-radius: 2px; background: linear-gradient(180deg,#63b3ed,#b794f4); }
 .section-head h3 { font-size: 12px; font-weight: 800; color: #a0aec0; text-transform: uppercase; letter-spacing: 0.8px; }
 
-/* ============ IFRAME SCREEN ============ */
 #iframeScreen { overflow: hidden; }
-.iframe-body {
-  flex: 1;
-  background: #0f0c29;
-  position: relative;
-  overflow: hidden;
-}
-.iframe-body iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  display: block;
-  background: #0f0c29;
-}
-.iframe-loading {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  background: #0f0c29;
-  color: #a0aec0;
-  font-size: 13px;
-  font-weight: 600;
-  z-index: 2;
-  transition: opacity 0.3s ease;
-}
+.iframe-body { flex: 1; background: #0f0c29; position: relative; overflow: hidden; }
+.iframe-body iframe { width: 100%; height: 100%; border: none; display: block; background: #0f0c29; }
+.iframe-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: #0f0c29; color: #a0aec0; font-size: 13px; font-weight: 600; z-index: 2; transition: opacity 0.3s ease; }
 .iframe-loading.gone { opacity: 0; pointer-events: none; }
 
-/* Bottom nav (Android style) */
-.bottom-nav {
-  display: flex;
-  background: rgba(15,12,41,0.95);
-  border-top: 1px solid rgba(255,255,255,0.08);
-  backdrop-filter: blur(14px);
-  flex-shrink: 0;
-  padding: 6px 4px 8px;
-  z-index: 5;
-}
-.bottom-nav .nav-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: 6px 4px;
-  border: none;
-  background: transparent;
-  color: #718096;
-  font-size: 9.5px;
-  font-weight: 700;
-  cursor: pointer;
-  border-radius: 10px;
-  transition: all 0.2s;
-}
+.bottom-nav { display: flex; background: rgba(15,12,41,0.95); border-top: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(14px); flex-shrink: 0; padding: 6px 4px 8px; z-index: 5; }
+.bottom-nav .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px; border: none; background: transparent; color: #718096; font-size: 9.5px; font-weight: 700; cursor: pointer; border-radius: 10px; transition: all 0.2s; }
 .bottom-nav .nav-item .nav-ico { font-size: 18px; line-height: 1; }
 .bottom-nav .nav-item:hover { color: #cbd5e0; }
 .bottom-nav .nav-item.active { color: #63b3ed; background: rgba(99,179,237,0.1); }
 
-/* ============ MESSAGE TOAST ============ */
-.message {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%) translateY(120%);
-  padding: 11px 18px;
-  border-radius: 12px;
-  text-align: center;
-  font-weight: 700;
-  font-size: 12.5px;
-  max-width: 90%;
-  z-index: 9999;
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s;
-  white-space: pre-line;
-  box-shadow: 0 8px 28px rgba(0,0,0,0.4);
-  opacity: 0;
-}
+.message { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(120%); padding: 11px 18px; border-radius: 12px; text-align: center; font-weight: 700; font-size: 12.5px; max-width: 90%; z-index: 9999; transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s; white-space: pre-line; box-shadow: 0 8px 28px rgba(0,0,0,0.4); opacity: 0; }
 .message.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 .message.success { background: #2f855a; color: #c6f6d5; border: 1px solid #48bb78; }
 .message.error { background: #9b2c2c; color: #fed7d7; border: 1px solid #fc8181; }
 .message.info { background: #2c5282; color: #bee3f8; border: 1px solid #63b3ed; }
 .message.warning { background: #9c4221; color: #feebc8; border: 1px solid #f6ad55; }
 
-/* ============ SPINNER ============ */
-.spinner {
-  width: 30px; height: 30px;
-  border: 3px solid rgba(255,255,255,0.15);
-  border-top-color: #63b3ed;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
+.spinner { width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.15); border-top-color: #63b3ed; border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .hidden { display: none !important; }
 
-/* ============ RESPONSIVE ============ */
-@media (min-width: 500px) {
-  .menu-grid { grid-template-columns: repeat(3, 1fr); }
-}
-@media (max-width: 340px) {
-  .menu-tile { padding: 14px 8px 12px; }
-  .menu-tile .tile-ico { width: 48px; height: 48px; font-size: 22px; }
-  .menu-tile .tile-title { font-size: 11.5px; }
-}
+@media (min-width: 500px) { .menu-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 340px) { .menu-tile { padding: 14px 8px 12px; } .menu-tile .tile-ico { width: 48px; height: 48px; font-size: 22px; } .menu-tile .tile-title { font-size: 11.5px; } }
 </style>
 </head>
 <body>
@@ -311,7 +107,7 @@ body::before { content: ''; position: fixed; top: -50%; left: -50%; width: 200%;
 <div class="app-shell">
 
   <!-- ================================================= -->
-  <!-- SCREEN 1: AUTH (SIGN IN / SIGN UP)                -->
+  <!-- SCREEN 1: AUTH (SIGN IN + SIGN UP)                -->
   <!-- ================================================= -->
   <div class="screen slide-in" id="authScreen">
     <div class="auth-wrap">
@@ -363,15 +159,18 @@ body::before { content: ''; position: fixed; top: -50%; left: -50%; width: 200%;
           </button>
         </form>
       </div>
+
+      <!-- Info note -->
+      <div class="note-info" id="authNote">
+        📝 New accounts must be <b>Approved by Admin</b> before you can sign in.
+      </div>
     </div>
   </div>
 
   <!-- ================================================= -->
-  <!-- SCREEN 2: HOME (MENU GRID)                        -->
+  <!-- SCREEN 2: HOME                                    -->
   <!-- ================================================= -->
   <div class="screen hidden" id="homeScreen">
-
-    <!-- TOP BAR -->
     <div class="topbar">
       <button class="back-btn hidden" id="homeBackBtn" onclick="goBackFromIframe()">←</button>
       <div class="topbar-title">
@@ -381,98 +180,55 @@ body::before { content: ''; position: fixed; top: -50%; left: -50%; width: 200%;
       <div class="avatar-mini" id="homeAvatar">U</div>
     </div>
 
-    <!-- MENU AREA -->
     <div class="menu-area">
-      <div class="section-head">
-        <div class="bar"></div>
-        <h3>Main Menu</h3>
-      </div>
-
+      <div class="section-head"><div class="bar"></div><h3>Main Menu</h3></div>
       <div class="menu-grid">
-
         <div class="menu-tile" onclick="openModule('field_survey', 'Field Survey')">
-          <div class="tile-ico ico-blue">📋</div>
-          <div class="tile-title">Field Survey</div>
-          <div class="tile-sub">Data collection</div>
+          <div class="tile-ico ico-blue">📋</div><div class="tile-title">Field Survey</div><div class="tile-sub">Data collection</div>
         </div>
-
         <div class="menu-tile" onclick="openModule('housing_data', 'Housing Data')">
-          <div class="tile-ico ico-green">🏘️</div>
-          <div class="tile-title">Housing Data</div>
-          <div class="tile-sub">Job card mapping</div>
+          <div class="tile-ico ico-green">🏘️</div><div class="tile-title">Housing Data</div><div class="tile-sub">Job card mapping</div>
         </div>
-
         <div class="menu-tile" onclick="openModule('report', 'Reports')">
-          <div class="tile-ico ico-orange">📊</div>
-          <div class="tile-title">Reports</div>
-          <div class="tile-sub">Analytics & stats</div>
+          <div class="tile-ico ico-orange">📊</div><div class="tile-title">Reports</div><div class="tile-sub">Analytics & stats</div>
         </div>
-
         <div class="menu-tile" onclick="openModule('beneficiary', 'Beneficiaries')">
-          <div class="tile-ico ico-purple">👥</div>
-          <div class="tile-title">Beneficiaries</div>
-          <div class="tile-sub">List & search</div>
+          <div class="tile-ico ico-purple">👥</div><div class="tile-title">Beneficiaries</div><div class="tile-sub">List & search</div>
         </div>
-
         <div class="menu-tile" onclick="openModule('documents', 'Documents')">
-          <div class="tile-ico ico-teal">📁</div>
-          <div class="tile-title">Documents</div>
-          <div class="tile-sub">Photo uploads</div>
+          <div class="tile-ico ico-teal">📁</div><div class="tile-title">Documents</div><div class="tile-sub">Photo uploads</div>
         </div>
-
         <div class="menu-tile" onclick="openModule('sync', 'Sync Center')">
-          <div class="tile-ico ico-pink">🔄</div>
-          <div class="tile-title">Sync Center</div>
-          <div class="tile-sub">Cloud sync</div>
+          <div class="tile-ico ico-pink">🔄</div><div class="tile-title">Sync Center</div><div class="tile-sub">Cloud sync</div>
         </div>
-
       </div>
 
-      <div class="section-head">
-        <div class="bar"></div>
-        <h3>Account</h3>
-      </div>
-
+      <div class="section-head"><div class="bar"></div><h3>Account</h3></div>
       <div class="menu-grid">
-
         <div class="menu-tile" onclick="openModule('profile', 'My Profile')">
-          <div class="tile-ico ico-indigo">👤</div>
-          <div class="tile-title">My Profile</div>
-          <div class="tile-sub">Account details</div>
+          <div class="tile-ico ico-indigo">👤</div><div class="tile-title">My Profile</div><div class="tile-sub">Account details</div>
         </div>
-
         <div class="menu-tile" onclick="openModule('settings', 'Settings')">
-          <div class="tile-ico ico-yellow">⚙️</div>
-          <div class="tile-title">Settings</div>
-          <div class="tile-sub">App preferences</div>
+          <div class="tile-ico ico-yellow">⚙️</div><div class="tile-title">Settings</div><div class="tile-sub">App preferences</div>
         </div>
-
         <div class="menu-tile" onclick="handleSignOut()">
-          <div class="tile-ico ico-red">🚪</div>
-          <div class="tile-title">Sign Out</div>
-          <div class="tile-sub">Log out</div>
+          <div class="tile-ico ico-red">🚪</div><div class="tile-title">Sign Out</div><div class="tile-sub">Log out</div>
         </div>
-
       </div>
     </div>
 
-    <!-- BOTTOM NAV -->
     <div class="bottom-nav">
       <button class="nav-item active" id="navHome" onclick="showHomeMenu()">
-        <span class="nav-ico">🏠</span>
-        <span>Home</span>
+        <span class="nav-ico">🏠</span><span>Home</span>
       </button>
       <button class="nav-item" onclick="openModule('field_survey', 'Field Survey')">
-        <span class="nav-ico">📋</span>
-        <span>Survey</span>
+        <span class="nav-ico">📋</span><span>Survey</span>
       </button>
       <button class="nav-item" onclick="openModule('report', 'Reports')">
-        <span class="nav-ico">📊</span>
-        <span>Reports</span>
+        <span class="nav-ico">📊</span><span>Reports</span>
       </button>
       <button class="nav-item" onclick="openModule('profile', 'My Profile')">
-        <span class="nav-ico">👤</span>
-        <span>Profile</span>
+        <span class="nav-ico">👤</span><span>Profile</span>
       </button>
     </div>
   </div>
@@ -500,17 +256,16 @@ body::before { content: ''; position: fixed; top: -50%; left: -50%; width: 200%;
 
 </div>
 
-<!-- ============ TOAST ============ -->
 <div id="message" class="message"></div>
 
 <script>
 // ============================================================
-// CONFIG — ⚠️ REPLACE WITH YOUR DEPLOYED URL
+// CONFIG
 // ============================================================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkien0rS1Q6DCnZGIOS-8KuLm6ksgSGgKsckLLzcvunnfQYeSJIqRwZ22Q21wGNVJa/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwi8dn4OFCAeDQ2jV7HFs2FkY5n9KdC3SBQ9Qrc4zsUhYDE_DYqDId8h0BPk1kbzHg0sg/exec';
 
 // ============================================================
-// MODULE MAP — Where each menu opens (iframe URL)
+// MODULE MAP
 // ============================================================
 const MODULES = {
   field_survey:   { url: 'field_survey.htm',    title: 'Field Survey',    sub: 'Data collection' },
@@ -523,20 +278,16 @@ const MODULES = {
   settings:       { url: 'settings.htm',        title: 'Settings',        sub: 'App preferences' }
 };
 
-// ============================================================
-// APP STATE
-// ============================================================
 const APP = {
   currentUser: null,
   sessionToken: null,
-  currentScreen: 'auth'   // 'auth' | 'home' | 'iframe'
+  currentScreen: 'auth'
 };
 
 // ============================================================
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
-  // Mobile input sanitation
   ['signinMobile','signupContact'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('input', e => {
@@ -544,7 +295,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Auto-restore session
   const t = localStorage.getItem('sessionToken');
   const u = localStorage.getItem('currentUser');
   if (t && u) {
@@ -555,14 +305,9 @@ document.addEventListener('DOMContentLoaded', () => {
     showScreen('auth');
   }
 
-  // Back button (Android hardware back / browser back)
-  window.addEventListener('popstate', (e) => {
-    if (APP.currentScreen === 'iframe') {
-      goBackFromIframe();
-    } else if (APP.currentScreen === 'home') {
-      // Let default browser behavior happen (exit app)
-      history.back();
-    }
+  window.addEventListener('popstate', () => {
+    if (APP.currentScreen === 'iframe') goBackFromIframe();
+    else if (APP.currentScreen === 'home') history.back();
   });
 });
 
@@ -588,20 +333,19 @@ function showScreen(name) {
 }
 
 function gotoHome() {
-  // Update greeting
   if (APP.currentUser) {
     document.getElementById('homeGreeting').textContent = 'Hi, ' + APP.currentUser.name;
-    document.getElementById('homeAvatar').textContent = APP.currentUser.name.charAt(0).toUpperCase();
-    document.getElementById('iframeAvatar').textContent = APP.currentUser.name.charAt(0).toUpperCase();
+    const initial = APP.currentUser.name.charAt(0).toUpperCase();
+    document.getElementById('homeAvatar').textContent = initial;
+    document.getElementById('iframeAvatar').textContent = initial;
   }
   showScreen('home');
-  // clear iframe when returning home
   document.getElementById('moduleFrame').src = 'about:blank';
   document.getElementById('iframeLoading').classList.remove('gone');
 }
 
 // ============================================================
-// AUTH — TABS
+// AUTH TABS
 // ============================================================
 function switchAuthTab(tab) {
   document.getElementById('signinTab').classList.toggle('active', tab === 'signin');
@@ -612,12 +356,10 @@ function switchAuthTab(tab) {
 }
 
 // ============================================================
-// AUTH — API CALL HELPER
+// API CALL
 // ============================================================
 async function apiCall(params) {
-  const query = new URLSearchParams(params).toString();
-  const url = SCRIPT_URL + '?' + query;
-  const r = await fetch(url, {
+  const r = await fetch(SCRIPT_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams(params)
@@ -642,12 +384,21 @@ async function handleSignIn(e) {
 
   try {
     const res = await apiCall({ action: 'signin', contact, password });
+
     if (!res.success) {
-      showMessage('❌ ' + res.message, 'error');
+      const st = (res.status || '').toLowerCase();
+      if (st === 'pending') {
+        showMessage('⏳ Your account is pending Admin approval.\nPlease wait or contact the Admin.', 'warning');
+      } else if (st === 'rejected') {
+        showMessage('❌ Your account has been rejected by Admin.', 'error');
+      } else {
+        showMessage('❌ ' + res.message, 'error');
+      }
       btn.disabled = false;
       btnText.textContent = '🚀 Sign In';
       return;
     }
+
     APP.currentUser = { name: res.data.name, contact: res.data.contact, status: res.data.status };
     APP.sessionToken = res.data.sessionToken;
     localStorage.setItem('sessionToken', APP.sessionToken);
@@ -686,11 +437,11 @@ async function handleSignUp(e) {
   try {
     const res = await apiCall({ action: 'signup', name, contact, password });
     if (res.success) {
-      showMessage('✅ Account created! Pending admin approval.', 'success');
+      showMessage('✅ Account created!\n⏳ Pending Admin approval. You can sign in once approved.', 'success');
       document.getElementById('signupName').value = '';
       document.getElementById('signupContact').value = '';
       document.getElementById('signupPassword').value = '';
-      setTimeout(() => switchAuthTab('signin'), 1200);
+      setTimeout(() => switchAuthTab('signin'), 1500);
     } else {
       showMessage('❌ ' + res.message, 'error');
     }
@@ -720,57 +471,36 @@ function handleSignOut() {
 // ============================================================
 function openModule(moduleKey, fallbackTitle) {
   const mod = MODULES[moduleKey];
-  if (!mod) {
-    showMessage('❌ Module "' + moduleKey + '" not configured yet.', 'warning');
-    return;
-  }
+  if (!mod) { showMessage('❌ Module "' + moduleKey + '" not configured yet.', 'warning'); return; }
 
-  // Update topbar title
   document.getElementById('iframeTitle').textContent = mod.title || fallbackTitle || 'Module';
   document.getElementById('iframeSub').textContent = mod.sub || '';
 
-  // Reset loader
   const loader = document.getElementById('iframeLoading');
   loader.classList.remove('gone');
   loader.innerHTML = '<div class="spinner"></div><div>Loading ' + (mod.title || 'module') + '…</div>';
 
-  // Load iframe
   const frame = document.getElementById('moduleFrame');
   frame.src = mod.url;
 
-  // Hide loader when iframe loads
   frame.onload = () => {
-    // Ignore about:blank reset
     if (frame.src && frame.src !== 'about:blank') {
       setTimeout(() => loader.classList.add('gone'), 250);
     }
   };
-
-  // Fallback: hide loader after 8s even if onload doesn't fire
   setTimeout(() => loader.classList.add('gone'), 8000);
 
   showScreen('iframe');
-
-  // Push history state for back button
   history.pushState({ screen: 'iframe', module: moduleKey }, '', '#' + moduleKey);
 }
 
-// ============================================================
-// BACK FROM IFRAME
-// ============================================================
 function goBackFromIframe() {
   document.getElementById('moduleFrame').src = 'about:blank';
   gotoHome();
-  // Replace current history entry so back button doesn't loop
   try { history.replaceState({ screen: 'home' }, '', location.pathname); } catch(e){}
 }
 
-// ============================================================
-// BOTTOM NAV HOME
-// ============================================================
-function showHomeMenu() {
-  gotoHome();
-}
+function showHomeMenu() { gotoHome(); }
 
 function updateNavHome() {
   document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
@@ -785,17 +515,16 @@ function showMessage(text, type = 'info') {
   const m = document.getElementById('message');
   m.textContent = text;
   m.className = 'message ' + type;
-  // force reflow
   void m.offsetWidth;
   m.classList.add('show');
   clearTimeout(m._t);
-  m._t = setTimeout(() => m.classList.remove('show'), 4000);
+  m._t = setTimeout(() => m.classList.remove('show'), 4500);
 }
 function hideMessage() {
   document.getElementById('message').classList.remove('show');
 }
 
-console.log('✅ Banglar Bari App Shell v1.0 — Android menu style');
+console.log('✅ Banglar Bari App Shell v1.2 — Sign Up allowed, Sign In needs Admin approval');
 </script>
 </body>
 </html>
