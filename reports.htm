@@ -36,12 +36,7 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
     }
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      overscroll-behavior-y: none;
-    }
+    html, body { margin: 0; padding: 0; min-height: 100vh; overscroll-behavior-y: none; }
 
     body {
       background: linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
@@ -57,12 +52,10 @@
     body::before {
       content: '';
       position: fixed;
-      width: 300px;
-      height: 300px;
+      width: 300px; height: 300px;
       border-radius: 50%;
       background: radial-gradient(circle, rgba(0, 212, 255, 0.25), transparent 70%);
-      top: -100px;
-      left: -100px;
+      top: -100px; left: -100px;
       filter: blur(60px);
       pointer-events: none;
       z-index: 0;
@@ -70,18 +63,16 @@
     body::after {
       content: '';
       position: fixed;
-      width: 320px;
-      height: 320px;
+      width: 320px; height: 320px;
       border-radius: 50%;
       background: radial-gradient(circle, rgba(241, 7, 163, 0.22), transparent 70%);
-      bottom: -120px;
-      right: -120px;
+      bottom: -120px; right: -120px;
       filter: blur(60px);
       pointer-events: none;
       z-index: 0;
     }
 
-    /* ---------- TOP APP BAR ---------- */
+    /* ---------- APP BAR ---------- */
     .app-bar {
       position: sticky;
       top: 0;
@@ -133,7 +124,7 @@
       letter-spacing: 0.3px;
       box-shadow: 0 3px 12px rgba(0, 212, 255, 0.35);
       white-space: nowrap;
-      max-width: 40vw;
+      max-width: 45vw;
       overflow: hidden;
       text-overflow: ellipsis;
     }
@@ -145,6 +136,10 @@
       background: linear-gradient(135deg, #f107a3, #ffb347);
       box-shadow: 0 3px 12px rgba(241, 7, 163, 0.4);
       animation: pulseChip 1.4s ease-in-out infinite;
+    }
+    .status-chip.cached {
+      background: linear-gradient(135deg, #00ffa3, #00d4ff);
+      box-shadow: 0 3px 12px rgba(0, 255, 163, 0.4);
     }
 
     @keyframes pulseChip {
@@ -206,7 +201,7 @@
       box-shadow: 0 4px 16px rgba(0, 212, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
     }
 
-    /* ---------- HERO STATS (4 cards, 2×2 grid) ---------- */
+    /* ---------- HERO STATS ---------- */
     .hero-stats {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -227,12 +222,9 @@
     .stat-card::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 4px;
-      height: 100%;
+      top: 0; left: 0;
+      width: 4px; height: 100%;
     }
-
     .stat-card.cum-total::before {
       background: linear-gradient(180deg, #00d4ff, #7b2ff7);
       box-shadow: 0 0 14px #00d4ff;
@@ -309,10 +301,7 @@
       min-width: 0;
       flex: 1;
     }
-    .card-title span:first-child {
-      font-size: 1.05rem;
-      flex-shrink: 0;
-    }
+    .card-title span:first-child { font-size: 1.05rem; flex-shrink: 0; }
     .card-title-text {
       white-space: nowrap;
       overflow: hidden;
@@ -333,7 +322,6 @@
       flex-shrink: 0;
     }
 
-    /* ---------- CHART ---------- */
     .chart-wrap {
       position: relative;
       height: 240px;
@@ -342,11 +330,7 @@
     }
     .chart-wrap.short { height: 200px; }
 
-    /* ---------- PANELS ---------- */
-    .panel {
-      display: none;
-      animation: fadeIn 0.3s ease;
-    }
+    .panel { display: none; animation: fadeIn 0.3s ease; }
     .panel.active { display: block; }
 
     @keyframes fadeIn {
@@ -354,7 +338,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* ---------- USER LIST (COMPACT) ---------- */
+    /* ---------- USER LIST ---------- */
     .user-list {
       display: flex;
       flex-direction: column;
@@ -372,7 +356,6 @@
       border-radius: 4px;
     }
 
-    /* Compact row-style user card */
     .user-card {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -390,7 +373,6 @@
       border-color: rgba(0, 212, 255, 0.5);
     }
 
-    /* Left: avatar + name */
     .user-left {
       display: grid;
       grid-template-columns: auto 1fr;
@@ -400,8 +382,7 @@
     }
     .user-avatar {
       flex-shrink: 0;
-      width: 34px;
-      height: 34px;
+      width: 34px; height: 34px;
       border-radius: 50%;
       background: linear-gradient(135deg, #00d4ff, #7b2ff7);
       display: flex;
@@ -426,7 +407,6 @@
       -webkit-box-orient: vertical;
     }
 
-    /* Right: 2 compact metric pills */
     .user-right {
       display: flex;
       gap: 6px;
@@ -466,21 +446,18 @@
       gap: 2px;
       white-space: nowrap;
     }
-
     .pill.cum {
       border-color: rgba(0, 212, 255, 0.28);
       box-shadow: inset 0 0 8px rgba(0, 212, 255, 0.08);
     }
     .pill.cum .p-vals .t { color: var(--accent-cyan); }
     .pill.cum .p-vals .c { color: var(--accent-mint); }
-
     .pill.today {
       border-color: rgba(255, 179, 71, 0.28);
       box-shadow: inset 0 0 8px rgba(255, 179, 71, 0.08);
     }
     .pill.today .p-vals .t { color: var(--accent-orange); }
     .pill.today .p-vals .c { color: var(--accent-mint); }
-
     .pill .p-vals .sep {
       color: var(--text-dim);
       font-weight: 500;
@@ -488,28 +465,16 @@
       opacity: 0.7;
     }
 
-    /* Small phones: stack pills under name */
     @media (max-width: 380px) {
-      .user-card {
-        grid-template-columns: 1fr;
-        gap: 8px;
-      }
-      .user-right {
-        justify-content: flex-start;
-        padding-left: 42px;
-      }
-      .pill {
-        flex: 1;
-        min-width: 0;
-      }
+      .user-card { grid-template-columns: 1fr; gap: 8px; }
+      .user-right { justify-content: flex-start; padding-left: 42px; }
+      .pill { flex: 1; min-width: 0; }
     }
 
     /* ---------- BOTTOM NAV ---------- */
     .bottom-nav {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       height: calc(var(--tab-h) + var(--safe-bottom));
       padding-bottom: var(--safe-bottom);
       background: rgba(15, 12, 41, 0.92);
@@ -549,9 +514,7 @@
       filter: grayscale(0.6);
       transition: filter 0.2s ease, transform 0.2s ease;
     }
-    .nav-btn.active {
-      color: #fff;
-    }
+    .nav-btn.active { color: #fff; }
     .nav-btn.active .ico {
       filter: grayscale(0) drop-shadow(0 0 8px rgba(0, 212, 255, 0.7));
       transform: scale(1.12);
@@ -562,15 +525,12 @@
       top: 4px;
       left: 50%;
       transform: translateX(-50%);
-      width: 32px;
-      height: 3px;
+      width: 32px; height: 3px;
       border-radius: 3px;
       background: linear-gradient(90deg, #00d4ff, #7b2ff7);
       box-shadow: 0 0 10px #00d4ff;
     }
-    .nav-btn:active {
-      transform: scale(0.92);
-    }
+    .nav-btn:active { transform: scale(0.92); }
 
     /* ---------- PULL TO REFRESH ---------- */
     .pull-indicator {
@@ -583,7 +543,7 @@
     }
     .pull-indicator.visible { opacity: 1; }
 
-    /* ---------- LOADING SKELETON ---------- */
+    /* ---------- SKELETON ---------- */
     .skeleton {
       padding: 40px 20px;
       display: flex;
@@ -594,8 +554,7 @@
       font-size: 0.82rem;
     }
     .spinner {
-      width: 28px;
-      height: 28px;
+      width: 28px; height: 28px;
       border: 3px solid rgba(255,255,255,0.12);
       border-top-color: #00d4ff;
       border-radius: 50%;
@@ -603,7 +562,6 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ---------- NO DATA ---------- */
     .empty {
       text-align: center;
       padding: 40px 20px;
@@ -617,11 +575,22 @@
       opacity: 0.6;
     }
 
-    /* ---------- RIPPLE ---------- */
-    .tap {
-      position: relative;
-      overflow: hidden;
+    /* ---------- TOP PROGRESS BAR ---------- */
+    .progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #00d4ff, #7b2ff7, #f107a3);
+      width: 0%;
+      z-index: 999;
+      transition: width 0.3s ease, opacity 0.4s ease;
+      box-shadow: 0 0 10px #00d4ff;
+      opacity: 0;
     }
+    .progress-bar.active { opacity: 1; }
+
+    /* ---------- RIPPLE ---------- */
+    .tap { position: relative; overflow: hidden; }
     .tap::after {
       content: '';
       position: absolute;
@@ -640,7 +609,6 @@
       transition: 0s;
     }
 
-    /* Small phones */
     @media (max-width: 360px) {
       body { font-size: 14px; padding-left: 10px; padding-right: 10px; }
       .stat-value { font-size: 1.35rem; }
@@ -651,7 +619,6 @@
       .card-tag { font-size: 0.58rem; padding: 3px 8px; }
     }
 
-    /* Landscape phones */
     @media (max-height: 500px) and (orientation: landscape) {
       .chart-wrap { height: 180px; }
       .chart-wrap.short { height: 150px; }
@@ -660,26 +627,26 @@
 </head>
 <body>
 
-  <!-- ================= APP BAR ================= -->
+  <!-- Top progress bar -->
+  <div class="progress-bar" id="topProgress"></div>
+
+  <!-- APP BAR -->
   <header class="app-bar">
     <h1 class="app-title">🏠 HOUSING · Report</h1>
     <span class="status-chip" id="lastUpdated">Loading...</span>
   </header>
 
-  <!-- ================= ERROR ================= -->
   <div class="error-box" id="errorBox"></div>
-
-  <!-- ================= PULL TO REFRESH ================= -->
   <div class="pull-indicator" id="pullIndicator">↓ Pull to refresh</div>
 
-  <!-- ================= SECTION TABS ================= -->
+  <!-- TABS -->
   <nav class="tabs" role="tablist">
     <button class="tab active tap" data-panel="overview" role="tab">Overview</button>
     <button class="tab tap" data-panel="location" role="tab">📍 Location</button>
     <button class="tab tap" data-panel="user" role="tab">👤 User</button>
   </nav>
 
-  <!-- ================= HERO STATS (4 cards) ================= -->
+  <!-- HERO STATS -->
   <section class="hero-stats">
     <div class="stat-card cum-total">
       <div class="stat-label">📊 Cumulative</div>
@@ -703,108 +670,81 @@
     </div>
   </section>
 
-  <!-- ================= PANEL: OVERVIEW ================= -->
+  <!-- OVERVIEW -->
   <section class="panel active" data-panel="overview">
     <div class="card">
       <div class="card-head">
-        <div class="card-title">
-          <span>📍</span>
-          <span class="card-title-text">Location · All time</span>
-        </div>
+        <div class="card-title"><span>📍</span><span class="card-title-text">Location · All time</span></div>
         <span class="card-tag">Cumulative</span>
       </div>
       <div class="chart-wrap"><canvas id="chartLocationCumulative"></canvas></div>
     </div>
-
     <div class="card">
       <div class="card-head">
-        <div class="card-title">
-          <span>👤</span>
-          <span class="card-title-text">User · All time</span>
-        </div>
+        <div class="card-title"><span>👤</span><span class="card-title-text">User · All time</span></div>
         <span class="card-tag">Top 10</span>
       </div>
       <div class="chart-wrap"><canvas id="chartUserCumulative"></canvas></div>
     </div>
   </section>
 
-  <!-- ================= PANEL: LOCATION ================= -->
+  <!-- LOCATION -->
   <section class="panel" data-panel="location">
     <div class="card">
       <div class="card-head">
-        <div class="card-title">
-          <span>📍</span>
-          <span class="card-title-text">Location · All time</span>
-        </div>
+        <div class="card-title"><span>📍</span><span class="card-title-text">Location · All time</span></div>
         <span class="card-tag">Cumulative</span>
       </div>
       <div class="chart-wrap"><canvas id="chartLocationCumulativeL"></canvas></div>
     </div>
-
     <div class="card">
       <div class="card-head">
-        <div class="card-title">
-          <span>📍</span>
-          <span class="card-title-text">Location · Today</span>
-        </div>
+        <div class="card-title"><span>📍</span><span class="card-title-text">Location · Today</span></div>
         <span class="card-tag">Today</span>
       </div>
       <div class="chart-wrap"><canvas id="chartLocationToday"></canvas></div>
     </div>
   </section>
 
-  <!-- ================= PANEL: USER ================= -->
+  <!-- USER -->
   <section class="panel" data-panel="user">
     <div class="card">
       <div class="card-head">
-        <div class="card-title">
-          <span>👤</span>
-          <span class="card-title-text">User · Today</span>
-        </div>
+        <div class="card-title"><span>👤</span><span class="card-title-text">User · Today</span></div>
         <span class="card-tag">Top 8</span>
       </div>
       <div class="chart-wrap short"><canvas id="chartUserToday"></canvas></div>
     </div>
-
     <div class="card">
       <div class="card-head">
-        <div class="card-title">
-          <span>📋</span>
-          <span class="card-title-text">All users</span>
-        </div>
+        <div class="card-title"><span>📋</span><span class="card-title-text">All users</span></div>
         <span class="card-tag" id="userCountTag">0 users</span>
       </div>
       <div class="user-list" id="userDetailList">
-        <div class="skeleton">
-          <div class="spinner"></div>
-          Loading users...
-        </div>
+        <div class="skeleton"><div class="spinner"></div>Loading users...</div>
       </div>
     </div>
   </section>
 
-  <!-- ================= BOTTOM NAV ================= -->
+  <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
-    <button class="nav-btn active" data-panel="overview">
-      <span class="ico">📊</span>
-      <span>Overview</span>
-    </button>
-    <button class="nav-btn" data-panel="location">
-      <span class="ico">📍</span>
-      <span>Location</span>
-    </button>
-    <button class="nav-btn" data-panel="user">
-      <span class="ico">👤</span>
-      <span>User</span>
-    </button>
+    <button class="nav-btn active" data-panel="overview"><span class="ico">📊</span><span>Overview</span></button>
+    <button class="nav-btn" data-panel="location"><span class="ico">📍</span><span>Location</span></button>
+    <button class="nav-btn" data-panel="user"><span class="ico">👤</span><span>User</span></button>
   </nav>
 
 <script>
   /* ============================================================
-     🔧 CONFIGURATION — PASTE YOUR APPS SCRIPT WEB APP URL HERE
-     Must end with /exec
+     🔧 CONFIGURATION
      ============================================================ */
   const API_URL = 'https://script.google.com/macros/s/AKfycbzYtuip9EVljC0vx83DQaycoGIcaBhnS94yyfdXmcDalNaZ2OxkPifNMu9fYp38GGvH/exec';
+
+  /* ---------- Cache config ---------- */
+  const CACHE_KEY_LS = 'housing_report_v2';
+  const CACHE_KEY_SS = 'housing_report_last_check';
+  const CLIENT_CACHE_TTL_MS = 60 * 1000;   // 1 minute: consider client cache "fresh"
+  const STALE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours: still show stale on failure
+  const REVALIDATE_DELAY_MS = 500;          // small delay before background refresh
   /* ============================================================ */
 
   const PALETTE = {
@@ -822,6 +762,9 @@
     chartUserToday: null
   };
 
+  let currentData = null;
+  let isFetching = false;
+
   /* ---------- Utilities ---------- */
   function escapeHtml(s) {
     if (!s) return '';
@@ -833,20 +776,69 @@
   function setStatus(text, state) {
     const el = document.getElementById('lastUpdated');
     el.textContent = text;
-    el.classList.remove('error', 'loading');
+    el.classList.remove('error', 'loading', 'cached');
     if (state) el.classList.add(state);
   }
 
   function showError(msg) {
     document.getElementById('errorBox').textContent = '⚠️ ' + msg;
   }
-
   function clearError() {
     document.getElementById('errorBox').textContent = '';
   }
 
+  function startProgress() {
+    const bar = document.getElementById('topProgress');
+    bar.classList.add('active');
+    bar.style.width = '20%';
+    setTimeout(() => { if (bar.classList.contains('active')) bar.style.width = '60%'; }, 200);
+  }
+  function endProgress() {
+    const bar = document.getElementById('topProgress');
+    bar.style.width = '100%';
+    setTimeout(() => {
+      bar.classList.remove('active');
+      bar.style.width = '0%';
+    }, 300);
+  }
+
+  /* ---------- Local cache helpers ---------- */
+  function saveClientCache(data) {
+    try {
+      const payload = {
+        savedAt: Date.now(),
+        data: data
+      };
+      localStorage.setItem(CACHE_KEY_LS, JSON.stringify(payload));
+    } catch (e) {
+      // localStorage full or disabled — ignore
+    }
+  }
+
+  function loadClientCache() {
+    try {
+      const raw = localStorage.getItem(CACHE_KEY_LS);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || !parsed.data) return null;
+      return parsed;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function loadLastCheckTime() {
+    try {
+      const v = sessionStorage.getItem(CACHE_KEY_SS);
+      return v ? parseInt(v, 10) : 0;
+    } catch (e) { return 0; }
+  }
+  function saveLastCheckTime(t) {
+    try { sessionStorage.setItem(CACHE_KEY_SS, String(t)); } catch (e) {}
+  }
+
   /* ---------- JSONP loader ---------- */
-  function fetchReportJSONP() {
+  function fetchReportJSONP(forceRefresh) {
     return new Promise((resolve, reject) => {
       if (!API_URL || API_URL.indexOf('YOUR_DEPLOYMENT_ID') !== -1) {
         return reject(new Error('API_URL is not configured.'));
@@ -856,13 +848,14 @@
       }
 
       const callbackName = 'housingReportCallback_' + Date.now();
-      const url = API_URL + (API_URL.includes('?') ? '&' : '?') + 'callback=' + callbackName;
+      let url = API_URL + (API_URL.includes('?') ? '&' : '?') + 'callback=' + callbackName;
+      if (forceRefresh) url += '&force=1';
+
       const script = document.createElement('script');
 
       const timeout = setTimeout(() => {
         cleanup();
-        reject(new Error('Request timed out. Test in incognito:\n' +
-          url.replace('callback=' + callbackName, 'callback=test')));
+        reject(new Error('Request timed out after 45s.'));
       }, 45000);
 
       function cleanup() {
@@ -882,14 +875,7 @@
 
       script.onerror = function() {
         cleanup();
-        reject(new Error(
-          'Failed to load API. Check:\n' +
-          '  1. Deployment access = "Anyone"\n' +
-          '  2. API_URL ends with /exec\n' +
-          '  3. No typos\n' +
-          'Test in incognito: ' +
-          url.replace('callback=' + callbackName, 'callback=test')
-        ));
+        reject(new Error('Network error loading API.'));
       };
 
       script.src = url;
@@ -897,7 +883,7 @@
     });
   }
 
-  /* ---------- Gradient helper ---------- */
+  /* ---------- Chart renderer ---------- */
   function makeGradient(ctx, chartArea, colorStart, colorEnd) {
     if (!chartArea) return colorStart;
     const g = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
@@ -906,7 +892,6 @@
     return g;
   }
 
-  /* ---------- 3D Bar Chart (mobile-optimised) ---------- */
   function render3DBarChart(canvasId, labels, totals, completeds, paletteKey) {
     if (charts[canvasId]) charts[canvasId].destroy();
 
@@ -924,9 +909,7 @@
         chart.ctx.shadowOffsetX = 3;
         chart.ctx.shadowOffsetY = 4;
       },
-      afterDatasetsDraw(chart) {
-        chart.ctx.restore();
-      }
+      afterDatasetsDraw(chart) { chart.ctx.restore(); }
     };
 
     charts[canvasId] = new Chart(ctx, {
@@ -963,7 +946,7 @@
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        animation: { duration: 700, easing: 'easeOutQuart' },
+        animation: { duration: 500, easing: 'easeOutQuart' },
         events: ['click', 'touchstart', 'touchend'],
         interaction: { mode: 'index', intersect: false },
         plugins: {
@@ -975,8 +958,7 @@
               padding: 10,
               usePointStyle: true,
               pointStyle: 'rectRounded',
-              boxWidth: 12,
-              boxHeight: 12
+              boxWidth: 12, boxHeight: 12
             }
           },
           tooltip: {
@@ -998,10 +980,8 @@
             ticks: {
               color: '#94a3b8',
               font: { size: 10, weight: '600' },
-              maxRotation: 45,
-              minRotation: 0,
-              autoSkip: true,
-              maxTicksLimit: 8
+              maxRotation: 45, minRotation: 0,
+              autoSkip: true, maxTicksLimit: 8
             },
             grid: { display: false },
             border: { color: 'rgba(255, 255, 255, 0.08)' }
@@ -1011,9 +991,7 @@
             ticks: {
               color: '#94a3b8',
               font: { size: 10, weight: '600' },
-              stepSize: 1,
-              precision: 0,
-              maxTicksLimit: 6
+              stepSize: 1, precision: 0, maxTicksLimit: 6
             },
             grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
             border: { display: false }
@@ -1045,14 +1023,15 @@
   }
 
   /* ---------- Main render ---------- */
-  function renderReport(data) {
+  function renderReport(data, fromCache) {
     if (!data || !data.success) {
       showError(data && data.error ? data.error : 'Unknown error from server');
       setStatus('Error', 'error');
       return;
     }
 
-    /* ---------- Hero stats ---------- */
+    currentData = data;
+
     const userDetailArr = data.userDetail || [];
     let cumTotal, cumCompleted;
 
@@ -1069,53 +1048,26 @@
     document.getElementById('todayTotalCount').textContent = data.summary.todayTotalCount;
     document.getElementById('todayCompletedCount').textContent = data.summary.todayCompletedCount;
 
-    /* ---------- Charts ---------- */
     const locCum = data.locationCumulative || [];
 
-    render3DBarChart(
-      'chartLocationCumulative',
-      locCum.map(d => d[0]),
-      locCum.map(d => d[1].total),
-      locCum.map(d => d[1].completed),
-      'total'
-    );
+    render3DBarChart('chartLocationCumulative',
+      locCum.map(d => d[0]), locCum.map(d => d[1].total), locCum.map(d => d[1].completed), 'total');
 
     const userCum = limitTopN(data.userCumulative || [], 10, 'Others');
-    render3DBarChart(
-      'chartUserCumulative',
-      userCum.map(d => d[0]),
-      userCum.map(d => d[1].total),
-      userCum.map(d => d[1].completed),
-      'completed'
-    );
+    render3DBarChart('chartUserCumulative',
+      userCum.map(d => d[0]), userCum.map(d => d[1].total), userCum.map(d => d[1].completed), 'completed');
 
-    render3DBarChart(
-      'chartLocationCumulativeL',
-      locCum.map(d => d[0]),
-      locCum.map(d => d[1].total),
-      locCum.map(d => d[1].completed),
-      'total'
-    );
+    render3DBarChart('chartLocationCumulativeL',
+      locCum.map(d => d[0]), locCum.map(d => d[1].total), locCum.map(d => d[1].completed), 'total');
 
     const locToday = data.locationToday || [];
-    render3DBarChart(
-      'chartLocationToday',
-      locToday.map(d => d[0]),
-      locToday.map(d => d[1].total),
-      locToday.map(d => d[1].completed),
-      'totalToday'
-    );
+    render3DBarChart('chartLocationToday',
+      locToday.map(d => d[0]), locToday.map(d => d[1].total), locToday.map(d => d[1].completed), 'totalToday');
 
     const userToday = limitTopN(data.userToday || [], 8, 'Others');
-    render3DBarChart(
-      'chartUserToday',
-      userToday.map(d => d[0]),
-      userToday.map(d => d[1].total),
-      userToday.map(d => d[1].completed),
-      'completedToday'
-    );
+    render3DBarChart('chartUserToday',
+      userToday.map(d => d[0]), userToday.map(d => d[1].total), userToday.map(d => d[1].completed), 'completedToday');
 
-    /* ---------- User list (compact cards) ---------- */
     const listEl = document.getElementById('userDetailList');
     document.getElementById('userCountTag').textContent =
       userDetailArr.length + ' user' + (userDetailArr.length === 1 ? '' : 's');
@@ -1151,21 +1103,75 @@
       `).join('');
     }
 
-    setStatus('Updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (fromCache) {
+      setStatus('💾 Cached · ' + time, 'cached');
+    } else {
+      setStatus('Updated ' + time);
+    }
   }
 
-  /* ---------- Load ---------- */
-  async function loadReport() {
-    setStatus('Loading...', 'loading');
+  /* ---------- Load orchestration (stale-while-revalidate) ---------- */
+
+  // 1. Show cached data instantly (if any), then fetch fresh
+  function bootLoad() {
+    const cached = loadClientCache();
+    const now = Date.now();
+
+    if (cached && cached.data) {
+      const age = now - cached.savedAt;
+
+      // Always render cached data instantly for immediate paint
+      renderReport(cached.data, true);
+
+      // If cache is fresh (< CLIENT_CACHE_TTL_MS), skip network entirely for now
+      if (age < CLIENT_CACHE_TTL_MS) {
+        console.log('Client cache fresh, skipping network fetch.');
+        return;
+      }
+    }
+
+    // Otherwise, fetch fresh data in background
+    refreshData(false);
+  }
+
+  // 2. Fetch fresh data; update UI; save to cache
+  async function refreshData(forceRefresh) {
+    if (isFetching) return;   // prevent overlapping requests
+    isFetching = true;
+
+    if (!currentData) {
+      // No data yet — show loading state
+      setStatus('Loading...', 'loading');
+    } else {
+      // Data already visible (from cache) — show subtle progress
+      setStatus('Syncing...', 'loading');
+      startProgress();
+    }
+
     clearError();
 
     try {
-      const data = await fetchReportJSONP();
-      renderReport(data);
+      const data = await fetchReportJSONP(forceRefresh);
+
+      renderReport(data, false);
+      saveClientCache(data);
+      saveLastCheckTime(Date.now());
+
+      endProgress();
     } catch (err) {
-      console.error('Load failed:', err);
-      showError(err.message || String(err));
-      setStatus('Error', 'error');
+      console.error('Refresh failed:', err);
+
+      if (currentData) {
+        // We have stale data visible — keep it, show soft warning
+        setStatus('⚠️ Offline · showing cached', 'error');
+      } else {
+        showError(err.message || String(err));
+        setStatus('Error', 'error');
+      }
+      endProgress();
+    } finally {
+      isFetching = false;
     }
   }
 
@@ -1192,7 +1198,7 @@
     el.addEventListener('click', () => switchPanel(el.dataset.panel));
   });
 
-  /* ---------- Pull to refresh ---------- */
+  /* ---------- Pull to refresh (forces network refresh) ---------- */
   (function pullToRefresh() {
     let startY = 0;
     let pulling = false;
@@ -1223,12 +1229,23 @@
       indicator.classList.remove('visible');
       indicator.style.transform = '';
       if (delta > THRESHOLD && window.scrollY === 0) {
-        loadReport();
+        refreshData(true);   // force refresh (bypasses server cache)
       }
     });
   })();
 
-  /* ---------- Prevent double-tap zoom on buttons ---------- */
+  /* ---------- Auto-refresh when tab becomes visible ---------- */
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      const lastCheck = loadLastCheckTime();
+      if (Date.now() - lastCheck > CLIENT_CACHE_TTL_MS) {
+        console.log('Tab visible again, checking for fresh data...');
+        refreshData(false);
+      }
+    }
+  });
+
+  /* ---------- Prevent double-tap zoom ---------- */
   let lastTouchEnd = 0;
   document.addEventListener('touchend', (e) => {
     const now = Date.now();
@@ -1237,7 +1254,7 @@
   }, { passive: false });
 
   /* ---------- Boot ---------- */
-  window.addEventListener('load', loadReport);
+  window.addEventListener('load', bootLoad);
 </script>
 </body>
 </html>
