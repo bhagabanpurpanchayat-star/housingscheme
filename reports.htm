@@ -78,7 +78,7 @@
       top: 0;
       z-index: 100;
       margin: calc(-1 * var(--safe-top) - 12px) -12px 14px;
-      padding: calc(var(--safe-top) + 14px) 16px 14px;
+      padding: calc(var(--safe-top) + 14px) 12px 14px 16px;
       background: rgba(15, 12, 41, 0.85);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
@@ -86,7 +86,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
     }
 
     .app-title {
@@ -106,6 +106,8 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      min-width: 0;
+      flex: 1;
     }
 
     @keyframes gradShift {
@@ -113,18 +115,24 @@
       50% { background-position: 100% 50%; }
     }
 
-    .status-chip {
+    .app-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       flex-shrink: 0;
+    }
+
+    .status-chip {
       background: linear-gradient(135deg, #00d4ff, #7b2ff7);
       color: #fff;
       border-radius: 20px;
-      padding: 6px 12px;
-      font-size: 0.68rem;
+      padding: 6px 10px;
+      font-size: 0.62rem;
       font-weight: 700;
       letter-spacing: 0.3px;
       box-shadow: 0 3px 12px rgba(0, 212, 255, 0.35);
       white-space: nowrap;
-      max-width: 45vw;
+      max-width: 30vw;
       overflow: hidden;
       text-overflow: ellipsis;
     }
@@ -147,6 +155,41 @@
       50% { opacity: 0.7; }
     }
 
+    /* ---------- SYNC BUTTON ---------- */
+    .sync-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 212, 255, 0.35);
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.18), rgba(123, 47, 247, 0.18));
+      color: #eaf2f8;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+      box-shadow: 0 3px 12px rgba(0, 212, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .sync-btn:active {
+      transform: scale(0.9);
+    }
+    .sync-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .sync-btn .ico {
+      display: inline-block;
+      line-height: 1;
+    }
+    .sync-btn.spinning .ico {
+      animation: spinSync 0.9s linear infinite;
+    }
+    @keyframes spinSync {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
     /* ---------- ERROR ---------- */
     .error-box {
       background: linear-gradient(135deg, rgba(255, 65, 108, 0.2), rgba(255, 75, 43, 0.15));
@@ -155,7 +198,7 @@
       border-radius: 14px;
       border: 1px solid rgba(255, 65, 108, 0.4);
       margin-bottom: 14px;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       line-height: 1.5;
       white-space: pre-wrap;
       word-break: break-word;
@@ -338,11 +381,13 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* ---------- USER LIST ---------- */
+    /* ============================================================
+       USER LIST — table-style rows, no avatar, small fonts
+       ============================================================ */
     .user-list {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
       max-height: 62vh;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
@@ -356,119 +401,105 @@
       border-radius: 4px;
     }
 
-    .user-card {
+    /* Header row (column labels) */
+    .user-header {
       display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03));
-      border: 1px solid rgba(255, 255, 255, 0.09);
-      transition: transform 0.15s ease, border-color 0.25s;
-      min-width: 0;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      padding: 6px 10px;
+      font-size: 0.58rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-dim);
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+      margin-bottom: 4px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
     }
-    .user-card:active {
-      transform: scale(0.985);
-      border-color: rgba(0, 212, 255, 0.5);
+    .user-header .uh-name { text-align: left; }
+    .user-header .uh-col { text-align: center; min-width: 60px; }
+
+    /* User data row */
+    .user-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      align-items: center;
+      transition: background 0.15s ease, border-color 0.2s ease;
+    }
+    .user-row:active {
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.12), rgba(123, 47, 247, 0.12));
+      border-color: rgba(0, 212, 255, 0.4);
     }
 
-    .user-left {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
-    }
-    .user-avatar {
-      flex-shrink: 0;
-      width: 34px; height: 34px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #00d4ff, #7b2ff7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.72rem;
-      font-weight: 800;
-      color: #fff;
-      box-shadow: 0 3px 10px rgba(0, 212, 255, 0.4);
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-    .user-name {
-      font-size: 0.84rem;
+    .ur-name {
+      font-size: 0.78rem;
       font-weight: 700;
       color: var(--text);
-      word-break: break-word;
       line-height: 1.25;
+      word-break: break-word;
       overflow: hidden;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
+      min-width: 0;
     }
 
-    .user-right {
-      display: flex;
-      gap: 6px;
-      flex-shrink: 0;
-      justify-content: flex-end;
-    }
-
-    .pill {
+    .ur-col {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-width: 54px;
-      padding: 5px 8px;
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      min-width: 60px;
+      padding: 4px 6px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
       background: rgba(0, 0, 0, 0.22);
       line-height: 1.1;
       gap: 1px;
     }
-    .pill .p-label {
-      font-size: 0.52rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      white-space: nowrap;
+    .ur-col.cum {
+      border-left: 3px solid var(--accent-cyan);
     }
-    .pill .p-vals {
-      font-size: 0.82rem;
-      font-weight: 800;
-      display: flex;
-      align-items: baseline;
-      gap: 2px;
-      white-space: nowrap;
-    }
-    .pill.cum {
-      border-color: rgba(0, 212, 255, 0.28);
-      box-shadow: inset 0 0 8px rgba(0, 212, 255, 0.08);
-    }
-    .pill.cum .p-vals .t { color: var(--accent-cyan); }
-    .pill.cum .p-vals .c { color: var(--accent-mint); }
-    .pill.today {
-      border-color: rgba(255, 179, 71, 0.28);
-      box-shadow: inset 0 0 8px rgba(255, 179, 71, 0.08);
-    }
-    .pill.today .p-vals .t { color: var(--accent-orange); }
-    .pill.today .p-vals .c { color: var(--accent-mint); }
-    .pill .p-vals .sep {
-      color: var(--text-dim);
-      font-weight: 500;
-      font-size: 0.68rem;
-      opacity: 0.7;
+    .ur-col.today {
+      border-left: 3px solid var(--accent-orange);
     }
 
-    @media (max-width: 380px) {
-      .user-card { grid-template-columns: 1fr; gap: 8px; }
-      .user-right { justify-content: flex-start; padding-left: 42px; }
-      .pill { flex: 1; min-width: 0; }
+    .ur-col .label {
+      font-size: 0.52rem;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+    .ur-col .num {
+      font-size: 0.85rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .ur-col .num .total { color: var(--accent-cyan); }
+    .ur-col .num .sep { color: var(--text-dim); font-weight: 500; opacity: 0.6; margin: 0 2px; }
+    .ur-col .num .done { color: var(--accent-mint); }
+
+    .ur-col.cum .num .total { color: var(--accent-cyan); }
+    .ur-col.today .num .total { color: var(--accent-orange); }
+    .ur-col.today .num .done { color: var(--accent-mint); }
+
+    /* Small phones: shrink fonts a touch */
+    @media (max-width: 360px) {
+      .ur-name { font-size: 0.72rem; }
+      .ur-col { min-width: 52px; padding: 3px 4px; }
+      .ur-col .num { font-size: 0.78rem; }
+      .ur-col .label { font-size: 0.48rem; }
+      .user-header .uh-col { min-width: 52px; }
     }
 
     /* ---------- BOTTOM NAV ---------- */
@@ -589,6 +620,38 @@
     }
     .progress-bar.active { opacity: 1; }
 
+    /* ---------- TOAST ---------- */
+    .toast {
+      position: fixed;
+      bottom: calc(var(--tab-h) + var(--safe-bottom) + 16px);
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(15, 12, 41, 0.95);
+      border: 1px solid rgba(0, 212, 255, 0.4);
+      color: #eaf2f8;
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 212, 255, 0.3);
+      z-index: 300;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      white-space: nowrap;
+      max-width: 80vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .toast.success { border-color: rgba(0, 255, 163, 0.5); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 255, 163, 0.35); }
+    .toast.error   { border-color: rgba(255, 65, 108, 0.5); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 65, 108, 0.35); }
+
     /* ---------- RIPPLE ---------- */
     .tap { position: relative; overflow: hidden; }
     .tap::after {
@@ -617,6 +680,8 @@
       .chart-wrap { height: 210px; }
       .chart-wrap.short { height: 180px; }
       .card-tag { font-size: 0.58rem; padding: 3px 8px; }
+      .sync-btn { width: 34px; height: 34px; font-size: 0.95rem; }
+      .status-chip { max-width: 26vw; font-size: 0.58rem; }
     }
 
     @media (max-height: 500px) and (orientation: landscape) {
@@ -633,7 +698,12 @@
   <!-- APP BAR -->
   <header class="app-bar">
     <h1 class="app-title">🏠 HOUSING · Report</h1>
-    <span class="status-chip" id="lastUpdated">Loading...</span>
+    <div class="app-bar-right">
+      <span class="status-chip" id="lastUpdated">Loading...</span>
+      <button class="sync-btn" id="syncBtn" aria-label="Sync latest data" title="Sync latest data">
+        <span class="ico">⟳</span>
+      </button>
+    </div>
   </header>
 
   <div class="error-box" id="errorBox"></div>
@@ -733,18 +803,18 @@
     <button class="nav-btn" data-panel="user"><span class="ico">👤</span><span>User</span></button>
   </nav>
 
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
 <script>
   /* ============================================================
      🔧 CONFIGURATION
      ============================================================ */
   const API_URL = 'https://script.google.com/macros/s/AKfycbzYtuip9EVljC0vx83DQaycoGIcaBhnS94yyfdXmcDalNaZ2OxkPifNMu9fYp38GGvH/exec';
 
-  /* ---------- Cache config ---------- */
   const CACHE_KEY_LS = 'housing_report_v2';
   const CACHE_KEY_SS = 'housing_report_last_check';
-  const CLIENT_CACHE_TTL_MS = 60 * 1000;   // 1 minute: consider client cache "fresh"
-  const STALE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours: still show stale on failure
-  const REVALIDATE_DELAY_MS = 500;          // small delay before background refresh
+  const CLIENT_CACHE_TTL_MS = 60 * 1000;
   /* ============================================================ */
 
   const PALETTE = {
@@ -765,7 +835,6 @@
   let currentData = null;
   let isFetching = false;
 
-  /* ---------- Utilities ---------- */
   function escapeHtml(s) {
     if (!s) return '';
     return String(s).replace(/[&<>"']/g, m => ({
@@ -802,17 +871,31 @@
     }, 300);
   }
 
-  /* ---------- Local cache helpers ---------- */
+  let toastTimer = null;
+  function showToast(msg, type) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.remove('success', 'error');
+    if (type) el.classList.add(type);
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.classList.remove('show'); }, 2200);
+  }
+
+  function setSyncBusy(busy) {
+    const btn = document.getElementById('syncBtn');
+    btn.disabled = busy;
+    if (busy) btn.classList.add('spinning');
+    else btn.classList.remove('spinning');
+  }
+
   function saveClientCache(data) {
     try {
-      const payload = {
+      localStorage.setItem(CACHE_KEY_LS, JSON.stringify({
         savedAt: Date.now(),
         data: data
-      };
-      localStorage.setItem(CACHE_KEY_LS, JSON.stringify(payload));
-    } catch (e) {
-      // localStorage full or disabled — ignore
-    }
+      }));
+    } catch (e) {}
   }
 
   function loadClientCache() {
@@ -822,9 +905,7 @@
       const parsed = JSON.parse(raw);
       if (!parsed || !parsed.data) return null;
       return parsed;
-    } catch (e) {
-      return null;
-    }
+    } catch (e) { return null; }
   }
 
   function loadLastCheckTime() {
@@ -837,7 +918,6 @@
     try { sessionStorage.setItem(CACHE_KEY_SS, String(t)); } catch (e) {}
   }
 
-  /* ---------- JSONP loader ---------- */
   function fetchReportJSONP(forceRefresh) {
     return new Promise((resolve, reject) => {
       if (!API_URL || API_URL.indexOf('YOUR_DEPLOYMENT_ID') !== -1) {
@@ -883,7 +963,6 @@
     });
   }
 
-  /* ---------- Chart renderer ---------- */
   function makeGradient(ctx, chartArea, colorStart, colorEnd) {
     if (!chartArea) return colorStart;
     const g = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
@@ -1016,13 +1095,6 @@
     return top.concat([restAgg]);
   }
 
-  function initials(name) {
-    const parts = String(name || '?').trim().split(/\s+/);
-    if (parts.length === 1) return parts[0].slice(0, 2);
-    return (parts[0][0] + parts[parts.length - 1][0]);
-  }
-
-  /* ---------- Main render ---------- */
   function renderReport(data, fromCache) {
     if (!data || !data.success) {
       showError(data && data.error ? data.error : 'Unknown error from server');
@@ -1068,6 +1140,7 @@
     render3DBarChart('chartUserToday',
       userToday.map(d => d[0]), userToday.map(d => d[1].total), userToday.map(d => d[1].completed), 'completedToday');
 
+    /* ---------- USER LIST — table-style, no avatar ---------- */
     const listEl = document.getElementById('userDetailList');
     document.getElementById('userCountTag').textContent =
       userDetailArr.length + ' user' + (userDetailArr.length === 1 ? '' : 's');
@@ -1075,32 +1148,35 @@
     if (userDetailArr.length === 0) {
       listEl.innerHTML = '<div class="empty"><span class="big">👤</span>No user data available</div>';
     } else {
-      listEl.innerHTML = userDetailArr.map(u => `
-        <div class="user-card tap">
-          <div class="user-left">
-            <div class="user-avatar">${escapeHtml(initials(u.user))}</div>
-            <div class="user-name">${escapeHtml(u.user)}</div>
+      const headerHTML = `
+        <div class="user-header">
+          <div class="uh-name">User</div>
+          <div class="uh-col">📊 Cum</div>
+          <div class="uh-col">📅 Today</div>
+        </div>
+      `;
+      const rowsHTML = userDetailArr.map(u => `
+        <div class="user-row tap">
+          <div class="ur-name">${escapeHtml(u.user)}</div>
+          <div class="ur-col cum">
+            <span class="num">
+              <span class="total">${u.cumTotal}</span>
+              <span class="sep">/</span>
+              <span class="done">${u.cumCompleted}</span>
+            </span>
+            <span class="label">total / done</span>
           </div>
-          <div class="user-right">
-            <div class="pill cum" title="Cumulative: total / completed">
-              <div class="p-label">📊 Cum</div>
-              <div class="p-vals">
-                <span class="t">${u.cumTotal}</span>
-                <span class="sep">/</span>
-                <span class="c">${u.cumCompleted}</span>
-              </div>
-            </div>
-            <div class="pill today" title="Today: total / completed">
-              <div class="p-label">📅 Today</div>
-              <div class="p-vals">
-                <span class="t">${u.todayTotal}</span>
-                <span class="sep">/</span>
-                <span class="c">${u.todayCompleted}</span>
-              </div>
-            </div>
+          <div class="ur-col today">
+            <span class="num">
+              <span class="total">${u.todayTotal}</span>
+              <span class="sep">/</span>
+              <span class="done">${u.todayCompleted}</span>
+            </span>
+            <span class="label">total / done</span>
           </div>
         </div>
       `).join('');
+      listEl.innerHTML = headerHTML + rowsHTML;
     }
 
     const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -1111,40 +1187,38 @@
     }
   }
 
-  /* ---------- Load orchestration (stale-while-revalidate) ---------- */
-
-  // 1. Show cached data instantly (if any), then fetch fresh
   function bootLoad() {
     const cached = loadClientCache();
     const now = Date.now();
 
     if (cached && cached.data) {
       const age = now - cached.savedAt;
-
-      // Always render cached data instantly for immediate paint
       renderReport(cached.data, true);
 
-      // If cache is fresh (< CLIENT_CACHE_TTL_MS), skip network entirely for now
       if (age < CLIENT_CACHE_TTL_MS) {
         console.log('Client cache fresh, skipping network fetch.');
         return;
       }
     }
 
-    // Otherwise, fetch fresh data in background
-    refreshData(false);
+    refreshData(false, false);
   }
 
-  // 2. Fetch fresh data; update UI; save to cache
-  async function refreshData(forceRefresh) {
-    if (isFetching) return;   // prevent overlapping requests
+  async function refreshData(forceRefresh, manual) {
+    if (isFetching) {
+      if (manual) showToast('⏳ Sync already in progress...', null);
+      return;
+    }
     isFetching = true;
 
+    if (manual) {
+      setSyncBusy(true);
+      showToast('🔄 Syncing latest data...', null);
+    }
+
     if (!currentData) {
-      // No data yet — show loading state
       setStatus('Loading...', 'loading');
     } else {
-      // Data already visible (from cache) — show subtle progress
       setStatus('Syncing...', 'loading');
       startProgress();
     }
@@ -1159,23 +1233,41 @@
       saveLastCheckTime(Date.now());
 
       endProgress();
+
+      if (manual) {
+        const mode = data.cacheHit === 'cache' || data.cacheHit === 'cache-late'
+          ? 'server-cached'
+          : data.cacheHit === 'incremental'
+            ? 'incremental'
+            : 'fresh';
+        showToast('✅ Synced · ' + mode, 'success');
+      }
     } catch (err) {
       console.error('Refresh failed:', err);
 
       if (currentData) {
-        // We have stale data visible — keep it, show soft warning
         setStatus('⚠️ Offline · showing cached', 'error');
+        if (manual) showToast('❌ Sync failed — showing cached', 'error');
       } else {
         showError(err.message || String(err));
         setStatus('Error', 'error');
+        if (manual) showToast('❌ Sync failed', 'error');
       }
       endProgress();
     } finally {
       isFetching = false;
+      if (manual) setSyncBusy(false);
     }
   }
 
-  /* ---------- Tab switching ---------- */
+  /* ---------- Sync button handler ---------- */
+  document.getElementById('syncBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('🔄 Sync button tapped');
+    refreshData(true, true);
+  });
+
   function switchPanel(panelId) {
     document.querySelectorAll('.panel').forEach(p => {
       p.classList.toggle('active', p.dataset.panel === panelId);
@@ -1198,7 +1290,6 @@
     el.addEventListener('click', () => switchPanel(el.dataset.panel));
   });
 
-  /* ---------- Pull to refresh (forces network refresh) ---------- */
   (function pullToRefresh() {
     let startY = 0;
     let pulling = false;
@@ -1229,23 +1320,21 @@
       indicator.classList.remove('visible');
       indicator.style.transform = '';
       if (delta > THRESHOLD && window.scrollY === 0) {
-        refreshData(true);   // force refresh (bypasses server cache)
+        refreshData(true, false);
       }
     });
   })();
 
-  /* ---------- Auto-refresh when tab becomes visible ---------- */
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
       const lastCheck = loadLastCheckTime();
       if (Date.now() - lastCheck > CLIENT_CACHE_TTL_MS) {
         console.log('Tab visible again, checking for fresh data...');
-        refreshData(false);
+        refreshData(false, false);
       }
     }
   });
 
-  /* ---------- Prevent double-tap zoom ---------- */
   let lastTouchEnd = 0;
   document.addEventListener('touchend', (e) => {
     const now = Date.now();
@@ -1253,7 +1342,6 @@
     lastTouchEnd = now;
   }, { passive: false });
 
-  /* ---------- Boot ---------- */
   window.addEventListener('load', bootLoad);
 </script>
 </body>
