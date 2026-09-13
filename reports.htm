@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1a1a2e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>HOUSING · Job Card Report</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg-1: #0f0c29;
+      --bg-2: #1a1a3e;
+      --bg-3: #24243e;
+      --surface: rgba(255, 255, 255, 0.06);
+      --surface-2: rgba(255, 255, 255, 0.10);
+      --border: rgba(255, 255, 255, 0.12);
+      --text: #f0f4f8;
+      --text-dim: #94a3b8;
+      --accent-cyan: #00d4ff;
+      --accent-purple: #7b2ff7;
+      --accent-pink: #f107a3;
+      --accent-mint: #00ffa3;
+      --accent-orange: #ffb347;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --tab-h: 64px;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      overscroll-behavior-y: none;
+    }
+
+    body {
+      background: linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
+      background-attachment: fixed;
+      color: var(--text);
+      padding: calc(var(--safe-top) + 12px) 12px calc(var(--tab-h) + var(--safe-bottom) + 20px);
+      min-height: 100vh;
+      font-size: 15px;
+      line-height: 1.45;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 212, 255, 0.25), transparent 70%);
+      top: -100px;
+      left: -100px;
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(241, 7, 163, 0.22), transparent 70%);
+      bottom: -120px;
+      right: -120px;
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ---------- TOP APP BAR ---------- */
+    .app-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      margin: calc(-1 * var(--safe-top) - 12px) -12px 14px;
+      padding: calc(var(--safe-top) + 14px) 16px 14px;
+      background: rgba(15, 12, 41, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .app-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin: 0;
+      background: linear-gradient(90deg, #00d4ff, #7b2ff7, #f107a3);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradShift 5s ease infinite;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    @keyframes gradShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .status-chip {
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+      color: #fff;
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      box-shadow: 0 3px 12px rgba(0, 212, 255, 0.35);
+      white-space: nowrap;
+      max-width: 40vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .status-chip.error {
+      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+      box-shadow: 0 3px 12px rgba(255, 65, 108, 0.4);
+    }
+    .status-chip.loading {
+      background: linear-gradient(135deg, #f107a3, #ffb347);
+      box-shadow: 0 3px 12px rgba(241, 7, 163, 0.4);
+      animation: pulseChip 1.4s ease-in-out infinite;
+    }
+
+    @keyframes pulseChip {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    /* ---------- ERROR ---------- */
+    .error-box {
+      background: linear-gradient(135deg, rgba(255, 65, 108, 0.2), rgba(255, 75, 43, 0.15));
+      color: #ffe0e6;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 65, 108, 0.4);
+      margin-bottom: 14px;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      backdrop-filter: blur(12px);
+    }
+    .error-box:empty { display: none; }
+
+    /* ---------- TABS ---------- */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 5px;
+      margin-bottom: 14px;
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: calc(var(--safe-top) + 60px);
+      z-index: 50;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 10px 6px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-align: center;
+      color: var(--text-dim);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: 0.2px;
+    }
+    .tab.active {
+      background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(0, 212, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    /* ---------- HERO STATS (4 cards, 2×2 grid) ---------- */
+    .hero-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .stat-card {
+      position: relative;
+      padding: 12px 12px 14px;
+      border-radius: 16px;
+      background: var(--surface-2);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+    }
+
+    .stat-card.cum-total::before {
+      background: linear-gradient(180deg, #00d4ff, #7b2ff7);
+      box-shadow: 0 0 14px #00d4ff;
+    }
+    .stat-card.cum-completed::before {
+      background: linear-gradient(180deg, #00ffa3, #00d4ff);
+      box-shadow: 0 0 14px #00ffa3;
+    }
+    .stat-card.today-total::before {
+      background: linear-gradient(180deg, #ffb347, #f107a3);
+      box-shadow: 0 0 14px #ffb347;
+    }
+    .stat-card.today-completed::before {
+      background: linear-gradient(180deg, #f107a3, #7b2ff7);
+      box-shadow: 0 0 14px #f107a3;
+    }
+
+    .stat-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-dim);
+      font-weight: 700;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .stat-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      line-height: 1.05;
+      background: linear-gradient(135deg, #fff, #b8d4f0);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .stat-sub {
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    /* ---------- CARDS ---------- */
+    .card {
+      background: var(--surface);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px 14px 14px;
+      margin-bottom: 14px;
+      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      flex: 1;
+    }
+    .card-title span:first-child {
+      font-size: 1.05rem;
+      flex-shrink: 0;
+    }
+    .card-title-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-tag {
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.25), rgba(123, 47, 247, 0.25));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--text);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ---------- CHART ---------- */
+    .chart-wrap {
+      position: relative;
+      height: 240px;
+      width: 100%;
+      touch-action: pan-y;
+    }
+    .chart-wrap.short { height: 200px; }
+
+    /* ---------- PANELS ---------- */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .panel.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- USER LIST (COMPACT) ---------- */
+    .user-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 62vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 2px;
+      margin: -2px;
+    }
+    .user-list::-webkit-scrollbar { width: 4px; }
+    .user-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.15); border-radius: 4px; }
+    .user-list::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #00d4ff, #7b2ff7);
+      border-radius: 4px;
+    }
+
+    /* Compact row-style user card */
+    .user-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03));
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      transition: transform 0.15s ease, border-color 0.25s;
+      min-width: 0;
+    }
+    .user-card:active {
+      transform: scale(0.985);
+      border-color: rgba(0, 212, 255, 0.5);
+    }
+
+    /* Left: avatar + name */
+    .user-left {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .user-avatar {
+      flex-shrink: 0;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 3px 10px rgba(0, 212, 255, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .user-name {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--text);
+      word-break: break-word;
+      line-height: 1.25;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    /* Right: 2 compact metric pills */
+    .user-right {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+      justify-content: flex-end;
+    }
+
+    .pill {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 54px;
+      padding: 5px 8px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.22);
+      line-height: 1.1;
+      gap: 1px;
+    }
+    .pill .p-label {
+      font-size: 0.52rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      white-space: nowrap;
+    }
+    .pill .p-vals {
+      font-size: 0.82rem;
+      font-weight: 800;
+      display: flex;
+      align-items: baseline;
+      gap: 2px;
+      white-space: nowrap;
+    }
+
+    .pill.cum {
+      border-color: rgba(0, 212, 255, 0.28);
+      box-shadow: inset 0 0 8px rgba(0, 212, 255, 0.08);
+    }
+    .pill.cum .p-vals .t { color: var(--accent-cyan); }
+    .pill.cum .p-vals .c { color: var(--accent-mint); }
+
+    .pill.today {
+      border-color: rgba(255, 179, 71, 0.28);
+      box-shadow: inset 0 0 8px rgba(255, 179, 71, 0.08);
+    }
+    .pill.today .p-vals .t { color: var(--accent-orange); }
+    .pill.today .p-vals .c { color: var(--accent-mint); }
+
+    .pill .p-vals .sep {
+      color: var(--text-dim);
+      font-weight: 500;
+      font-size: 0.68rem;
+      opacity: 0.7;
+    }
+
+    /* Small phones: stack pills under name */
+    @media (max-width: 380px) {
+      .user-card {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .user-right {
+        justify-content: flex-start;
+        padding-left: 42px;
+      }
+      .pill {
+        flex: 1;
+        min-width: 0;
+      }
+    }
+
+    /* ---------- BOTTOM NAV ---------- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: calc(var(--tab-h) + var(--safe-bottom));
+      padding-bottom: var(--safe-bottom);
+      background: rgba(15, 12, 41, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 200;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .nav-btn {
+      flex: 1;
+      height: var(--tab-h);
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      transition: color 0.2s ease, transform 0.15s ease;
+      padding: 0;
+      text-transform: uppercase;
+      position: relative;
+    }
+    .nav-btn .ico {
+      font-size: 1.25rem;
+      line-height: 1;
+      filter: grayscale(0.6);
+      transition: filter 0.2s ease, transform 0.2s ease;
+    }
+    .nav-btn.active {
+      color: #fff;
+    }
+    .nav-btn.active .ico {
+      filter: grayscale(0) drop-shadow(0 0 8px rgba(0, 212, 255, 0.7));
+      transform: scale(1.12);
+    }
+    .nav-btn.active::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 3px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #00d4ff, #7b2ff7);
+      box-shadow: 0 0 10px #00d4ff;
+    }
+    .nav-btn:active {
+      transform: scale(0.92);
+    }
+
+    /* ---------- PULL TO REFRESH ---------- */
+    .pull-indicator {
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      padding: 6px;
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .pull-indicator.visible { opacity: 1; }
+
+    /* ---------- LOADING SKELETON ---------- */
+    .skeleton {
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-dim);
+      font-size: 0.82rem;
+    }
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid rgba(255,255,255,0.12);
+      border-top-color: #00d4ff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---------- NO DATA ---------- */
+    .empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+    .empty .big {
+      font-size: 2rem;
+      display: block;
+      margin-bottom: 8px;
+      opacity: 0.6;
+    }
+
+    /* ---------- RIPPLE ---------- */
+    .tap {
+      position: relative;
+      overflow: hidden;
+    }
+    .tap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, rgba(255,255,255,0.3) 10%, transparent 11%);
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 0% 0%;
+      opacity: 0;
+      transition: background-size 0.4s, opacity 0.5s;
+      pointer-events: none;
+    }
+    .tap:active::after {
+      background-size: 200% 200%;
+      opacity: 1;
+      transition: 0s;
+    }
+
+    /* Small phones */
+    @media (max-width: 360px) {
+      body { font-size: 14px; padding-left: 10px; padding-right: 10px; }
+      .stat-value { font-size: 1.35rem; }
+      .stat-label { font-size: 0.55rem; }
+      .stat-sub   { font-size: 0.55rem; }
+      .chart-wrap { height: 210px; }
+      .chart-wrap.short { height: 180px; }
+      .card-tag { font-size: 0.58rem; padding: 3px 8px; }
+    }
+
+    /* Landscape phones */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .chart-wrap { height: 180px; }
+      .chart-wrap.short { height: 150px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= APP BAR ================= -->
+  <header class="app-bar">
+    <h1 class="app-title">🏠 HOUSING · Report</h1>
+    <span class="status-chip" id="lastUpdated">Loading...</span>
+  </header>
+
+  <!-- ================= ERROR ================= -->
+  <div class="error-box" id="errorBox"></div>
+
+  <!-- ================= PULL TO REFRESH ================= -->
+  <div class="pull-indicator" id="pullIndicator">↓ Pull to refresh</div>
+
+  <!-- ================= SECTION TABS ================= -->
+  <nav class="tabs" role="tablist">
+    <button class="tab active tap" data-panel="overview" role="tab">Overview</button>
+    <button class="tab tap" data-panel="location" role="tab">📍 Location</button>
+    <button class="tab tap" data-panel="user" role="tab">👤 User</button>
+  </nav>
+
+  <!-- ================= HERO STATS (4 cards) ================= -->
+  <section class="hero-stats">
+    <div class="stat-card cum-total">
+      <div class="stat-label">📊 Cumulative</div>
+      <div class="stat-value" id="cumTotalCount">0</div>
+      <div class="stat-sub">total rows</div>
+    </div>
+    <div class="stat-card cum-completed">
+      <div class="stat-label">✓ Cum. Done</div>
+      <div class="stat-value" id="cumCompletedCount">0</div>
+      <div class="stat-sub">completed</div>
+    </div>
+    <div class="stat-card today-total">
+      <div class="stat-label">📅 Today</div>
+      <div class="stat-value" id="todayTotalCount">0</div>
+      <div class="stat-sub">rows today</div>
+    </div>
+    <div class="stat-card today-completed">
+      <div class="stat-label">✓ Today Done</div>
+      <div class="stat-value" id="todayCompletedCount">0</div>
+      <div class="stat-sub">completed</div>
+    </div>
+  </section>
+
+  <!-- ================= PANEL: OVERVIEW ================= -->
+  <section class="panel active" data-panel="overview">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">
+          <span>📍</span>
+          <span class="card-title-text">Location · All time</span>
+        </div>
+        <span class="card-tag">Cumulative</span>
+      </div>
+      <div class="chart-wrap"><canvas id="chartLocationCumulative"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">
+          <span>👤</span>
+          <span class="card-title-text">User · All time</span>
+        </div>
+        <span class="card-tag">Top 10</span>
+      </div>
+      <div class="chart-wrap"><canvas id="chartUserCumulative"></canvas></div>
+    </div>
+  </section>
+
+  <!-- ================= PANEL: LOCATION ================= -->
+  <section class="panel" data-panel="location">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">
+          <span>📍</span>
+          <span class="card-title-text">Location · All time</span>
+        </div>
+        <span class="card-tag">Cumulative</span>
+      </div>
+      <div class="chart-wrap"><canvas id="chartLocationCumulativeL"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">
+          <span>📍</span>
+          <span class="card-title-text">Location · Today</span>
+        </div>
+        <span class="card-tag">Today</span>
+      </div>
+      <div class="chart-wrap"><canvas id="chartLocationToday"></canvas></div>
+    </div>
+  </section>
+
+  <!-- ================= PANEL: USER ================= -->
+  <section class="panel" data-panel="user">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">
+          <span>👤</span>
+          <span class="card-title-text">User · Today</span>
+        </div>
+        <span class="card-tag">Top 8</span>
+      </div>
+      <div class="chart-wrap short"><canvas id="chartUserToday"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">
+          <span>📋</span>
+          <span class="card-title-text">All users</span>
+        </div>
+        <span class="card-tag" id="userCountTag">0 users</span>
+      </div>
+      <div class="user-list" id="userDetailList">
+        <div class="skeleton">
+          <div class="spinner"></div>
+          Loading users...
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= BOTTOM NAV ================= -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-panel="overview">
+      <span class="ico">📊</span>
+      <span>Overview</span>
+    </button>
+    <button class="nav-btn" data-panel="location">
+      <span class="ico">📍</span>
+      <span>Location</span>
+    </button>
+    <button class="nav-btn" data-panel="user">
+      <span class="ico">👤</span>
+      <span>User</span>
+    </button>
+  </nav>
+
+<script>
+  /* ============================================================
+     🔧 CONFIGURATION — PASTE YOUR APPS SCRIPT WEB APP URL HERE
+     Must end with /exec
+     ============================================================ */
+  const API_URL = 'https://script.google.com/macros/s/AKfycbzYtuip9EVljC0vx83DQaycoGIcaBhnS94yyfdXmcDalNaZ2OxkPifNMu9fYp38GGvH/exec';
+  /* ============================================================ */
+
+  const PALETTE = {
+    total:          { start: '#00d4ff', end: '#7b2ff7', hover: '#4be3ff' },
+    completed:      { start: '#00ffa3', end: '#00d4ff', hover: '#6effc7' },
+    totalToday:     { start: '#ffb347', end: '#f107a3', hover: '#ffd080' },
+    completedToday: { start: '#f107a3', end: '#7b2ff7', hover: '#ff5ec4' }
+  };
+
+  const charts = {
+    chartLocationCumulative: null,
+    chartLocationCumulativeL: null,
+    chartLocationToday: null,
+    chartUserCumulative: null,
+    chartUserToday: null
+  };
+
+  /* ---------- Utilities ---------- */
+  function escapeHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/[&<>"']/g, m => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[m]));
+  }
+
+  function setStatus(text, state) {
+    const el = document.getElementById('lastUpdated');
+    el.textContent = text;
+    el.classList.remove('error', 'loading');
+    if (state) el.classList.add(state);
+  }
+
+  function showError(msg) {
+    document.getElementById('errorBox').textContent = '⚠️ ' + msg;
+  }
+
+  function clearError() {
+    document.getElementById('errorBox').textContent = '';
+  }
+
+  /* ---------- JSONP loader ---------- */
+  function fetchReportJSONP() {
+    return new Promise((resolve, reject) => {
+      if (!API_URL || API_URL.indexOf('YOUR_DEPLOYMENT_ID') !== -1) {
+        return reject(new Error('API_URL is not configured.'));
+      }
+      if (API_URL.indexOf('/exec') === -1) {
+        return reject(new Error('API_URL must end with /exec.'));
+      }
+
+      const callbackName = 'housingReportCallback_' + Date.now();
+      const url = API_URL + (API_URL.includes('?') ? '&' : '?') + 'callback=' + callbackName;
+      const script = document.createElement('script');
+
+      const timeout = setTimeout(() => {
+        cleanup();
+        reject(new Error('Request timed out. Test in incognito:\n' +
+          url.replace('callback=' + callbackName, 'callback=test')));
+      }, 45000);
+
+      function cleanup() {
+        clearTimeout(timeout);
+        try { delete window[callbackName]; } catch (e) {}
+        if (script.parentNode) script.parentNode.removeChild(script);
+      }
+
+      window[callbackName] = function(data) {
+        cleanup();
+        if (data && data.success === false) {
+          reject(new Error('Backend error: ' + (data.error || 'Unknown')));
+        } else {
+          resolve(data);
+        }
+      };
+
+      script.onerror = function() {
+        cleanup();
+        reject(new Error(
+          'Failed to load API. Check:\n' +
+          '  1. Deployment access = "Anyone"\n' +
+          '  2. API_URL ends with /exec\n' +
+          '  3. No typos\n' +
+          'Test in incognito: ' +
+          url.replace('callback=' + callbackName, 'callback=test')
+        ));
+      };
+
+      script.src = url;
+      document.body.appendChild(script);
+    });
+  }
+
+  /* ---------- Gradient helper ---------- */
+  function makeGradient(ctx, chartArea, colorStart, colorEnd) {
+    if (!chartArea) return colorStart;
+    const g = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+    g.addColorStop(0, colorStart);
+    g.addColorStop(1, colorEnd);
+    return g;
+  }
+
+  /* ---------- 3D Bar Chart (mobile-optimised) ---------- */
+  function render3DBarChart(canvasId, labels, totals, completeds, paletteKey) {
+    if (charts[canvasId]) charts[canvasId].destroy();
+
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return null;
+    const ctx = canvas.getContext('2d');
+    const palette = PALETTE[paletteKey] || PALETTE.total;
+
+    const shadowPlugin = {
+      id: 'customShadow',
+      beforeDatasetsDraw(chart) {
+        chart.ctx.save();
+        chart.ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
+        chart.ctx.shadowBlur = 12;
+        chart.ctx.shadowOffsetX = 3;
+        chart.ctx.shadowOffsetY = 4;
+      },
+      afterDatasetsDraw(chart) {
+        chart.ctx.restore();
+      }
+    };
+
+    charts[canvasId] = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels.length ? labels : ['No data'],
+        datasets: [
+          {
+            label: 'Total',
+            data: totals,
+            backgroundColor: (c) => makeGradient(c.chart.ctx, c.chart.chartArea, palette.start, palette.end),
+            hoverBackgroundColor: palette.hover,
+            borderColor: 'rgba(255, 255, 255, 0.2)',
+            borderWidth: 1,
+            borderRadius: { topLeft: 8, topRight: 8 },
+            borderSkipped: 'bottom',
+            barPercentage: 0.75,
+            categoryPercentage: 0.7
+          },
+          {
+            label: 'Completed',
+            data: completeds,
+            backgroundColor: (c) => makeGradient(c.chart.ctx, c.chart.chartArea, palette.end, palette.start),
+            hoverBackgroundColor: palette.hover,
+            borderColor: 'rgba(255, 255, 255, 0.2)',
+            borderWidth: 1,
+            borderRadius: { topLeft: 8, topRight: 8 },
+            borderSkipped: 'bottom',
+            barPercentage: 0.75,
+            categoryPercentage: 0.7
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 700, easing: 'easeOutQuart' },
+        events: ['click', 'touchstart', 'touchend'],
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              color: '#eaf2f8',
+              font: { size: 11, weight: '700' },
+              padding: 10,
+              usePointStyle: true,
+              pointStyle: 'rectRounded',
+              boxWidth: 12,
+              boxHeight: 12
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(15, 12, 41, 0.96)',
+            titleColor: '#00d4ff',
+            bodyColor: '#eaf2f8',
+            borderColor: 'rgba(0, 212, 255, 0.5)',
+            borderWidth: 1,
+            padding: 10,
+            cornerRadius: 10,
+            displayColors: true,
+            boxPadding: 5,
+            titleFont: { size: 12, weight: '700' },
+            bodyFont: { size: 11 }
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: '#94a3b8',
+              font: { size: 10, weight: '600' },
+              maxRotation: 45,
+              minRotation: 0,
+              autoSkip: true,
+              maxTicksLimit: 8
+            },
+            grid: { display: false },
+            border: { color: 'rgba(255, 255, 255, 0.08)' }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              color: '#94a3b8',
+              font: { size: 10, weight: '600' },
+              stepSize: 1,
+              precision: 0,
+              maxTicksLimit: 6
+            },
+            grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+            border: { display: false }
+          }
+        }
+      },
+      plugins: [shadowPlugin]
+    });
+
+    return charts[canvasId];
+  }
+
+  function limitTopN(arr, n, othersLabel) {
+    if (arr.length <= n) return arr;
+    const top = arr.slice(0, n);
+    const rest = arr.slice(n);
+    const restAgg = rest.reduce((acc, item) => {
+      acc[1].total += item[1].total;
+      acc[1].completed += item[1].completed;
+      return acc;
+    }, [othersLabel, { total: 0, completed: 0 }]);
+    return top.concat([restAgg]);
+  }
+
+  function initials(name) {
+    const parts = String(name || '?').trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].slice(0, 2);
+    return (parts[0][0] + parts[parts.length - 1][0]);
+  }
+
+  /* ---------- Main render ---------- */
+  function renderReport(data) {
+    if (!data || !data.success) {
+      showError(data && data.error ? data.error : 'Unknown error from server');
+      setStatus('Error', 'error');
+      return;
+    }
+
+    /* ---------- Hero stats ---------- */
+    const userDetailArr = data.userDetail || [];
+    let cumTotal, cumCompleted;
+
+    if (data.summary && typeof data.summary.cumTotalCount === 'number') {
+      cumTotal = data.summary.cumTotalCount;
+      cumCompleted = data.summary.cumCompletedCount;
+    } else {
+      cumTotal = userDetailArr.reduce((s, u) => s + (u.cumTotal || 0), 0);
+      cumCompleted = userDetailArr.reduce((s, u) => s + (u.cumCompleted || 0), 0);
+    }
+
+    document.getElementById('cumTotalCount').textContent = cumTotal;
+    document.getElementById('cumCompletedCount').textContent = cumCompleted;
+    document.getElementById('todayTotalCount').textContent = data.summary.todayTotalCount;
+    document.getElementById('todayCompletedCount').textContent = data.summary.todayCompletedCount;
+
+    /* ---------- Charts ---------- */
+    const locCum = data.locationCumulative || [];
+
+    render3DBarChart(
+      'chartLocationCumulative',
+      locCum.map(d => d[0]),
+      locCum.map(d => d[1].total),
+      locCum.map(d => d[1].completed),
+      'total'
+    );
+
+    const userCum = limitTopN(data.userCumulative || [], 10, 'Others');
+    render3DBarChart(
+      'chartUserCumulative',
+      userCum.map(d => d[0]),
+      userCum.map(d => d[1].total),
+      userCum.map(d => d[1].completed),
+      'completed'
+    );
+
+    render3DBarChart(
+      'chartLocationCumulativeL',
+      locCum.map(d => d[0]),
+      locCum.map(d => d[1].total),
+      locCum.map(d => d[1].completed),
+      'total'
+    );
+
+    const locToday = data.locationToday || [];
+    render3DBarChart(
+      'chartLocationToday',
+      locToday.map(d => d[0]),
+      locToday.map(d => d[1].total),
+      locToday.map(d => d[1].completed),
+      'totalToday'
+    );
+
+    const userToday = limitTopN(data.userToday || [], 8, 'Others');
+    render3DBarChart(
+      'chartUserToday',
+      userToday.map(d => d[0]),
+      userToday.map(d => d[1].total),
+      userToday.map(d => d[1].completed),
+      'completedToday'
+    );
+
+    /* ---------- User list (compact cards) ---------- */
+    const listEl = document.getElementById('userDetailList');
+    document.getElementById('userCountTag').textContent =
+      userDetailArr.length + ' user' + (userDetailArr.length === 1 ? '' : 's');
+
+    if (userDetailArr.length === 0) {
+      listEl.innerHTML = '<div class="empty"><span class="big">👤</span>No user data available</div>';
+    } else {
+      listEl.innerHTML = userDetailArr.map(u => `
+        <div class="user-card tap">
+          <div class="user-left">
+            <div class="user-avatar">${escapeHtml(initials(u.user))}</div>
+            <div class="user-name">${escapeHtml(u.user)}</div>
+          </div>
+          <div class="user-right">
+            <div class="pill cum" title="Cumulative: total / completed">
+              <div class="p-label">📊 Cum</div>
+              <div class="p-vals">
+                <span class="t">${u.cumTotal}</span>
+                <span class="sep">/</span>
+                <span class="c">${u.cumCompleted}</span>
+              </div>
+            </div>
+            <div class="pill today" title="Today: total / completed">
+              <div class="p-label">📅 Today</div>
+              <div class="p-vals">
+                <span class="t">${u.todayTotal}</span>
+                <span class="sep">/</span>
+                <span class="c">${u.todayCompleted}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    setStatus('Updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+  }
+
+  /* ---------- Load ---------- */
+  async function loadReport() {
+    setStatus('Loading...', 'loading');
+    clearError();
+
+    try {
+      const data = await fetchReportJSONP();
+      renderReport(data);
+    } catch (err) {
+      console.error('Load failed:', err);
+      showError(err.message || String(err));
+      setStatus('Error', 'error');
+    }
+  }
+
+  /* ---------- Tab switching ---------- */
+  function switchPanel(panelId) {
+    document.querySelectorAll('.panel').forEach(p => {
+      p.classList.toggle('active', p.dataset.panel === panelId);
+    });
+    document.querySelectorAll('.tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.panel === panelId);
+    });
+    document.querySelectorAll('.nav-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.panel === panelId);
+    });
+
+    setTimeout(() => {
+      Object.values(charts).forEach(c => { if (c) c.resize(); });
+    }, 60);
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.querySelectorAll('.tab, .nav-btn').forEach(el => {
+    el.addEventListener('click', () => switchPanel(el.dataset.panel));
+  });
+
+  /* ---------- Pull to refresh ---------- */
+  (function pullToRefresh() {
+    let startY = 0;
+    let pulling = false;
+    const indicator = document.getElementById('pullIndicator');
+    const THRESHOLD = 70;
+
+    window.addEventListener('touchstart', (e) => {
+      if (window.scrollY === 0) {
+        startY = e.touches[0].clientY;
+        pulling = true;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!pulling) return;
+      const delta = e.touches[0].clientY - startY;
+      if (delta > 10 && window.scrollY === 0) {
+        indicator.classList.add('visible');
+        indicator.textContent = delta > THRESHOLD ? '↻ Release to refresh' : '↓ Pull to refresh';
+        indicator.style.transform = `translateY(${Math.min(delta / 3, 30)}px)`;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+      if (!pulling) return;
+      pulling = false;
+      const delta = (e.changedTouches[0].clientY - startY);
+      indicator.classList.remove('visible');
+      indicator.style.transform = '';
+      if (delta > THRESHOLD && window.scrollY === 0) {
+        loadReport();
+      }
+    });
+  })();
+
+  /* ---------- Prevent double-tap zoom on buttons ---------- */
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (e) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) e.preventDefault();
+    lastTouchEnd = now;
+  }, { passive: false });
+
+  /* ---------- Boot ---------- */
+  window.addEventListener('load', loadReport);
+</script>
+</body>
+</html>
