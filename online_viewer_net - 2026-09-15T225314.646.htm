@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<title>Field Survey · Banglar Bari</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+body {
+  background: linear-gradient(160deg, #0b1020 0%, #131a35 45%, #0e1428 100%);
+  min-height: 100vh;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  overflow-x: hidden;
+  color: #e8eefb;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(99,179,237,0.10) 0%, transparent 45%),
+    radial-gradient(circle at 80% 70%, rgba(129,140,248,0.10) 0%, transparent 45%);
+  animation: floatBg 25s ease-in-out infinite alternate;
+  z-index: 0;
+}
+@keyframes floatBg { 0% { transform: translate(0,0) rotate(0deg); } 100% { transform: translate(2%,1%) rotate(3deg); } }
+
+.container {
+  background: rgba(20, 26, 48, 0.72);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  max-width: 520px;
+  width: 100%;
+  border-radius: 22px;
+  padding: 20px 16px 22px;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+  border: 1px solid rgba(120, 160, 255, 0.14);
+  position: relative;
+  z-index: 1;
+}
+
+/* ============ HEADER ============ */
+.header { text-align: center; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 2px solid rgba(120,160,255,0.14); }
+.header h1 {
+  background: linear-gradient(135deg, #7dd3fc, #a78bfa, #fbbf24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0.2px;
+}
+.header p { color: #94a3c4; font-size: 12.5px; margin-top: 5px; font-weight: 600; }
+
+/* ============ SYNC BANNER ============ */
+.sync-banner {
+  background: rgba(52,211,153,0.10);
+  border: 1px solid rgba(52,211,153,0.28);
+  border-radius: 12px;
+  padding: 9px 13px;
+  margin-bottom: 14px;
+  font-size: 12.5px;
+  color: #6ee7b7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  gap: 8px;
+}
+.sync-banner.stale {
+  background: rgba(251,146,60,0.10);
+  border-color: rgba(251,146,60,0.30);
+  color: #fdba74;
+}
+.sync-banner .refresh-link {
+  color: #93c5fd;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 700;
+  flex-shrink: 0;
+  font-size: 12.5px;
+}
+.sync-banner #syncText { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ============ FORM ============ */
+.form-group { margin-bottom: 14px; }
+label { display: block; font-size: 13.5px; font-weight: 700; color: #dbe4fa; margin-bottom: 7px; letter-spacing: 0.1px; }
+.required { color: #fca5a5; }
+
+select, input[type="text"], input[type="number"] {
+  width: 100%;
+  padding: 13px 14px;
+  font-size: 15.5px;
+  border: 2px solid rgba(140,170,255,0.14);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.045);
+  color: #f1f5ff;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+input::placeholder { color: rgba(190,205,235,0.45); }
+select option { background: #131a35; color: #f1f5ff; font-size: 15px; }
+input:focus, select:focus {
+  outline: none;
+  border-color: rgba(125,180,250,0.65);
+  background: rgba(255,255,255,0.075);
+  box-shadow: 0 0 0 4px rgba(99,179,237,0.12);
+}
+input:disabled, select:disabled { opacity: 0.45; cursor: not-allowed; background: rgba(255,255,255,0.02); }
+
+/* ============ BUTTONS ============ */
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15.5px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.25s ease;
+  letter-spacing: 0.2px;
+  box-shadow: 0 4px 15px rgba(99,102,241,0.3);
+}
+.submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99,102,241,0.45); }
+.submit-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+.btn-cancel {
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.06);
+  color: #c4cfe6;
+  border: 1px solid rgba(140,170,255,0.18);
+  border-radius: 11px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-cancel:hover { background: rgba(255,255,255,0.10); color: #fff; }
+
+/* ============ MESSAGES ============ */
+.message {
+  display: none;
+  padding: 13px 16px;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: 700;
+  margin-top: 14px;
+  white-space: pre-line;
+  font-size: 14px;
+  animation: slideUp 0.3s ease;
+  line-height: 1.5;
+}
+.message.success { background: rgba(52,211,153,0.14); color: #6ee7b7; border: 1px solid rgba(52,211,153,0.28); }
+.message.error { background: rgba(248,113,113,0.14); color: #fca5a5; border: 1px solid rgba(248,113,113,0.28); }
+.message.info { background: rgba(96,165,250,0.14); color: #93c5fd; border: 1px solid rgba(96,165,250,0.28); }
+.message.warning { background: rgba(251,146,60,0.14); color: #fdba74; border: 1px solid rgba(251,146,60,0.28); }
+@keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.hidden { display: none !important; }
+.loading {
+  display: inline-block;
+  width: 15px; height: 15px;
+  border: 2.5px solid rgba(255,255,255,0.25);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============ SEARCH ============ */
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.05);
+  border: 2px solid rgba(140,170,255,0.14);
+  border-radius: 12px;
+  padding: 0 14px;
+  transition: all 0.2s;
+  margin-bottom: 8px;
+}
+.search-box:focus-within { border-color: rgba(125,180,250,0.65); background: rgba(255,255,255,0.075); box-shadow: 0 0 0 4px rgba(99,179,237,0.12); }
+.search-icon { font-size: 16px; color: rgba(200,215,240,0.55); margin-right: 8px; flex-shrink: 0; }
+.search-box input { flex: 1; background: transparent; border: none; padding: 13px 0; color: #f1f5ff; font-size: 15.5px; font-weight: 500; outline: none; width: 100%; }
+.search-box input::placeholder { color: rgba(190,205,235,0.42); font-size: 14.5px; }
+.search-clear {
+  background: rgba(248,113,113,0.18);
+  color: #fca5a5;
+  border: none;
+  border-radius: 50%;
+  width: 24px; height: 24px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.search-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+  color: #94a3c4;
+  padding: 0 4px 8px 4px;
+  min-height: 16px;
+}
+#searchResultCount { color: #93c5fd; font-weight: 700; }
+
+/* ============ RECORDS ============ */
+.records-container { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
+.record-card {
+  background: rgba(30, 40, 72, 0.55);
+  border: 1px solid rgba(140,170,255,0.14);
+  border-radius: 14px;
+  padding: 15px;
+  transition: all 0.25s ease;
+}
+.record-card:hover { border-color: rgba(140,170,255,0.32); box-shadow: 0 4px 20px rgba(99,102,241,0.10); }
+.records-container.has-active .record-card:not(.editing) { display: none !important; }
+.record-card.editing {
+  border-color: rgba(125,180,250,0.7);
+  box-shadow: 0 0 0 3px rgba(99,179,237,0.14), 0 6px 24px rgba(99,102,241,0.18);
+  background: rgba(45,60,100,0.65);
+}
+
+.editing-banner {
+  background: linear-gradient(135deg, rgba(99,179,237,0.16), rgba(167,139,250,0.16));
+  border: 1px solid rgba(125,180,250,0.35);
+  border-radius: 12px;
+  padding: 11px 15px;
+  margin-bottom: 12px;
+  color: #93c5fd;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.editing-banner .btn-back {
+  background: rgba(255,255,255,0.10);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ============ RECORD HEADER ============ */
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed rgba(140,170,255,0.18);
+  gap: 8px;
+}
+.record-beneficiary { font-size: 16px; font-weight: 800; color: #f1f5ff; letter-spacing: 0.15px; }
+.record-ref { font-size: 12px; color: #fbbf24; font-weight: 700; margin-top: 3px; letter-spacing: 0.2px; }
+.edit-btn {
+  padding: 7px 14px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+  border: none;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(59,130,246,0.3);
+}
+.edit-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(59,130,246,0.45); }
+.edit-btn.active { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 3px 10px rgba(239,68,68,0.3); }
+
+/* ============ READONLY GRID ============ */
+.readonly-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; margin-bottom: 10px; }
+.ro-item { font-size: 12.5px; }
+.ro-label {
+  color: #93a5c8;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+  font-weight: 700;
+}
+.ro-value { color: #dbe4fa; font-weight: 600; word-break: break-word; font-size: 13.5px; line-height: 1.35; }
+
+/* ============ NREGA SECTION ============ */
+.nrega-section {
+  margin-top: 12px;
+  padding: 13px 14px;
+  border-radius: 12px;
+  background: rgba(96,165,250,0.07);
+  border: 1px solid rgba(96,165,250,0.22);
+  animation: slideDown 0.25s ease;
+}
+.nrega-section.nrega-hit { background: rgba(52,211,153,0.08); border-color: rgba(52,211,153,0.30); }
+.nrega-section.nrega-miss { background: rgba(248,113,113,0.07); border-color: rgba(248,113,113,0.28); }
+.nrega-title {
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #93c5fd;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nrega-section.nrega-hit .nrega-title { color: #6ee7b7; }
+.nrega-section.nrega-miss .nrega-title { color: #fca5a5; }
+.nrega-badge {
+  background: rgba(52,211,153,0.22);
+  color: #6ee7b7;
+  font-size: 10.5px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  font-weight: 800;
+}
+.nrega-empty { font-size: 13px; color: #93a5c8; padding: 6px 0; line-height: 1.5; }
+.nrega-section .readonly-grid { margin-bottom: 0; }
+
+.nrega-applicant {
+  background: rgba(10,15,32,0.35);
+  border-radius: 10px;
+  padding: 11px 12px;
+  margin-top: 8px;
+  border: 1px solid rgba(140,170,255,0.08);
+}
+.nrega-applicant:first-of-type { margin-top: 0; }
+.nrega-applicant-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed rgba(140,170,255,0.14);
+}
+.nrega-applicant-num {
+  background: rgba(96,165,250,0.22);
+  color: #93c5fd;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 5px;
+  letter-spacing: 0.4px;
+}
+.nrega-sansad-tag { color: #fbbf24; font-size: 12px; font-weight: 700; }
+.nrega-status-tag {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 5px;
+  background: rgba(52,211,153,0.20);
+  color: #6ee7b7;
+  letter-spacing: 0.4px;
+}
+.nrega-status-tag.deleted { background: rgba(248,113,113,0.20); color: #fca5a5; }
+.nrega-applicant-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+}
+
+/* ============ EDIT PANEL ============ */
+.edit-panel {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 2px solid rgba(125,180,250,0.28);
+  animation: slideDown 0.25s ease;
+}
+@keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+.edit-panel h4 {
+  color: #93c5fd;
+  font-size: 14px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-weight: 800;
+}
+
+.edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.edit-field { display: flex; flex-direction: column; }
+.edit-field.full { grid-column: 1 / -1; }
+.edit-field label {
+  font-size: 11.5px;
+  color: #a5b4d4;
+  margin-bottom: 5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+.edit-field input, .edit-field select { padding: 11px 12px; font-size: 14.5px; }
+.edit-field input[readonly] {
+  background: rgba(251,191,36,0.10);
+  color: #fbbf24;
+  font-weight: 700;
+  font-family: 'SF Mono', Consolas, monospace;
+  letter-spacing: 0.5px;
+  border-color: rgba(251,191,36,0.22);
+}
+
+/* 🔒 locked field hint */
+.edit-field.locked label { color: #64748b; }
+.edit-field.locked::after {
+  content: '🔒 auto-disabled';
+  display: block;
+  font-size: 10px;
+  color: #64748b;
+  margin-top: 4px;
+  letter-spacing: 0.3px;
+}
+
+/* ⚠️ invalid field */
+.edit-field.invalid input,
+.edit-field.invalid select {
+  border-color: #f87171 !important;
+  background: rgba(248,113,113,0.08) !important;
+}
+.edit-field.invalid label { color: #fca5a5; }
+
+/* ✅ picker active */
+.edit-field.picker-active label { color: #6ee7b7; }
+.edit-field.picker-active select {
+  border-color: rgba(52,211,153,0.55);
+  background: rgba(52,211,153,0.08);
+}
+.applicant-note {
+  font-size: 11px;
+  margin-top: 4px;
+  display: block;
+  color: #6ee7b7;
+  line-height: 1.4;
+  font-weight: 600;
+}
+.applicant-note.warn { color: #fdba74; }
+.applicant-note.miss { color: #fca5a5; }
+
+.autofill-hint {
+  font-size: 11px;
+  margin-top: 4px;
+  display: block;
+  color: #93c5fd;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+/* ============ PHOTO UPLOAD ============ */
+.photo-upload {
+  border: 2px dashed rgba(140,170,255,0.22);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  background: rgba(255,255,255,0.03);
+  position: relative;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+.photo-upload:hover { border-color: rgba(125,180,250,0.55); background: rgba(96,165,250,0.06); }
+.photo-upload.uploading { border-color: #fdba74; background: rgba(251,146,60,0.08); pointer-events: none; }
+.photo-upload.success { border-color: #34d399; background: rgba(52,211,153,0.10); }
+.photo-upload.success .ph-text { color: #6ee7b7; font-weight: 700; }
+.photo-upload img { max-width: 100%; max-height: 90px; border-radius: 6px; }
+.photo-upload .ph-icon { font-size: 24px; }
+.photo-upload .ph-text { font-size: 11.5px; color: rgba(190,205,235,0.55); margin-top: 5px; font-weight: 600; }
+.photo-remove {
+  position: absolute;
+  top: -8px; right: -8px;
+  background: rgba(239,68,68,0.92);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 24px; height: 24px;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 3;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+}
+.upload-progress-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: rgba(255,255,255,0.08); overflow: hidden; }
+.upload-progress-bar .fill { width: 0%; height: 100%; background: linear-gradient(90deg, #fdba74, #34d399); transition: width 0.3s ease; }
+.upload-spinner {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30px; height: 30px;
+  border: 3px solid rgba(251,191,36,0.25);
+  border-top-color: #fbbf24;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  z-index: 2;
+}
+.upload-check {
+  position: absolute;
+  top: 6px; right: 6px;
+  background: #34d399;
+  color: #fff;
+  border-radius: 50%;
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  z-index: 3;
+}
+
+.mandatory-photo-label { display: flex; align-items: center; gap: 6px; }
+.mandatory-photo-label .dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #f87171;
+  animation: dotPulse 1.5s ease infinite;
+}
+.mandatory-photo-label .dot.ok { background: #34d399; animation: none; }
+@keyframes dotPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+/* ============ BANNERS ============ */
+.required-banner {
+  background: rgba(251,146,60,0.12);
+  border: 1px solid rgba(251,146,60,0.30);
+  border-radius: 10px;
+  padding: 10px 13px;
+  margin-bottom: 12px;
+  font-size: 12.5px;
+  color: #fdba74;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* ============ META ============ */
+.meta-info {
+  font-size: 11.5px;
+  color: rgba(160,180,215,0.55);
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(140,170,255,0.14);
+  display: flex;
+  justify-content: space-between;
+}
+
+.save-row { display: flex; gap: 10px; margin-top: 14px; }
+.save-row .submit-btn { margin-top: 0; flex: 1; font-size: 14.5px; padding: 13px; }
+.save-row .btn-cancel { padding: 13px 18px; font-size: 13.5px; }
+
+/* ============ EMPTY STATES ============ */
+.no-records { text-align: center; padding: 32px 18px; color: #94a3c4; font-size: 14px; }
+.no-records .icon { font-size: 42px; margin-bottom: 10px; }
+.no-results-search { text-align: center; padding: 32px 18px; color: #94a3c4; font-size: 14px; }
+.no-results-search .icon { font-size: 42px; margin-bottom: 10px; }
+.no-results-search .query { color: #fbbf24; font-weight: 700; }
+
+/* ============ ANIMATIONS ============ */
+.shake { animation: shake 0.5s ease; }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 400px) {
+  .header h1 { font-size: 18px; }
+  .edit-grid { grid-template-columns: 1fr; }
+  .readonly-grid { grid-template-columns: 1fr; }
+  .nrega-applicant-body { grid-template-columns: 1fr; }
+  .container { padding: 16px 13px 18px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container" id="surveyContainer">
+  <div class="header">
+    <h1>📋 BBG VS JOBCARD MAPPING</h1>
+    <p>For technical Support plz contact @Akram Mobile-⚠️9733280384</p>
+  </div>
+
+  <div class="sync-banner" id="syncBanner">
+    <span id="syncText"><span class="loading"></span> Loading data...</span>
+    <span class="refresh-link" onclick="syncFromServer(true)">Refresh</span>
+  </div>
+
+  <div class="form-group">
+    <label>📍 Select Location <span class="required">*</span></label>
+    <select id="locationSelect" onchange="onLocationChange()">
+      <option value="">-- Select Location --</option>
+    </select>
+  </div>
+
+  <div id="searchWrapper" class="hidden">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search name, ID, mobile, job card..." oninput="onSearchInput()" autocomplete="off">
+      <button class="search-clear hidden" id="searchClear" onclick="clearSearch()">✕</button>
+    </div>
+    <div class="search-meta">
+      <span id="searchResultCount"></span>
+      <span id="searchHint" class="hidden">⚡ Instant</span>
+    </div>
+  </div>
+
+  <div id="editingBanner" class="editing-banner hidden">
+    <span>✏️ <strong>Editing</strong> — others hidden</span>
+    <button class="btn-back" onclick="closeAllEdits()">← Back</button>
+  </div>
+
+  <div id="recordsContainer" class="records-container"></div>
+  <div id="noRecords" class="hidden no-records">
+    <div class="icon">📭</div>
+    <div>No records found for this location.</div>
+  </div>
+
+  <div id="message" class="message"></div>
+</div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyMOAvXfKzRqFmInYIrvYmtw-AhPivY7o6LKfbnaFyLc4sMVv2PI3FTN5Ebub9v0GCHyg/exec';
+
+// ============================================================
+// APP STATE
+// ============================================================
+const APP = {
+  currentUser: null,
+  sessionToken: null,
+  allRecords: [],
+  existingJobCards: new Set(),
+  nregaJobCards: new Map(),
+  nregaBySansad: new Map(),
+  filteredRecords: [],
+  currentLocation: '',
+  currentQuery: '',
+  editingRow: null,
+  lastSynced: null,
+  isSyncing: false
+};
+
+const REMARK_OPTIONS = [
+  'Veified & Found Ok',
+  'Benificiary GRGC/Job Card is deleted',
+  'GRGC/Job Card not available'
+];
+
+// ============================================================
+// FETCH HELPER
+// ============================================================
+async function apiCall(params, timeoutMs = 45000) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const r = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(params),
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    return await r.json();
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (err.name === 'AbortError') {
+      throw new Error('Request timed out after ' + Math.round(timeoutMs / 1000) + 's. Please check your connection and try again.');
+    }
+    throw err;
+  }
+}
+
+// ============================================================
+// IMAGE COMPRESSION
+// ============================================================
+function compressImage(file, maxWidth = 1280, quality = 0.72) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          let { width, height } = img;
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob((blob) => {
+            if (blob) resolve(blob);
+            else reject(new Error('Image compression failed'));
+          }, 'image/jpeg', quality);
+        } catch (err) { reject(err); }
+      };
+      img.onerror = () => reject(new Error('Invalid image file'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsDataURL(file);
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const t = localStorage.getItem('sessionToken');
+  const u = localStorage.getItem('currentUser');
+
+  if (!t || !u) {
+    document.getElementById('message').className = 'message error';
+    document.getElementById('message').style.display = 'block';
+    document.getElementById('message').textContent = '❌ Not authenticated. Please log in from the main app.';
+    document.getElementById('syncBanner').classList.add('stale');
+    document.getElementById('syncText').textContent = '❌ Not authenticated';
+    return;
+  }
+
+  APP.sessionToken = t;
+  APP.currentUser = JSON.parse(u);
+  syncFromServer(false);
+});
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+function showMessage(text, type = 'info') {
+  const m = document.getElementById('message');
+  m.textContent = text;
+  m.className = 'message ' + type;
+  m.style.display = 'block';
+  clearTimeout(m._t);
+  m._t = setTimeout(() => m.style.display = 'none', 6000);
+}
+function hideMessage() { document.getElementById('message').style.display = 'none'; }
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+function formatSyncTime(date) {
+  const d = date || new Date();
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+function normalizeSansad(v) {
+  if (v === null || v === undefined) return '';
+  const m = String(v).match(/(\d+)/);
+  return m ? String(parseInt(m[1], 10)) : '';
+}
+
+function normalizeJobCardNo(v) {
+  if (v === null || v === undefined) return '';
+  return String(v)
+    .replace(/\u00A0/g, ' ')
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
+    .replace(/\s*\/\s*/g, '/')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toUpperCase();
+}
+
+function normalizeMobile(v) {
+  if (v === null || v === undefined) return '';
+  const digits = String(v).replace(/\D/g, '');
+  if (digits.length === 0) return '';
+  if (digits.length >= 10) return digits.slice(-10);
+  return digits;
+}
+
+// ✅ Completed-row check (frontend filter)
+function isPending(rec) {
+  return ((rec.remark || '').trim() === '');
+}
+
+// ============================================================
+// SYNC
+// ============================================================
+async function syncFromServer(showToast) {
+  if (APP.isSyncing) return;
+  APP.isSyncing = true;
+  const banner = document.getElementById('syncBanner');
+  const text = document.getElementById('syncText');
+  banner.classList.remove('stale');
+  text.innerHTML = '<span class="loading"></span> Loading...';
+
+  try {
+    const res = await apiCall({ action: 'get_all_housing_data', sessionToken: APP.sessionToken });
+    if (!res.success) {
+      banner.classList.add('stale');
+      text.textContent = '❌ Failed: ' + (res.message || 'Error');
+      showMessage('❌ Sync failed: ' + res.message, 'error');
+      APP.isSyncing = false;
+      return;
+    }
+
+    APP.allRecords = res.data || [];
+    APP.existingJobCards = new Set(res.existingJobCards || []);
+    APP.lastSynced = new Date();
+
+    try {
+      const nrega = await apiCall({ action: 'get_nrega_jobcards', sessionToken: APP.sessionToken });
+      if (nrega && nrega.success && Array.isArray(nrega.data)) {
+        APP.nregaJobCards = new Map();
+        APP.nregaBySansad = new Map();
+
+        nrega.data.forEach(r => {
+          if (r.jobCardNo) {
+            const key = normalizeJobCardNo(r.jobCardNo);
+            if (!key) return;
+            if (!APP.nregaJobCards.has(key)) APP.nregaJobCards.set(key, []);
+            APP.nregaJobCards.get(key).push(r);
+          }
+          const sNum = normalizeSansad(r.sansad);
+          if (sNum) {
+            if (!APP.nregaBySansad.has(sNum)) APP.nregaBySansad.set(sNum, []);
+            APP.nregaBySansad.get(sNum).push(r);
+          }
+        });
+
+        console.log('✅ NREGA loaded: ' + nrega.count + ' rows | ' +
+                    APP.nregaJobCards.size + ' unique job cards');
+      } else if (nrega && !nrega.success) {
+        console.warn('❌ NREGA fetch error:', nrega.message);
+      }
+    } catch (nErr) {
+      console.warn('NREGA fetch failed (non-blocking):', nErr);
+    }
+
+    populateLocationDropdown(res.locations || []);
+
+    if (APP.currentLocation) {
+      applyFilters();
+      document.getElementById('searchWrapper').classList.remove('hidden');
+    }
+
+    // ✅ Banner: pending + done counts (frontend-computed)
+    const totalAll = APP.allRecords.length;
+    const pendingAll = APP.allRecords.filter(isPending).length;
+    const doneAll = totalAll - pendingAll;
+    const doneLabel = doneAll > 0 ? ` · ✅ <strong>${doneAll}</strong> done` : '';
+    banner.classList.remove('stale');
+    text.innerHTML = `📊 <strong>${pendingAll}</strong> pending${doneLabel} · ${formatSyncTime(APP.lastSynced)}`;
+
+    if (showToast) showMessage('✅ Data synced!', 'success');
+  } catch (err) {
+    banner.classList.add('stale');
+    text.textContent = '❌ Network error';
+    showMessage('❌ Sync failed: ' + err.message, 'error');
+  }
+
+  APP.isSyncing = false;
+}
+
+function populateLocationDropdown(locations) {
+  const sel = document.getElementById('locationSelect');
+  const currentVal = sel.value;
+  sel.innerHTML = '<option value="">-- Select Location --</option>';
+  locations.forEach(loc => {
+    const o = document.createElement('option');
+    o.value = loc; o.textContent = loc;
+    sel.appendChild(o);
+  });
+  if (currentVal && locations.includes(currentVal)) sel.value = currentVal;
+}
+
+// ============================================================
+// LOCATION CHANGE
+// ============================================================
+function onLocationChange() {
+  const location = document.getElementById('locationSelect').value;
+  APP.currentLocation = location;
+  APP.currentQuery = '';
+  APP.editingRow = null;
+
+  const container = document.getElementById('recordsContainer');
+  container.innerHTML = '';
+  container.classList.remove('has-active');
+  document.getElementById('editingBanner').classList.add('hidden');
+  document.getElementById('noRecords').classList.add('hidden');
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchClear').classList.add('hidden');
+  document.getElementById('searchHint').classList.add('hidden');
+
+  if (!location) {
+    document.getElementById('searchWrapper').classList.add('hidden');
+    document.getElementById('searchResultCount').textContent = '';
+    return;
+  }
+  document.getElementById('searchWrapper').classList.remove('hidden');
+  applyFilters();
+}
+
+// ============================================================
+// FILTER — ✅ now hides completed rows (REMARK filled)
+// ============================================================
+function applyFilters() {
+  const location = APP.currentLocation;
+  const query = APP.currentQuery.toLowerCase().trim();
+
+  // ✅ Only show pending rows (REMARK empty) for this location
+  let filtered = APP.allRecords.filter(r =>
+    r.location === location && isPending(r)
+  );
+
+  if (query) {
+    filtered = filtered.filter(rec => {
+      const haystack = [
+        rec.beneficiaryName, rec.referenceId, rec.mobileNumber,
+        rec.fatherHusbandName, rec.jobCardNo, rec.sansad,
+        rec.epicNo, rec.aadharNo, rec.nameAsPerJobCard,
+        rec.guardianAsPerJobCard, rec.jobCardVbGram,
+        rec.nameAsPerAadhar, rec.guardianAsPerAadhar, rec.mobileNo, rec.remark
+      ].filter(Boolean).join(' ').toLowerCase();
+      return haystack.includes(query);
+    });
+  }
+
+  APP.filteredRecords = filtered;
+  renderRecords(filtered);
+
+  const countEl = document.getElementById('searchResultCount');
+  const totalPendingForLocation = APP.allRecords.filter(r =>
+    r.location === location && isPending(r)
+  ).length;
+
+  if (query) {
+    countEl.textContent = filtered.length === 0
+      ? `❌ No matches for "${APP.currentQuery}"`
+      : `🔍 ${filtered.length} of ${totalPendingForLocation}`;
+  } else {
+    countEl.textContent = `📊 ${filtered.length} pending record${filtered.length !== 1 ? 's' : ''}`;
+  }
+
+  if (filtered.length === 0 && !query) {
+    document.getElementById('noRecords').classList.remove('hidden');
+  } else {
+    document.getElementById('noRecords').classList.add('hidden');
+  }
+}
+
+// ============================================================
+// SEARCH
+// ============================================================
+let searchDebounceTimer = null;
+function onSearchInput() {
+  const query = document.getElementById('searchInput').value.trim();
+  APP.currentQuery = query;
+  document.getElementById('searchClear').classList.toggle('hidden', !query);
+  document.getElementById('searchHint').classList.toggle('hidden', !query);
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(() => applyFilters(), 80);
+}
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  APP.currentQuery = '';
+  document.getElementById('searchClear').classList.add('hidden');
+  document.getElementById('searchHint').classList.add('hidden');
+  applyFilters();
+}
+
+// ============================================================
+// RENDER RECORDS
+// ============================================================
+function renderRecords(records) {
+  const c = document.getElementById('recordsContainer');
+  c.innerHTML = '';
+  c.classList.remove('has-active');
+  if (records.length === 0) {
+    const noRes = document.createElement('div');
+    noRes.className = 'no-results-search';
+    noRes.innerHTML = `<div class="icon">🔍</div><div>No records match <span class="query">"${esc(APP.currentQuery)}"</span></div>`;
+    c.appendChild(noRes);
+    return;
+  }
+  records.forEach(rec => c.appendChild(buildCard(rec)));
+}
+
+// ============================================================
+// NREGA LOOKUP — tolerant for 603/603A
+// ============================================================
+function findNregaList(jobCardNo) {
+  const key = normalizeJobCardNo(jobCardNo);
+  if (!key) return [];
+
+  let list = APP.nregaJobCards.get(key);
+  if (list) return list;
+
+  const stripTrailingLetters = s => s.replace(/(\/\d+)[A-Z]+$/, '$1');
+  const keyBase = stripTrailingLetters(key);
+
+  for (const [k, v] of APP.nregaJobCards.entries()) {
+    if (stripTrailingLetters(k) === keyBase) return v;
+  }
+
+  return [];
+}
+
+function renderNregaSection(rec) {
+  const jcRaw = (rec.jobCardNo || '').trim();
+  const jc = normalizeJobCardNo(jcRaw);
+
+  if (!jc) {
+    return `
+      <div class="nrega-section">
+        <div class="nrega-title">📋 NREGA Jobcard Details</div>
+        <div class="nrega-empty">⚠️ No Job Card saved for this beneficiary.</div>
+      </div>
+    `;
+  }
+
+  const nregaList = findNregaList(jc);
+
+  if (nregaList.length === 0) {
+    return `
+      <div class="nrega-section nrega-miss">
+        <div class="nrega-title">📋 NREGA Jobcard Details</div>
+        <div class="nrega-empty">❌ <strong>${esc(jcRaw)}</strong> not found in NREGAJOBCARD sheet.</div>
+      </div>
+    `;
+  }
+
+  const applicantsHtml = nregaList.map((n, idx) => {
+    const statusUpper = (n.status || '').toUpperCase();
+    const isDeleted = statusUpper.indexOf('DELETED') !== -1;
+    return `
+      <div class="nrega-applicant">
+        <div class="nrega-applicant-head">
+          <span class="nrega-applicant-num">#${idx + 1}</span>
+          ${n.sansad ? `<span class="nrega-sansad-tag">${esc(n.sansad)}</span>` : ''}
+          <span class="nrega-status-tag ${isDeleted ? 'deleted' : ''}">${esc(n.status) || 'N/A'}</span>
+        </div>
+        <div class="nrega-applicant-body">
+          <div class="ro-item"><div class="ro-label">Name of Applicant</div><div class="ro-value">${esc(n.nameOfApplicant) || '—'}</div></div>
+          <div class="ro-item"><div class="ro-label">Father/Husband Name</div><div class="ro-value">${esc(n.fatherHusbandName) || '—'}</div></div>
+          ${n.gender ? `<div class="ro-item"><div class="ro-label">Gender</div><div class="ro-value">${esc(n.gender)}</div></div>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="nrega-section nrega-hit">
+      <div class="nrega-title">📋 NREGA Jobcard Details <span class="nrega-badge">${nregaList.length} APPLICANT${nregaList.length > 1 ? 'S' : ''}</span></div>
+      ${applicantsHtml}
+    </div>
+  `;
+}
+
+// ============================================================
+// BUILD CARD
+// ============================================================
+function buildCard(rec) {
+  const card = document.createElement('div');
+  card.className = 'record-card';
+  card.id = 'card-' + rec.rowIndex;
+
+  const hasEpic = !!rec.epicPhotoLink;
+  const hasAadhar = !!rec.aadharPhotoLink;
+
+  const epicPreview = hasEpic
+    ? `<img src="${esc(rec.epicPhotoLink)}" alt="EPIC">
+       <button class="photo-remove" onclick="event.stopPropagation();removePhoto(${rec.rowIndex},'epic')">✕</button>
+       <div class="upload-check">✓</div>`
+    : `<span class="ph-icon">📷</span><span class="ph-text">Tap for EPIC Photo</span>`;
+
+  const aadharPreview = hasAadhar
+    ? `<img src="${esc(rec.aadharPhotoLink)}" alt="Aadhar">
+       <button class="photo-remove" onclick="event.stopPropagation();removePhoto(${rec.rowIndex},'aadhar')">✕</button>
+       <div class="upload-check">✓</div>`
+    : `<span class="ph-icon">📷</span><span class="ph-text">Tap for Aadhar Photo</span>`;
+
+  const sansadMatch = (rec.sansad || '').match(/(\d+)/);
+  const sansadNumVal = sansadMatch ? sansadMatch[1] : '';
+  const serialVal = extractSerial(rec.jobCardNo);
+
+  const savedMobile = (rec.mobileNo || '').trim();
+  const defaultMobile = normalizeMobile(rec.mobileNumber || '');
+  const prefilledMobile = savedMobile || defaultMobile;
+  const showAutofillHint = !savedMobile && defaultMobile;
+
+  card.innerHTML = `
+    <div class="record-header">
+      <div style="min-width:0;">
+        <div class="record-beneficiary">${esc(rec.beneficiaryName)}</div>
+        <div class="record-ref">🆔 ${esc(rec.referenceId)}</div>
+      </div>
+      <button class="edit-btn" id="editbtn-${rec.rowIndex}" onclick="toggleEdit(${rec.rowIndex})">✏️ Edit</button>
+    </div>
+
+    <div class="readonly-grid">
+      <div class="ro-item"><div class="ro-label">Location</div><div class="ro-value">${esc(rec.location)}</div></div>
+      <div class="ro-item"><div class="ro-label">Father/Husband</div><div class="ro-value">${esc(rec.fatherHusbandName)}</div></div>
+      <div class="ro-item"><div class="ro-label">Mobile</div><div class="ro-value">${esc(rec.mobileNumber)}</div></div>
+      <div class="ro-item"><div class="ro-label">Job Card VB-G-RAM-G</div><div class="ro-value">${esc(rec.jobCardVbGram) || '—'}</div></div>
+      <div class="ro-item" style="grid-column:1/-1;"><div class="ro-label">Status of Job Card After Table top</div><div class="ro-value">${esc(rec.statusJobCard)}</div></div>
+      ${rec.matchBBG ? `<div class="ro-item"><div class="ro-label">Job Card Matches BBG</div><div class="ro-value">${esc(rec.matchBBG)}</div></div>` : ''}
+      ${rec.hasJobCard ? `<div class="ro-item"><div class="ro-label">Has Job Card</div><div class="ro-value">${esc(rec.hasJobCard)}</div></div>` : ''}
+      ${rec.jobCardExists ? `<div class="ro-item"><div class="ro-label">Job Card Exists</div><div class="ro-value">${esc(rec.jobCardExists)}</div></div>` : ''}
+      ${rec.includedExcluded ? `<div class="ro-item"><div class="ro-label">Included/Excluded</div><div class="ro-value">${esc(rec.includedExcluded)}</div></div>` : ''}
+    </div>
+
+    ${renderNregaSection(rec)}
+
+    <div class="edit-panel hidden" id="editpanel-${rec.rowIndex}">
+      <h4>✏️ Editable Fields</h4>
+      <div class="required-banner">⚠️ Both <strong>EPIC Photo</strong> and <strong>Aadhar Photo</strong> are mandatory.<br>⚠️ <strong>Mobile No</strong> (10 digits), <strong>AADHAR No</strong> (12 digits) and <strong>Remark</strong> are required.</div>
+      <div class="edit-grid">
+
+        <div class="edit-field">
+          <label>DOES JOB CARD MATCH BBG? <span style="color:#fca5a5;">*</span></label>
+          <select id="matchbbg-${rec.rowIndex}" onchange="onMatchBBGChange(${rec.rowIndex})">${buildYesNoOptions(rec.matchBBG)}</select>
+        </div>
+        <div class="edit-field" id="hasjcField-${rec.rowIndex}">
+          <label>IF NO — HAS JOB CARD?</label>
+          <select id="hasjc-${rec.rowIndex}">${buildYesNoOptions(rec.hasJobCard)}</select>
+        </div>
+        <div class="edit-field">
+          <label>IF YES — JOB CARD EXISTS?</label>
+          <select id="jcexists-${rec.rowIndex}" onchange="onJobCardExistsChange(${rec.rowIndex})">${buildYesNoOptions(rec.jobCardExists)}</select>
+        </div>
+        <div class="edit-field" id="incexcField-${rec.rowIndex}">
+          <label>APPLICANT INCLUDED/EXCLUDED</label>
+          <select id="incexc-${rec.rowIndex}">${buildIncludedExcludedOptions(rec.includedExcluded)}</select>
+        </div>
+
+        <div class="edit-field">
+          <label>SANSAD <span style="color:#fca5a5;">*</span></label>
+          <select id="sansadsel-${rec.rowIndex}" onchange="onSansadSelectChange(${rec.rowIndex})">
+            <option value="">-- Select --</option>
+            ${buildSansadOptions(sansadNumVal)}
+          </select>
+        </div>
+        <div class="edit-field">
+          <label>SERIAL NO <span style="color:#fca5a5;">*</span></label>
+          <input type="text" id="serialnum-${rec.rowIndex}" value="${esc(serialVal)}" placeholder="e.g. 15 or 603A" oninput="onSerialChange(${rec.rowIndex})">
+        </div>
+
+        <div class="edit-field full">
+          <label>JOB CARD NO (Auto)</label>
+          <input type="text" id="jobcard-${rec.rowIndex}" value="${esc(rec.jobCardNo)}" readonly>
+          <small id="jcstatus-${rec.rowIndex}" style="font-size:11px;margin-top:5px;display:block;"></small>
+        </div>
+
+        <div class="edit-field full" id="applicantPickerField-${rec.rowIndex}">
+          <label>SELECT APPLICANT (from NREGA Job Card)</label>
+          <select id="applicantPicker-${rec.rowIndex}" onchange="onApplicantPickerChange(${rec.rowIndex})">
+            <option value="">-- Select Applicant --</option>
+          </select>
+          <small id="applicantPickerNote-${rec.rowIndex}" class="applicant-note"></small>
+        </div>
+
+        <div class="edit-field">
+          <label>NAME AS PER JOB CARD</label>
+          <input type="text" id="namejc-${rec.rowIndex}" value="${esc(rec.nameAsPerJobCard)}">
+        </div>
+        <div class="edit-field">
+          <label>GURDIAN AS PER JOB CARD</label>
+          <input type="text" id="guardianjc-${rec.rowIndex}" value="${esc(rec.guardianAsPerJobCard)}">
+        </div>
+
+        <div class="edit-field">
+          <label>EPIC NO</label>
+          <input type="text" id="epicno-${rec.rowIndex}" value="${esc(rec.epicNo)}">
+        </div>
+        <div class="edit-field" id="aadharnoField-${rec.rowIndex}">
+          <label>AADHAR NO <span style="color:#fca5a5;">*</span></label>
+          <input type="text" id="aadharno-${rec.rowIndex}" value="${esc(rec.aadharNo)}" placeholder="12 digits" maxlength="12" oninput="onAadharInput(${rec.rowIndex})">
+          <small id="aadharhint-${rec.rowIndex}" style="font-size:11px;margin-top:4px;display:block;color:#94a3c4;"></small>
+        </div>
+
+        <div class="edit-field">
+          <label>NAME AS PER AADHAR</label>
+          <input type="text" id="nameadhar-${rec.rowIndex}" value="${esc(rec.nameAsPerAadhar)}">
+        </div>
+        <div class="edit-field">
+          <label>GURDIAN AS PER AADHAR</label>
+          <input type="text" id="guardianadhar-${rec.rowIndex}" value="${esc(rec.guardianAsPerAadhar)}">
+        </div>
+
+        <div class="edit-field" id="mobilenoField-${rec.rowIndex}">
+          <label>MOBILE NO <span style="color:#fca5a5;">*</span></label>
+          <input type="text" id="mobileno-${rec.rowIndex}" value="${esc(prefilledMobile)}" placeholder="10 digits" maxlength="10" oninput="onMobileInput(${rec.rowIndex})">
+          <small id="mobilehint-${rec.rowIndex}" style="font-size:11px;margin-top:4px;display:block;color:#94a3c4;"></small>
+          ${showAutofillHint ? `<small class="autofill-hint">ℹ️ Auto-filled from record · you can edit</small>` : ''}
+        </div>
+
+        <div class="edit-field" id="remarkField-${rec.rowIndex}">
+          <label>REMARK <span style="color:#fca5a5;">*</span></label>
+          <select id="remark-${rec.rowIndex}">${buildRemarkOptions(rec.remark)}</select>
+          <small id="remarkhint-${rec.rowIndex}" style="font-size:11px;margin-top:4px;display:block;color:#94a3c4;"></small>
+        </div>
+
+        <div class="edit-field">
+          <label class="mandatory-photo-label">EPIC PHOTO <span style="color:#fca5a5;">*</span><span class="dot ${hasEpic ? 'ok' : ''}" id="epicdot-${rec.rowIndex}"></span></label>
+          <div class="photo-upload ${hasEpic ? 'success' : ''}" id="epicarea-${rec.rowIndex}" onclick="triggerPhotoUpload(${rec.rowIndex}, 'epic')">
+            ${epicPreview}
+            <input type="file" id="epicinput-${rec.rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rec.rowIndex},'epic')" style="display:none;">
+          </div>
+        </div>
+        <div class="edit-field">
+          <label class="mandatory-photo-label">AADHAR PHOTO <span style="color:#fca5a5;">*</span><span class="dot ${hasAadhar ? 'ok' : ''}" id="aadhardot-${rec.rowIndex}"></span></label>
+          <div class="photo-upload ${hasAadhar ? 'success' : ''}" id="aadhararea-${rec.rowIndex}" onclick="triggerPhotoUpload(${rec.rowIndex}, 'aadhar')">
+            ${aadharPreview}
+            <input type="file" id="aadharinput-${rec.rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rec.rowIndex},'aadhar')" style="display:none;">
+          </div>
+        </div>
+      </div>
+      <div class="meta-info">
+        <span>👤 ${esc(rec.userName) || 'N/A'}</span>
+        <span>🕐 ${esc(rec.timestamp) || 'N/A'}</span>
+      </div>
+      <div class="save-row">
+        <button class="btn-cancel" onclick="cancelEdit(${rec.rowIndex})">Cancel</button>
+        <button class="submit-btn" onclick="saveRecord(${rec.rowIndex})">💾 Save</button>
+      </div>
+    </div>
+  `;
+
+  card.dataset.epicPhoto = rec.epicPhotoLink || '';
+  card.dataset.aadharPhoto = rec.aadharPhotoLink || '';
+  return card;
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function buildSansadOptions(selectedNum) {
+  let html = '';
+  for (let i = 1; i <= 30; i++) {
+    const sel = String(selectedNum) === String(i) ? ' selected' : '';
+    html += `<option value="${i}"${sel}>SANSAD/${i}</option>`;
+  }
+  return html;
+}
+
+function extractSerial(jobCardNo) {
+  if (!jobCardNo) return '';
+  const m = String(jobCardNo).match(/\/(\d+[A-Za-z]*)\s*$/);
+  return m ? m[1] : '';
+}
+
+function buildYesNoOptions(selected) {
+  const sel = (selected || '').toString().trim().toUpperCase();
+  return `
+    <option value="">-- Select --</option>
+    <option value="YES" ${sel === 'YES' ? 'selected' : ''}>YES</option>
+    <option value="NO"  ${sel === 'NO'  ? 'selected' : ''}>NO</option>
+  `;
+}
+
+function buildIncludedExcludedOptions(selected) {
+  const sel = (selected || '').toString().trim().toUpperCase();
+  return `
+    <option value="">-- Select --</option>
+    <option value="INCLUDED" ${sel === 'INCLUDED' ? 'selected' : ''}>INCLUDED</option>
+    <option value="EXCLUDED" ${sel === 'EXCLUDED' ? 'selected' : ''}>EXCLUDED</option>
+  `;
+}
+
+function buildRemarkOptions(selected) {
+  const sel = (selected || '').toString().trim();
+  let html = `<option value="">-- Select --</option>`;
+  REMARK_OPTIONS.forEach(opt => {
+    const isSel = sel === opt ? ' selected' : '';
+    html += `<option value="${esc(opt)}"${isSel}>${esc(opt)}</option>`;
+  });
+  if (sel && REMARK_OPTIONS.indexOf(sel) === -1) {
+    html += `<option value="${esc(sel)}" selected>${esc(sel)}</option>`;
+  }
+  return html;
+}
+
+// ============================================================
+// APPLICANT PICKER
+// ============================================================
+function populateApplicantPicker(rowIndex, rec) {
+  const picker = document.getElementById('applicantPicker-' + rowIndex);
+  const note = document.getElementById('applicantPickerNote-' + rowIndex);
+  const field = document.getElementById('applicantPickerField-' + rowIndex);
+  if (!picker || !note || !field) return;
+
+  const jc = (rec.jobCardNo || '').trim();
+  const list = jc ? findNregaList(jc) : [];
+
+  if (!jc || list.length === 0) {
+    picker.innerHTML = `<option value="">-- Select Applicant --</option>`;
+    picker.disabled = true;
+    field.classList.remove('picker-active');
+    note.className = 'applicant-note miss';
+    note.textContent = jc
+      ? '❌ No NREGA applicants found for this Job Card.'
+      : '⚠️ Enter Job Card number first.';
+    return;
+  }
+
+  if (list.length === 1) {
+    picker.innerHTML = `<option value="0" selected>${esc(list[0].nameOfApplicant || 'Applicant #1')}</option>`;
+    picker.disabled = true;
+    field.classList.remove('picker-active');
+    note.className = 'applicant-note';
+    note.textContent = '✅ Single applicant — auto-filled.';
+    const nameEl = document.getElementById('namejc-' + rowIndex);
+    const guardianEl = document.getElementById('guardianjc-' + rowIndex);
+    if (nameEl && list[0].nameOfApplicant) nameEl.value = list[0].nameOfApplicant;
+    if (guardianEl && list[0].fatherHusbandName) guardianEl.value = list[0].fatherHusbandName;
+    return;
+  }
+
+  let html = `<option value="">-- Select Applicant --</option>`;
+  const targetName = (rec.nameAsPerJobCard || '').trim().toLowerCase();
+  let preselectedIdx = -1;
+
+  list.forEach((n, idx) => {
+    const nm = (n.nameOfApplicant || '').trim();
+    const gd = (n.fatherHusbandName || '').trim();
+    const status = (n.status || '').trim();
+    const labelParts = [];
+    if (nm) labelParts.push(nm);
+    if (gd) labelParts.push('S/o ' + gd);
+    if (status) labelParts.push('(' + status + ')');
+    const label = labelParts.join(' · ') || ('Applicant #' + (idx + 1));
+
+    if (preselectedIdx === -1 && targetName && nm.toLowerCase() === targetName) {
+      preselectedIdx = idx;
+    }
+    html += `<option value="${idx}">${esc(label)}</option>`;
+  });
+
+  picker.innerHTML = html;
+  picker.disabled = false;
+  field.classList.add('picker-active');
+  note.className = 'applicant-note warn';
+  note.textContent = `⚡ ${list.length} applicants — select one. Name & Guardian will auto-fill.`;
+
+  if (preselectedIdx !== -1) {
+    picker.value = String(preselectedIdx);
+  }
+}
+
+function onApplicantPickerChange(rowIndex) {
+  const picker = document.getElementById('applicantPicker-' + rowIndex);
+  if (!picker) return;
+
+  const idxStr = picker.value;
+  if (idxStr === '') return;
+  const idx = parseInt(idxStr, 10);
+  if (isNaN(idx)) return;
+
+  const rec = APP.allRecords.find(r => r.rowIndex === rowIndex);
+  if (!rec) return;
+
+  const jc = (rec.jobCardNo || '').trim();
+  const list = jc ? findNregaList(jc) : [];
+  const n = list[idx];
+  if (!n) return;
+
+  const nameEl = document.getElementById('namejc-' + rowIndex);
+  const guardianEl = document.getElementById('guardianjc-' + rowIndex);
+  if (nameEl) nameEl.value = n.nameOfApplicant || '';
+  if (guardianEl) guardianEl.value = n.fatherHusbandName || '';
+
+  showMessage(`✅ Auto-filled: ${n.nameOfApplicant || ''}`, 'success');
+  setTimeout(hideMessage, 1800);
+}
+
+// ============================================================
+// Conditional enable/disable
+// ============================================================
+function applyFormLogic(rowIndex) {
+  const matchSel  = document.getElementById('matchbbg-' + rowIndex);
+  const hasJcSel  = document.getElementById('hasjc-' + rowIndex);
+  const jcExSel   = document.getElementById('jcexists-' + rowIndex);
+  const incexcSel = document.getElementById('incexc-' + rowIndex);
+  const remarkSel = document.getElementById('remark-' + rowIndex);
+
+  const hasJcField     = document.getElementById('hasjcField-' + rowIndex);
+  const incexcField    = document.getElementById('incexcField-' + rowIndex);
+  const remarkField    = document.getElementById('remarkField-' + rowIndex);
+
+  const matchVal = (matchSel.value || '').toUpperCase();
+  const disableHasJc = (matchVal === 'YES');
+  hasJcSel.disabled = disableHasJc;
+  if (hasJcField) hasJcField.classList.toggle('locked', disableHasJc);
+
+  const jcExVal = (jcExSel.value || '').toUpperCase();
+  const disableIncexcAndRemark = (jcExVal === 'NO');
+
+  incexcSel.disabled = disableIncexcAndRemark;
+  remarkSel.disabled = disableIncexcAndRemark;
+  if (incexcField) incexcField.classList.toggle('locked', disableIncexcAndRemark);
+  if (remarkField) remarkField.classList.toggle('locked', disableIncexcAndRemark);
+}
+
+function onMatchBBGChange(rowIndex) { applyFormLogic(rowIndex); }
+function onJobCardExistsChange(rowIndex) { applyFormLogic(rowIndex); }
+
+// ============================================================
+// Real-time validation
+// ============================================================
+function onMobileInput(rowIndex) {
+  const input = document.getElementById('mobileno-' + rowIndex);
+  const hint = document.getElementById('mobilehint-' + rowIndex);
+  const field = document.getElementById('mobilenoField-' + rowIndex);
+
+  let v = input.value.replace(/\D/g, '');
+  if (v !== input.value) input.value = v;
+
+  if (v.length === 0) {
+    hint.textContent = '';
+    field.classList.remove('invalid');
+  } else if (v.length === 10) {
+    hint.textContent = '✓ Valid mobile number';
+    hint.style.color = '#6ee7b7';
+    field.classList.remove('invalid');
+  } else {
+    hint.textContent = `⚠️ ${v.length}/10 digits`;
+    hint.style.color = '#fdba74';
+    field.classList.add('invalid');
+  }
+}
+
+function onAadharInput(rowIndex) {
+  const input = document.getElementById('aadharno-' + rowIndex);
+  const hint = document.getElementById('aadharhint-' + rowIndex);
+  const field = document.getElementById('aadharnoField-' + rowIndex);
+
+  let v = input.value.replace(/\D/g, '');
+  if (v !== input.value) input.value = v;
+
+  if (v.length === 0) {
+    hint.textContent = '';
+    field.classList.remove('invalid');
+  } else if (v.length === 12) {
+    hint.textContent = '✓ Valid Aadhar number';
+    hint.style.color = '#6ee7b7';
+    field.classList.remove('invalid');
+  } else {
+    hint.textContent = `⚠️ ${v.length}/12 digits`;
+    hint.style.color = '#fdba74';
+    field.classList.add('invalid');
+  }
+}
+
+// ============================================================
+// NREGA LOOKUP
+// ============================================================
+function lookupNregaJobCard(rowIndex) {
+  const jcInput = document.getElementById('jobcard-' + rowIndex);
+  if (!jcInput) return;
+
+  const jcRaw = (jcInput.value || '').trim();
+  const statusEl = document.getElementById('jcstatus-' + rowIndex);
+
+  if (!jcRaw) {
+    if (statusEl) statusEl.textContent = '';
+    jcInput.style.borderColor = '';
+    return;
+  }
+
+  const list = findNregaList(jcRaw);
+
+  if (list.length === 0) {
+    if (statusEl) {
+      statusEl.textContent = `❌ Not found in NREGAJOBCARD`;
+      statusEl.style.color = '#fca5a5';
+    }
+    jcInput.style.borderColor = '#f87171';
+    const rec = APP.allRecords.find(r => r.rowIndex === rowIndex);
+    if (rec) populateApplicantPicker(rowIndex, { ...rec, jobCardNo: jcRaw });
+    return;
+  }
+
+  if (statusEl) {
+    if (list.length === 1) {
+      statusEl.textContent = `✅ Found 1 applicant: ${list[0].nameOfApplicant} (${list[0].status || 'N/A'})`;
+    } else {
+      const names = list.map(r => r.nameOfApplicant).filter(Boolean).slice(0, 3).join(', ');
+      statusEl.textContent = `✅ Found ${list.length} applicants: ${names}${list.length > 3 ? '…' : ''}`;
+    }
+    statusEl.style.color = '#6ee7b7';
+  }
+  jcInput.style.borderColor = '#34d399';
+
+  if (list.length === 1) {
+    const nameJcEl     = document.getElementById('namejc-' + rowIndex);
+    const guardianJcEl = document.getElementById('guardianjc-' + rowIndex);
+    if (nameJcEl     && !nameJcEl.value.trim())     nameJcEl.value     = list[0].nameOfApplicant || '';
+    if (guardianJcEl && !guardianJcEl.value.trim()) guardianJcEl.value = list[0].fatherHusbandName || '';
+  }
+
+  const rec = APP.allRecords.find(r => r.rowIndex === rowIndex);
+  if (rec) populateApplicantPicker(rowIndex, { ...rec, jobCardNo: jcRaw });
+}
+
+// ============================================================
+// EDIT TOGGLE
+// ============================================================
+function toggleEdit(rowIndex) {
+  const panel = document.getElementById('editpanel-' + rowIndex);
+  const btn = document.getElementById('editbtn-' + rowIndex);
+  const card = document.getElementById('card-' + rowIndex);
+  const container = document.getElementById('recordsContainer');
+  const banner = document.getElementById('editingBanner');
+  const isCurrentlyOpen = !panel.classList.contains('hidden');
+
+  document.querySelectorAll('.edit-panel').forEach(p => p.classList.add('hidden'));
+  document.querySelectorAll('.edit-btn').forEach(b => { b.classList.remove('active'); b.textContent = '✏️ Edit'; });
+  document.querySelectorAll('.record-card').forEach(c => c.classList.remove('editing'));
+
+  if (!isCurrentlyOpen) {
+    panel.classList.remove('hidden');
+    btn.classList.add('active');
+    btn.textContent = '✖ Close';
+    card.classList.add('editing');
+    container.classList.add('has-active');
+    banner.classList.remove('hidden');
+    APP.editingRow = rowIndex;
+    lookupNregaJobCard(rowIndex);
+    applyFormLogic(rowIndex);
+    onMobileInput(rowIndex);
+    onAadharInput(rowIndex);
+    const rec = APP.allRecords.find(r => r.rowIndex === rowIndex);
+    if (rec) populateApplicantPicker(rowIndex, rec);
+    setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  } else {
+    container.classList.remove('has-active');
+    banner.classList.add('hidden');
+    APP.editingRow = null;
+  }
+}
+
+function cancelEdit(rowIndex) {
+  document.getElementById('editpanel-' + rowIndex).classList.add('hidden');
+  const btn = document.getElementById('editbtn-' + rowIndex);
+  btn.classList.remove('active');
+  btn.textContent = '✏️ Edit';
+  document.getElementById('card-' + rowIndex).classList.remove('editing');
+  document.getElementById('recordsContainer').classList.remove('has-active');
+  document.getElementById('editingBanner').classList.add('hidden');
+  APP.editingRow = null;
+}
+
+function closeAllEdits() {
+  document.querySelectorAll('.edit-panel').forEach(p => p.classList.add('hidden'));
+  document.querySelectorAll('.edit-btn').forEach(b => { b.classList.remove('active'); b.textContent = '✏️ Edit'; });
+  document.querySelectorAll('.record-card').forEach(c => c.classList.remove('editing'));
+  document.getElementById('recordsContainer').classList.remove('has-active');
+  document.getElementById('editingBanner').classList.add('hidden');
+  APP.editingRow = null;
+  setTimeout(() => document.getElementById('recordsContainer').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+}
+
+// ============================================================
+// JOB CARD GENERATION
+// ============================================================
+function onSansadSelectChange(rowIndex) {
+  const sansadNum = document.getElementById('sansadsel-' + rowIndex).value;
+  const serialInput = document.getElementById('serialnum-' + rowIndex);
+
+  if (!sansadNum) {
+    document.getElementById('jobcard-' + rowIndex).value = '';
+    lookupNregaJobCard(rowIndex);
+    return;
+  }
+  if (serialInput.value) {
+    generateJobCard(rowIndex);
+  } else {
+    lookupNregaJobCard(rowIndex);
+  }
+}
+function onSerialChange(rowIndex) {
+  const sansadNum = document.getElementById('sansadsel-' + rowIndex).value;
+  const serialNum = document.getElementById('serialnum-' + rowIndex).value;
+  if (!sansadNum || !serialNum) {
+    document.getElementById('jobcard-' + rowIndex).value = '';
+    lookupNregaJobCard(rowIndex);
+    return;
+  }
+  generateJobCard(rowIndex);
+}
+function generateJobCard(rowIndex) {
+  const sansadNum = parseInt(document.getElementById('sansadsel-' + rowIndex).value);
+  const serialRaw = (document.getElementById('serialnum-' + rowIndex).value || '').trim();
+  const jcInput = document.getElementById('jobcard-' + rowIndex);
+  if (!jcInput) return;
+
+  if (!sansadNum || !serialRaw) { jcInput.value = ''; return; }
+
+  const serialClean = serialRaw.replace(/\s+/g, '').toUpperCase();
+  if (!/^\d+[A-Z]*$/.test(serialClean)) { jcInput.value = ''; return; }
+
+  const sansadPadded = String(sansadNum).padStart(3, '0');
+  const jobCard = `WB-09-003-002-${sansadPadded}/${serialClean}`;
+  jcInput.value = jobCard;
+
+  let duplicateRow = null;
+  for (const rec of APP.allRecords) {
+    if (rec.rowIndex === rowIndex) continue;
+    if (normalizeJobCardNo(rec.jobCardNo) === jobCard) { duplicateRow = rec.rowIndex; break; }
+  }
+  if (duplicateRow) {
+    showMessage('⚠️ Job Card already exists (Row ' + duplicateRow + ')', 'warning');
+    jcInput.style.borderColor = '#f87171';
+  } else {
+    jcInput.style.borderColor = '';
+  }
+  lookupNregaJobCard(rowIndex);
+}
+
+// ============================================================
+// PHOTO UPLOAD
+// ============================================================
+function triggerPhotoUpload(rowIndex, type) {
+  const input = document.getElementById((type === 'epic' ? 'epicinput-' : 'aadharinput-') + rowIndex);
+  if (input) input.click();
+}
+
+async function handlePhoto(event, rowIndex, type) {
+  const file = event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    showMessage('❌ Please select an image file.', 'error');
+    return;
+  }
+  if (file.size > 8 * 1024 * 1024) {
+    showMessage('❌ Image too large (' + (file.size / 1024 / 1024).toFixed(1) + 'MB). Max 8MB.', 'error');
+    return;
+  }
+
+  const areaId = type === 'epic' ? 'epicarea-' : 'aadhararea-';
+  const dotId = type === 'epic' ? 'epicdot-' : 'aadhardot-';
+  const area = document.getElementById(areaId + rowIndex);
+  const dot = document.getElementById(dotId + rowIndex);
+
+  const rec = APP.allRecords.find(r => r.rowIndex === rowIndex);
+  const referenceId = rec ? rec.referenceId : 'UNKNOWN';
+  const photoType = type === 'epic' ? 'EPIC' : 'AADHAR';
+
+  area.classList.remove('success');
+  area.classList.add('uploading');
+  area.innerHTML = `
+    <div class="upload-spinner"></div>
+    <span class="ph-icon" style="opacity:0.3;">📷</span>
+    <span class="ph-text" style="color:#fdba74;font-weight:700;">Compressing & uploading...</span>
+    <div class="upload-progress-bar"><div class="fill" id="progress-${rowIndex}-${type}"></div></div>
+    <input type="file" id="${type}input-${rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rowIndex},'${type}')" style="display:none;">
+  `;
+
+  const progressFill = document.getElementById(`progress-${rowIndex}-${type}`);
+  let prog = 0;
+  const progressInterval = setInterval(() => {
+    if (prog < 85 && progressFill) {
+      prog += Math.random() * 8;
+      progressFill.style.width = Math.min(prog, 85) + '%';
+    }
+  }, 150);
+
+  function resetUploadArea(errMsg) {
+    clearInterval(progressInterval);
+    area.classList.remove('uploading', 'success');
+    area.innerHTML = `
+      <span class="ph-icon">📷</span>
+      <span class="ph-text">Tap for ${photoType} Photo</span>
+      <input type="file" id="${type}input-${rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rowIndex},'${type}')" style="display:none;">
+    `;
+    if (dot) dot.classList.remove('ok');
+    if (errMsg) showMessage('❌ ' + errMsg, 'error');
+  }
+
+  try {
+    const compressedBlob = await compressImage(file, 1280, 0.72);
+
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => resolve(ev.target.result.split(',')[1]);
+      reader.onerror = () => reject(new Error('Failed to read compressed image'));
+      reader.readAsDataURL(compressedBlob);
+    });
+
+    const res = await apiCall({
+      action: 'upload_photo',
+      fileData: base64,
+      fileType: 'image/jpeg',
+      referenceId: referenceId,
+      photoType: photoType,
+      sessionToken: APP.sessionToken
+    }, 90000);
+
+    clearInterval(progressInterval);
+
+    if (res && res.success && res.fileUrl) {
+      if (progressFill) progressFill.style.width = '100%';
+      setTimeout(() => {
+        area.classList.remove('uploading');
+        area.classList.add('success');
+        area.innerHTML = `
+          <img src="${res.fileUrl}" alt="${photoType}">
+          <button class="photo-remove" onclick="event.stopPropagation();removePhoto(${rowIndex},'${type}')">✕</button>
+          <div class="upload-check">✓</div>
+          <input type="file" id="${type}input-${rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rowIndex},'${type}')" style="display:none;">
+        `;
+        if (dot) dot.classList.add('ok');
+        const card = document.getElementById('card-' + rowIndex);
+        if (card) card.dataset[type + 'Photo'] = res.fileUrl;
+        showMessage(`✅ ${photoType} uploaded`, 'success');
+        setTimeout(hideMessage, 2000);
+      }, 300);
+    } else {
+      resetUploadArea((res && (res.error || res.message)) || 'Server rejected the upload');
+    }
+  } catch (err) {
+    console.error('Photo upload error:', err);
+    resetUploadArea(err.message || 'Network error');
+  }
+}
+
+function removePhoto(rowIndex, type) {
+  const area = document.getElementById((type === 'epic' ? 'epicarea-' : 'aadhararea-') + rowIndex);
+  const dot = document.getElementById((type === 'epic' ? 'epicdot-' : 'aadhardot-') + rowIndex);
+  const label = type === 'epic' ? 'EPIC Photo' : 'Aadhar Photo';
+  area.classList.remove('success', 'uploading');
+  area.innerHTML = `<span class="ph-icon">📷</span><span class="ph-text">Tap for ${label}</span><input type="file" id="${type}input-${rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rowIndex},'${type}')" style="display:none;">`;
+  if (dot) dot.classList.remove('ok');
+  document.getElementById('card-' + rowIndex).dataset[type + 'Photo'] = '';
+}
+
+// ============================================================
+// SAVE RECORD
+// ============================================================
+async function saveRecord(rowIndex) {
+  ['mobilenoField','aadharnoField','remarkField'].forEach(prefix => {
+    const f = document.getElementById(prefix + '-' + rowIndex);
+    if (f) f.classList.remove('invalid');
+  });
+
+  const sansadNum = document.getElementById('sansadsel-' + rowIndex).value;
+  const serialNum = document.getElementById('serialnum-' + rowIndex).value;
+  const jobCardNo = document.getElementById('jobcard-' + rowIndex).value;
+
+  if (!sansadNum) { showMessage('❌ Select SANSAD.', 'error'); return; }
+  if (!serialNum) { showMessage('❌ Enter serial number.', 'error'); return; }
+  if (!jobCardNo) { showMessage('❌ Job Card not generated.', 'error'); return; }
+
+  const mobileVal = document.getElementById('mobileno-' + rowIndex).value.trim();
+  const mobileField = document.getElementById('mobilenoField-' + rowIndex);
+  if (!mobileVal) {
+    mobileField.classList.add('invalid');
+    mobileField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    showMessage('❌ Mobile No is required.', 'error');
+    return;
+  }
+  if (!/^\d{10}$/.test(mobileVal)) {
+    mobileField.classList.add('invalid');
+    mobileField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    showMessage('❌ Mobile No must be exactly 10 digits.', 'error');
+    return;
+  }
+
+  const aadharVal = document.getElementById('aadharno-' + rowIndex).value.trim();
+  const aadharField = document.getElementById('aadharnoField-' + rowIndex);
+  if (!aadharVal) {
+    aadharField.classList.add('invalid');
+    aadharField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    showMessage('❌ AADHAR No is required.', 'error');
+    return;
+  }
+  if (!/^\d{12}$/.test(aadharVal)) {
+    aadharField.classList.add('invalid');
+    aadharField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    showMessage('❌ AADHAR No must be exactly 12 digits.', 'error');
+    return;
+  }
+
+  const remarkVal = document.getElementById('remark-' + rowIndex).value.trim();
+  const remarkField = document.getElementById('remarkField-' + rowIndex);
+  if (!remarkVal) {
+    remarkField.classList.add('invalid');
+    remarkField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    showMessage('❌ Remark is required. Please select a remark.', 'error');
+    return;
+  }
+
+  const card = document.getElementById('card-' + rowIndex);
+  const epicUrl = card.dataset.epicPhoto || '';
+  const aadharUrl = card.dataset.aadharPhoto || '';
+
+  if (!epicUrl && !aadharUrl) { shakeBoth(rowIndex); showMessage('⚠️ Both photos mandatory!', 'error'); return; }
+  if (!epicUrl) { shakePhoto(rowIndex, 'epic'); showMessage('⚠️ EPIC Photo mandatory!', 'error'); return; }
+  if (!aadharUrl) { shakePhoto(rowIndex, 'aadhar'); showMessage('⚠️ Aadhar Photo mandatory!', 'error'); return; }
+
+  const rec = APP.allRecords.find(r => r.rowIndex === rowIndex);
+
+  const payload = {
+    rowIndex: rowIndex,
+    referenceId: rec.referenceId,
+    matchBBG:         document.getElementById('matchbbg-' + rowIndex).value,
+    hasJobCard:       document.getElementById('hasjc-' + rowIndex).value,
+    jobCardExists:    document.getElementById('jcexists-' + rowIndex).value,
+    includedExcluded: document.getElementById('incexc-' + rowIndex).value,
+    sansad: 'SANSAD/' + sansadNum,
+    jobCardNo: jobCardNo,
+    nameAsPerJobCard: document.getElementById('namejc-' + rowIndex).value.trim(),
+    guardianAsPerJobCard: document.getElementById('guardianjc-' + rowIndex).value.trim(),
+    epicNo: document.getElementById('epicno-' + rowIndex).value.trim(),
+    epicPhotoLink: epicUrl,
+    aadharNo: aadharVal,
+    nameAsPerAadhar: document.getElementById('nameadhar-' + rowIndex).value.trim(),
+    guardianAsPerAadhar: document.getElementById('guardianadhar-' + rowIndex).value.trim(),
+    aadharPhotoLink: aadharUrl,
+    mobileNo: mobileVal,
+    remark: remarkVal
+  };
+
+  const saveBtn = document.querySelector(`#editpanel-${rowIndex} .submit-btn`);
+  const originalText = saveBtn.innerHTML;
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = '<span class="loading"></span> Saving...';
+
+  try {
+    const res = await apiCall({
+      action: 'update_housing_record',
+      data: JSON.stringify(payload),
+      sessionToken: APP.sessionToken,
+      userName: APP.currentUser.name
+    });
+
+    if (res.success) {
+      const idx = APP.allRecords.findIndex(r => r.rowIndex === rowIndex);
+      if (idx !== -1) {
+        Object.assign(APP.allRecords[idx], res.data.updatedFields);
+        if (res.data.updatedFields.jobCardNo) {
+          APP.allRecords[idx].jobCardVbGram = res.data.updatedFields.jobCardNo;
+        }
+      }
+      if (res.data.updatedFields.jobCardNo) APP.existingJobCards.add(res.data.updatedFields.jobCardNo);
+
+      closeAllEdits();
+      showMessage('✅ ' + res.message + '\n👤 ' + APP.currentUser.name, 'success');
+
+      applyFilters();
+
+      setTimeout(() => {
+        const newCard = document.getElementById('card-' + rowIndex);
+        if (newCard) {
+          newCard.style.transition = 'box-shadow 0.3s';
+          newCard.style.boxShadow = '0 0 0 3px rgba(52,211,153,0.55)';
+          setTimeout(() => { newCard.style.boxShadow = ''; }, 1500);
+        }
+      }, 100);
+    } else {
+      showMessage('❌ ' + res.message, 'error');
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = originalText;
+    }
+  } catch (err) {
+    showMessage('❌ ' + err.message, 'error');
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = originalText;
+  }
+}
+
+function shakePhoto(rowIndex, type) {
+  const el = document.getElementById((type === 'epic' ? 'epicarea-' : 'aadhararea-') + rowIndex);
+  if (!el) return;
+  el.classList.add('shake');
+  setTimeout(() => el.classList.remove('shake'), 500);
+}
+function shakeBoth(rowIndex) {
+  shakePhoto(rowIndex, 'epic');
+  setTimeout(() => shakePhoto(rowIndex, 'aadhar'), 150);
+}
+
+console.log('✅ Field Survey module v3.6 loaded — completed rows hidden on frontend');
+</script>
+</body>
+</html>
