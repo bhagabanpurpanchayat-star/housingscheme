@@ -181,6 +181,31 @@ input:disabled, select:disabled { opacity: 0.45; cursor: not-allowed; background
 }
 .edit-field.invalid label { color: #fc8181; }
 
+/* ✅ applicant picker highlight */
+.edit-field.picker-active label { color: #68d391; }
+.edit-field.picker-active select {
+  border-color: rgba(72,187,120,0.5);
+  background: rgba(72,187,120,0.06);
+}
+.applicant-note {
+  font-size: 9px;
+  margin-top: 3px;
+  display: block;
+  color: #68d391;
+  line-height: 1.3;
+}
+.applicant-note.warn { color: #f6ad55; }
+.applicant-note.miss { color: #fc8181; }
+
+/* ✅ auto-filled-from-record hint */
+.autofill-hint {
+  font-size: 9px;
+  margin-top: 3px;
+  display: block;
+  color: #63b3ed;
+  line-height: 1.3;
+}
+
 .photo-upload { border: 1.5px dashed rgba(255,255,255,0.15); border-radius: 9px; padding: 8px; text-align: center; cursor: pointer; background: rgba(255,255,255,0.02); position: relative; min-height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s ease; overflow: hidden; }
 .photo-upload:hover { border-color: rgba(99,179,237,0.4); background: rgba(99,179,237,0.04); }
 .photo-upload.uploading { border-color: #f6ad55; background: rgba(237,137,54,0.06); pointer-events: none; }
@@ -272,7 +297,7 @@ input:disabled, select:disabled { opacity: 0.45; cursor: not-allowed; background
 
 <script>
 // ============================================================
-// CONFIG — ⚠️ REPLACE WITH YOUR FIELD SURVEY DEPLOYMENT URL
+// CONFIG
 // ============================================================
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzLJKVzGtt0L-jN8emEHLf14BDKDWe2gsSz35SI4NTactHPniV6PPwv1Aa5ilt7C6z4UA/exec';
 
@@ -284,7 +309,7 @@ const APP = {
   sessionToken: null,
   allRecords: [],
   existingJobCards: new Set(),
-  nregaJobCards: new Map(),     // jobCardNo -> [array of NREGA rows]
+  nregaJobCards: new Map(),
   nregaBySansad: new Map(),
   filteredRecords: [],
   currentLocation: '',
@@ -294,9 +319,6 @@ const APP = {
   isSyncing: false
 };
 
-// ============================================================
-// REMARK DROPDOWN VALUES
-// ============================================================
 const REMARK_OPTIONS = [
   'Veified & Found Ok',
   'Benificiary GRGC/Job Card is deleted',
@@ -407,14 +429,14 @@ function normalizeSansad(v) {
   return m ? String(parseInt(m[1], 10)) : '';
 }
 
-// ✅ NEW — Normalize job card key (handles spaces, case, NBSP, zero-width chars)
-function normalizeJobCardKey(v) {
+// ✅ Normalize a mobile number — keep only digits, take last 10
+function normalizeMobile(v) {
   if (v === null || v === undefined) return '';
-  return String(v)
-    .replace(/\u00A0/g, ' ')                 // non-breaking space → normal space
-    .replace(/[\u200B-\u200D\uFEFF]/g, '')   // zero-width chars
-    .trim()
-    .toUpperCase();
+  const digits = String(v).replace(/\D/g, '');
+  if (digits.length === 0) return '';
+  // If 10+ digits, take last 10 (handles +91 prefix, leading 0, etc.)
+  if (digits.length >= 10) return digits.slice(-10);
+  return digits;
 }
 
 // ============================================================
@@ -450,11 +472,9 @@ async function syncFromServer(showToast) {
 
         nrega.data.forEach(r => {
           if (r.jobCardNo) {
-            const key = normalizeJobCardKey(r.jobCardNo);
-            if (key) {
-              if (!APP.nregaJobCards.has(key)) APP.nregaJobCards.set(key, []);
-              APP.nregaJobCards.get(key).push(r);
-            }
+            const key = r.jobCardNo.trim();
+            if (!APP.nregaJobCards.has(key)) APP.nregaJobCards.set(key, []);
+            APP.nregaJobCards.get(key).push(r);
           }
           const sNum = normalizeSansad(r.sansad);
           if (sNum) {
@@ -611,11 +631,10 @@ function renderRecords(records) {
 }
 
 // ============================================================
-// ✅ FIXED — NREGA SECTION with normalized key lookup + fallback scan
+// NREGA SECTION — original working logic
 // ============================================================
 function renderNregaSection(rec) {
-  const jcRaw = (rec.jobCardNo || '').trim();
-  const jc = normalizeJobCardKey(jcRaw);
+  const jc = (rec.jobCardNo || '').trim();
 
   if (!jc) {
     return `
@@ -626,21 +645,13 @@ function renderNregaSection(rec) {
     `;
   }
 
-  let nregaList = APP.nregaJobCards.get(jc);
-
-  // fallback scan in case of formatting mismatch
-  if (!nregaList) {
-    for (const [k, v] of APP.nregaJobCards.entries()) {
-      if (normalizeJobCardKey(k) === jc) { nregaList = v; break; }
-    }
-  }
-  nregaList = nregaList || [];
+  const nregaList = APP.nregaJobCards.get(jc) || [];
 
   if (nregaList.length === 0) {
     return `
       <div class="nrega-section nrega-miss">
         <div class="nrega-title">📋 NREGA Jobcard Details</div>
-        <div class="nrega-empty">❌ <strong>${esc(jcRaw)}</strong> not found in NREGAJOBCARD sheet.</div>
+        <div class="nrega-empty">❌ <strong>${esc(jc)}</strong> not found in NREGAJOBCARD sheet.</div>
       </div>
     `;
   }
@@ -698,6 +709,12 @@ function buildCard(rec) {
   const sansadMatch = (rec.sansad || '').match(/(\d+)/);
   const sansadNumVal = sansadMatch ? sansadMatch[1] : '';
   const serialVal = extractSerial(rec.jobCardNo);
+
+  // ✅ Saved mobile (already stored) vs default from mobileNumber column
+  const savedMobile = (rec.mobileNo || '').trim();
+  const defaultMobile = normalizeMobile(rec.mobileNumber || '');
+  const prefilledMobile = savedMobile || defaultMobile;
+  const showAutofillHint = !savedMobile && defaultMobile;
 
   card.innerHTML = `
     <div class="record-header">
@@ -762,6 +779,14 @@ function buildCard(rec) {
           <small id="jcstatus-${rec.rowIndex}" style="font-size:9.5px;margin-top:3px;display:block;"></small>
         </div>
 
+        <div class="edit-field full" id="applicantPickerField-${rec.rowIndex}">
+          <label>SELECT APPLICANT (from NREGA Job Card)</label>
+          <select id="applicantPicker-${rec.rowIndex}" onchange="onApplicantPickerChange(${rec.rowIndex})">
+            <option value="">-- Select Applicant --</option>
+          </select>
+          <small id="applicantPickerNote-${rec.rowIndex}" class="applicant-note"></small>
+        </div>
+
         <div class="edit-field">
           <label>NAME AS PER JOB CARD</label>
           <input type="text" id="namejc-${rec.rowIndex}" value="${esc(rec.nameAsPerJobCard)}">
@@ -792,8 +817,9 @@ function buildCard(rec) {
 
         <div class="edit-field" id="mobilenoField-${rec.rowIndex}">
           <label>MOBILE NO <span style="color:#fc8181;">*</span></label>
-          <input type="text" id="mobileno-${rec.rowIndex}" value="${esc(rec.mobileNo)}" placeholder="10 digits" maxlength="10" oninput="onMobileInput(${rec.rowIndex})">
+          <input type="text" id="mobileno-${rec.rowIndex}" value="${esc(prefilledMobile)}" placeholder="10 digits" maxlength="10" oninput="onMobileInput(${rec.rowIndex})">
           <small id="mobilehint-${rec.rowIndex}" style="font-size:9px;margin-top:2px;display:block;color:#a0aec0;"></small>
+          ${showAutofillHint ? `<small class="autofill-hint">ℹ️ Auto-filled from record · you can edit</small>` : ''}
         </div>
 
         <div class="edit-field" id="remarkField-${rec.rowIndex}">
@@ -868,7 +894,6 @@ function buildIncludedExcludedOptions(selected) {
   `;
 }
 
-// ✅ REMARK dropdown
 function buildRemarkOptions(selected) {
   const sel = (selected || '').toString().trim();
   let html = `<option value="">-- Select --</option>`;
@@ -876,7 +901,6 @@ function buildRemarkOptions(selected) {
     const isSel = sel === opt ? ' selected' : '';
     html += `<option value="${esc(opt)}"${isSel}>${esc(opt)}</option>`;
   });
-  // If an old free-text remark exists that isn't in our list, keep it as an extra option
   if (sel && REMARK_OPTIONS.indexOf(sel) === -1) {
     html += `<option value="${esc(sel)}" selected>${esc(sel)}</option>`;
   }
@@ -884,7 +908,100 @@ function buildRemarkOptions(selected) {
 }
 
 // ============================================================
-// ✅ Conditional enable/disable logic
+// APPLICANT PICKER
+// ============================================================
+function populateApplicantPicker(rowIndex, rec) {
+  const picker = document.getElementById('applicantPicker-' + rowIndex);
+  const note = document.getElementById('applicantPickerNote-' + rowIndex);
+  const field = document.getElementById('applicantPickerField-' + rowIndex);
+  if (!picker || !note || !field) return;
+
+  const jc = (rec.jobCardNo || '').trim();
+  const list = jc ? (APP.nregaJobCards.get(jc) || []) : [];
+
+  if (!jc || list.length === 0) {
+    picker.innerHTML = `<option value="">-- Select Applicant --</option>`;
+    picker.disabled = true;
+    field.classList.remove('picker-active');
+    note.className = 'applicant-note miss';
+    note.textContent = jc
+      ? '❌ No NREGA applicants found for this Job Card.'
+      : '⚠️ Enter Job Card number first.';
+    return;
+  }
+
+  if (list.length === 1) {
+    picker.innerHTML = `<option value="0" selected>${esc(list[0].nameOfApplicant || 'Applicant #1')}</option>`;
+    picker.disabled = true;
+    field.classList.remove('picker-active');
+    note.className = 'applicant-note';
+    note.textContent = '✅ Single applicant — auto-filled.';
+    const nameEl = document.getElementById('namejc-' + rowIndex);
+    const guardianEl = document.getElementById('guardianjc-' + rowIndex);
+    if (nameEl && list[0].nameOfApplicant) nameEl.value = list[0].nameOfApplicant;
+    if (guardianEl && list[0].fatherHusbandName) guardianEl.value = list[0].fatherHusbandName;
+    return;
+  }
+
+  let html = `<option value="">-- Select Applicant --</option>`;
+  const targetName = (rec.nameAsPerJobCard || '').trim().toLowerCase();
+  let preselectedIdx = -1;
+
+  list.forEach((n, idx) => {
+    const nm = (n.nameOfApplicant || '').trim();
+    const gd = (n.fatherHusbandName || '').trim();
+    const status = (n.status || '').trim();
+    const labelParts = [];
+    if (nm) labelParts.push(nm);
+    if (gd) labelParts.push('S/o ' + gd);
+    if (status) labelParts.push('(' + status + ')');
+    const label = labelParts.join(' · ') || ('Applicant #' + (idx + 1));
+
+    if (preselectedIdx === -1 && targetName && nm.toLowerCase() === targetName) {
+      preselectedIdx = idx;
+    }
+    html += `<option value="${idx}">${esc(label)}</option>`;
+  });
+
+  picker.innerHTML = html;
+  picker.disabled = false;
+  field.classList.add('picker-active');
+  note.className = 'applicant-note warn';
+  note.textContent = `⚡ ${list.length} applicants — select one. Name & Guardian will auto-fill.`;
+
+  if (preselectedIdx !== -1) {
+    picker.value = String(preselectedIdx);
+  }
+}
+
+function onApplicantPickerChange(rowIndex) {
+  const picker = document.getElementById('applicantPicker-' + rowIndex);
+  if (!picker) return;
+
+  const idxStr = picker.value;
+  if (idxStr === '') return;
+  const idx = parseInt(idxStr, 10);
+  if (isNaN(idx)) return;
+
+  const rec = APP.allRecords.find(r => r.rowIndex === rowIndex);
+  if (!rec) return;
+
+  const jc = (rec.jobCardNo || '').trim();
+  const list = jc ? (APP.nregaJobCards.get(jc) || []) : [];
+  const n = list[idx];
+  if (!n) return;
+
+  const nameEl = document.getElementById('namejc-' + rowIndex);
+  const guardianEl = document.getElementById('guardianjc-' + rowIndex);
+  if (nameEl) nameEl.value = n.nameOfApplicant || '';
+  if (guardianEl) guardianEl.value = n.fatherHusbandName || '';
+
+  showMessage(`✅ Auto-filled: ${n.nameOfApplicant || ''}`, 'success');
+  setTimeout(hideMessage, 1800);
+}
+
+// ============================================================
+// Conditional enable/disable
 // ============================================================
 function applyFormLogic(rowIndex) {
   const matchSel  = document.getElementById('matchbbg-' + rowIndex);
@@ -897,13 +1014,11 @@ function applyFormLogic(rowIndex) {
   const incexcField    = document.getElementById('incexcField-' + rowIndex);
   const remarkField    = document.getElementById('remarkField-' + rowIndex);
 
-  // 1) HAS JOB CARD? → disabled when DOES JOB CARD MATCH BBG? = YES
   const matchVal = (matchSel.value || '').toUpperCase();
   const disableHasJc = (matchVal === 'YES');
   hasJcSel.disabled = disableHasJc;
   if (hasJcField) hasJcField.classList.toggle('locked', disableHasJc);
 
-  // 2) APPLICANT INCLUDED/EXCLUDED + REMARK → disabled when IF YES — JOB CARD EXISTS? = NO
   const jcExVal = (jcExSel.value || '').toUpperCase();
   const disableIncexcAndRemark = (jcExVal === 'NO');
 
@@ -913,23 +1028,17 @@ function applyFormLogic(rowIndex) {
   if (remarkField) remarkField.classList.toggle('locked', disableIncexcAndRemark);
 }
 
-// Called on dropdown changes
-function onMatchBBGChange(rowIndex) {
-  applyFormLogic(rowIndex);
-}
-function onJobCardExistsChange(rowIndex) {
-  applyFormLogic(rowIndex);
-}
+function onMatchBBGChange(rowIndex) { applyFormLogic(rowIndex); }
+function onJobCardExistsChange(rowIndex) { applyFormLogic(rowIndex); }
 
 // ============================================================
-// ✅ Real-time validation helpers
+// Real-time validation
 // ============================================================
 function onMobileInput(rowIndex) {
   const input = document.getElementById('mobileno-' + rowIndex);
   const hint = document.getElementById('mobilehint-' + rowIndex);
   const field = document.getElementById('mobilenoField-' + rowIndex);
 
-  // strip non-digits
   let v = input.value.replace(/\D/g, '');
   if (v !== input.value) input.value = v;
 
@@ -970,14 +1079,13 @@ function onAadharInput(rowIndex) {
 }
 
 // ============================================================
-// ✅ FIXED — NREGA LOOKUP with normalized key + fallback scan
+// NREGA LOOKUP
 // ============================================================
 function lookupNregaJobCard(rowIndex) {
   const jcInput = document.getElementById('jobcard-' + rowIndex);
   if (!jcInput) return;
 
-  const jcRaw = (jcInput.value || '').trim();
-  const jc = normalizeJobCardKey(jcRaw);
+  const jc = (jcInput.value || '').trim();
   const statusEl = document.getElementById('jcstatus-' + rowIndex);
 
   if (!jc) {
@@ -986,15 +1094,7 @@ function lookupNregaJobCard(rowIndex) {
     return;
   }
 
-  let list = APP.nregaJobCards.get(jc);
-
-  // fallback scan in case of formatting mismatch
-  if (!list) {
-    for (const [k, v] of APP.nregaJobCards.entries()) {
-      if (normalizeJobCardKey(k) === jc) { list = v; break; }
-    }
-  }
-  list = list || [];
+  const list = APP.nregaJobCards.get(jc) || [];
 
   if (list.length === 0) {
     if (statusEl) {
@@ -1022,6 +1122,9 @@ function lookupNregaJobCard(rowIndex) {
     if (nameJcEl     && !nameJcEl.value.trim())     nameJcEl.value     = list[0].nameOfApplicant || '';
     if (guardianJcEl && !guardianJcEl.value.trim()) guardianJcEl.value = list[0].fatherHusbandName || '';
   }
+
+  const rec = APP.allRecords.find(r => r.rowIndex === rowIndex);
+  if (rec) populateApplicantPicker(rowIndex, { ...rec, jobCardNo: jc });
 }
 
 // ============================================================
@@ -1048,10 +1151,11 @@ function toggleEdit(rowIndex) {
     banner.classList.remove('hidden');
     APP.editingRow = rowIndex;
     lookupNregaJobCard(rowIndex);
-    applyFormLogic(rowIndex);            // apply disable rules on open
-    // run validation hints on open
+    applyFormLogic(rowIndex);
     onMobileInput(rowIndex);
     onAadharInput(rowIndex);
+    const rec = APP.allRecords.find(r => r.rowIndex === rowIndex);
+    if (rec) populateApplicantPicker(rowIndex, rec);
     setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
   } else {
     container.classList.remove('has-active');
@@ -1119,10 +1223,9 @@ function generateJobCard(rowIndex) {
 
   const jcInput = document.getElementById('jobcard-' + rowIndex);
   let duplicateRow = null;
-  const normalizedNew = normalizeJobCardKey(jobCard);
   for (const rec of APP.allRecords) {
     if (rec.rowIndex === rowIndex) continue;
-    if (normalizeJobCardKey(rec.jobCardNo) === normalizedNew) { duplicateRow = rec.rowIndex; break; }
+    if (rec.jobCardNo === jobCard) { duplicateRow = rec.rowIndex; break; }
   }
   if (duplicateRow) {
     showMessage('⚠️ Job Card already exists (Row ' + duplicateRow + ')', 'warning');
@@ -1256,7 +1359,6 @@ function removePhoto(rowIndex, type) {
 // SAVE RECORD
 // ============================================================
 async function saveRecord(rowIndex) {
-  // clear previous validation highlights
   ['mobilenoField','aadharnoField','remarkField'].forEach(prefix => {
     const f = document.getElementById(prefix + '-' + rowIndex);
     if (f) f.classList.remove('invalid');
@@ -1270,7 +1372,6 @@ async function saveRecord(rowIndex) {
   if (!serialNum) { showMessage('❌ Enter serial number.', 'error'); return; }
   if (!jobCardNo) { showMessage('❌ Job Card not generated.', 'error'); return; }
 
-  // ✅ Mobile No validation (10 digits)
   const mobileVal = document.getElementById('mobileno-' + rowIndex).value.trim();
   const mobileField = document.getElementById('mobilenoField-' + rowIndex);
   if (!mobileVal) {
@@ -1286,7 +1387,6 @@ async function saveRecord(rowIndex) {
     return;
   }
 
-  // ✅ AADHAR No validation (12 digits)
   const aadharVal = document.getElementById('aadharno-' + rowIndex).value.trim();
   const aadharField = document.getElementById('aadharnoField-' + rowIndex);
   if (!aadharVal) {
@@ -1302,7 +1402,6 @@ async function saveRecord(rowIndex) {
     return;
   }
 
-  // ✅ Remark validation (required)
   const remarkVal = document.getElementById('remark-' + rowIndex).value.trim();
   const remarkField = document.getElementById('remarkField-' + rowIndex);
   if (!remarkVal) {
@@ -1312,7 +1411,6 @@ async function saveRecord(rowIndex) {
     return;
   }
 
-  // Photo validation
   const card = document.getElementById('card-' + rowIndex);
   const epicUrl = card.dataset.epicPhoto || '';
   const aadharUrl = card.dataset.aadharPhoto || '';
@@ -1403,7 +1501,7 @@ function shakeBoth(rowIndex) {
   setTimeout(() => shakePhoto(rowIndex, 'aadhar'), 150);
 }
 
-console.log('✅ Field Survey module v2.8 loaded');
+console.log('✅ Field Survey module v3.2 loaded — mobile auto-fill from record');
 </script>
 </body>
 </html>
