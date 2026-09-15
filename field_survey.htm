@@ -6,246 +6,584 @@
 <title>Field Survey · Banglar Bari</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-body { background: linear-gradient(135deg, #0f0c29 0%, #1a1a3e 30%, #24243e 60%, #1a1a3e 100%); min-height: 100vh; padding: 8px; display: flex; justify-content: center; overflow-x: hidden; }
-body::before { content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(99,179,237,0.08) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(183,148,244,0.08) 0%, transparent 50%); animation: floatBg 20s ease-in-out infinite alternate; z-index: 0; }
+body {
+  background: linear-gradient(160deg, #0b1020 0%, #131a35 45%, #0e1428 100%);
+  min-height: 100vh;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  overflow-x: hidden;
+  color: #e8eefb;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(99,179,237,0.10) 0%, transparent 45%),
+    radial-gradient(circle at 80% 70%, rgba(129,140,248,0.10) 0%, transparent 45%);
+  animation: floatBg 25s ease-in-out infinite alternate;
+  z-index: 0;
+}
 @keyframes floatBg { 0% { transform: translate(0,0) rotate(0deg); } 100% { transform: translate(2%,1%) rotate(3deg); } }
 
-.container { background: rgba(255,255,255,0.06); backdrop-filter: blur(20px); max-width: 480px; width: 100%; border-radius: 20px; padding: 14px 12px 18px; box-shadow: 0 8px 40px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.06); position: relative; z-index: 1; }
+.container {
+  background: rgba(20, 26, 48, 0.72);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  max-width: 520px;
+  width: 100%;
+  border-radius: 22px;
+  padding: 20px 16px 22px;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+  border: 1px solid rgba(120, 160, 255, 0.14);
+  position: relative;
+  z-index: 1;
+}
 
-.header { text-align: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid rgba(255,255,255,0.06); }
-.header h1 { background: linear-gradient(135deg, #63b3ed, #b794f4, #f6ad55, #f6e05e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 17px; font-weight: 800; line-height: 1.2; }
-.header p { color: #a0aec0; font-size: 11px; margin-top: 3px; font-weight: 600; }
+/* ============ HEADER ============ */
+.header { text-align: center; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 2px solid rgba(120,160,255,0.14); }
+.header h1 {
+  background: linear-gradient(135deg, #7dd3fc, #a78bfa, #fbbf24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0.2px;
+}
+.header p { color: #94a3c4; font-size: 12.5px; margin-top: 5px; font-weight: 600; }
 
-.sync-banner { background: rgba(72,187,120,0.12); border: 1px solid rgba(72,187,120,0.3); border-radius: 9px; padding: 6px 10px; margin-bottom: 10px; font-size: 10.5px; color: #68d391; display: flex; justify-content: space-between; align-items: center; font-weight: 600; gap: 6px; }
-.sync-banner.stale { background: rgba(237,137,54,0.12); border-color: rgba(237,137,54,0.3); color: #f6ad55; }
-.sync-banner .refresh-link { color: #63b3ed; cursor: pointer; text-decoration: underline; font-weight: 700; flex-shrink: 0; }
+/* ============ SYNC BANNER ============ */
+.sync-banner {
+  background: rgba(52,211,153,0.10);
+  border: 1px solid rgba(52,211,153,0.28);
+  border-radius: 12px;
+  padding: 9px 13px;
+  margin-bottom: 14px;
+  font-size: 12.5px;
+  color: #6ee7b7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  gap: 8px;
+}
+.sync-banner.stale {
+  background: rgba(251,146,60,0.10);
+  border-color: rgba(251,146,60,0.30);
+  color: #fdba74;
+}
+.sync-banner .refresh-link {
+  color: #93c5fd;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 700;
+  flex-shrink: 0;
+  font-size: 12.5px;
+}
 .sync-banner #syncText { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.form-group { margin-bottom: 10px; }
-label { display: block; font-size: 12px; font-weight: 700; color: #e2e8f0; margin-bottom: 5px; }
-.required { color: #fc8181; }
-select, input[type="text"], input[type="number"] { width: 100%; padding: 10px 12px; font-size: 14px; border: 2px solid rgba(255,255,255,0.08); border-radius: 10px; background: rgba(255,255,255,0.05); color: #fff; font-weight: 500; transition: all 0.2s; }
-input::placeholder { color: rgba(255,255,255,0.4); }
-select option { background: #1a1a3e; color: #fff; }
-input:focus, select:focus { outline: none; border-color: rgba(99,179,237,0.4); background: rgba(255,255,255,0.08); }
+/* ============ FORM ============ */
+.form-group { margin-bottom: 14px; }
+label { display: block; font-size: 13.5px; font-weight: 700; color: #dbe4fa; margin-bottom: 7px; letter-spacing: 0.1px; }
+.required { color: #fca5a5; }
+
+select, input[type="text"], input[type="number"] {
+  width: 100%;
+  padding: 13px 14px;
+  font-size: 15.5px;
+  border: 2px solid rgba(140,170,255,0.14);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.045);
+  color: #f1f5ff;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+input::placeholder { color: rgba(190,205,235,0.45); }
+select option { background: #131a35; color: #f1f5ff; font-size: 15px; }
+input:focus, select:focus {
+  outline: none;
+  border-color: rgba(125,180,250,0.65);
+  background: rgba(255,255,255,0.075);
+  box-shadow: 0 0 0 4px rgba(99,179,237,0.12);
+}
 input:disabled, select:disabled { opacity: 0.45; cursor: not-allowed; background: rgba(255,255,255,0.02); }
 
-.submit-btn { width: 100%; padding: 12px; background: linear-gradient(135deg,#667eea,#764ba2); color: #fff; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 6px; transition: all 0.3s; }
-.submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(102,126,234,0.4); }
-.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-cancel { padding: 11px 14px; background: rgba(255,255,255,0.05); color: #a0aec0; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
+/* ============ BUTTONS ============ */
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15.5px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.25s ease;
+  letter-spacing: 0.2px;
+  box-shadow: 0 4px 15px rgba(99,102,241,0.3);
+}
+.submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99,102,241,0.45); }
+.submit-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+.btn-cancel {
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.06);
+  color: #c4cfe6;
+  border: 1px solid rgba(140,170,255,0.18);
+  border-radius: 11px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-cancel:hover { background: rgba(255,255,255,0.10); color: #fff; }
 
-.message { display: none; padding: 10px 14px; border-radius: 10px; text-align: center; font-weight: 700; margin-top: 10px; white-space: pre-line; font-size: 12.5px; animation: slideUp 0.3s ease; }
-.message.success { background: rgba(72,187,120,0.15); color: #68d391; border: 1px solid rgba(72,187,120,0.2); }
-.message.error { background: rgba(229,62,62,0.15); color: #fc8181; border: 1px solid rgba(229,62,62,0.2); }
-.message.info { background: rgba(66,153,225,0.15); color: #63b3ed; border: 1px solid rgba(66,153,225,0.2); }
-.message.warning { background: rgba(237,137,54,0.15); color: #f6ad55; border: 1px solid rgba(237,137,54,0.2); }
+/* ============ MESSAGES ============ */
+.message {
+  display: none;
+  padding: 13px 16px;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: 700;
+  margin-top: 14px;
+  white-space: pre-line;
+  font-size: 14px;
+  animation: slideUp 0.3s ease;
+  line-height: 1.5;
+}
+.message.success { background: rgba(52,211,153,0.14); color: #6ee7b7; border: 1px solid rgba(52,211,153,0.28); }
+.message.error { background: rgba(248,113,113,0.14); color: #fca5a5; border: 1px solid rgba(248,113,113,0.28); }
+.message.info { background: rgba(96,165,250,0.14); color: #93c5fd; border: 1px solid rgba(96,165,250,0.28); }
+.message.warning { background: rgba(251,146,60,0.14); color: #fdba74; border: 1px solid rgba(251,146,60,0.28); }
 @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
 .hidden { display: none !important; }
-.loading { display: inline-block; width: 14px; height: 14px; border: 2.5px solid rgba(255,255,255,0.2); border-radius: 50%; border-top-color: #fff; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 4px; }
+.loading {
+  display: inline-block;
+  width: 15px; height: 15px;
+  border: 2.5px solid rgba(255,255,255,0.25);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 5px;
+}
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.search-box { position: relative; display: flex; align-items: center; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 0 12px; transition: all 0.2s; margin-bottom: 6px; }
-.search-box:focus-within { border-color: rgba(99,179,237,0.5); background: rgba(255,255,255,0.08); }
-.search-icon { font-size: 14px; color: rgba(255,255,255,0.5); margin-right: 6px; flex-shrink: 0; }
-.search-box input { flex: 1; background: transparent; border: none; padding: 11px 0; color: #fff; font-size: 14px; font-weight: 500; outline: none; width: 100%; }
-.search-box input::placeholder { color: rgba(255,255,255,0.35); font-size: 13px; }
-.search-clear { background: rgba(229,62,62,0.2); color: #fc8181; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.search-meta { display: flex; justify-content: space-between; align-items: center; font-size: 10.5px; color: #a0aec0; padding: 0 3px 6px 3px; min-height: 14px; }
-#searchResultCount { color: #63b3ed; font-weight: 600; }
+/* ============ SEARCH ============ */
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.05);
+  border: 2px solid rgba(140,170,255,0.14);
+  border-radius: 12px;
+  padding: 0 14px;
+  transition: all 0.2s;
+  margin-bottom: 8px;
+}
+.search-box:focus-within { border-color: rgba(125,180,250,0.65); background: rgba(255,255,255,0.075); box-shadow: 0 0 0 4px rgba(99,179,237,0.12); }
+.search-icon { font-size: 16px; color: rgba(200,215,240,0.55); margin-right: 8px; flex-shrink: 0; }
+.search-box input { flex: 1; background: transparent; border: none; padding: 13px 0; color: #f1f5ff; font-size: 15.5px; font-weight: 500; outline: none; width: 100%; }
+.search-box input::placeholder { color: rgba(190,205,235,0.42); font-size: 14.5px; }
+.search-clear {
+  background: rgba(248,113,113,0.18);
+  color: #fca5a5;
+  border: none;
+  border-radius: 50%;
+  width: 24px; height: 24px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.search-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+  color: #94a3c4;
+  padding: 0 4px 8px 4px;
+  min-height: 16px;
+}
+#searchResultCount { color: #93c5fd; font-weight: 700; }
 
-.records-container { display: flex; flex-direction: column; gap: 9px; margin-top: 10px; }
-.record-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 11px; transition: all 0.25s ease; }
-.record-card:hover { border-color: rgba(99,179,237,0.3); }
+/* ============ RECORDS ============ */
+.records-container { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
+.record-card {
+  background: rgba(30, 40, 72, 0.55);
+  border: 1px solid rgba(140,170,255,0.14);
+  border-radius: 14px;
+  padding: 15px;
+  transition: all 0.25s ease;
+}
+.record-card:hover { border-color: rgba(140,170,255,0.32); box-shadow: 0 4px 20px rgba(99,102,241,0.10); }
 .records-container.has-active .record-card:not(.editing) { display: none !important; }
-.record-card.editing { border-color: rgba(99,179,237,0.6); box-shadow: 0 0 0 2px rgba(99,179,237,0.15); background: rgba(99,179,237,0.06); }
+.record-card.editing {
+  border-color: rgba(125,180,250,0.7);
+  box-shadow: 0 0 0 3px rgba(99,179,237,0.14), 0 6px 24px rgba(99,102,241,0.18);
+  background: rgba(45,60,100,0.65);
+}
 
-.editing-banner { background: linear-gradient(135deg, rgba(99,179,237,0.15), rgba(183,148,244,0.15)); border: 1px solid rgba(99,179,237,0.3); border-radius: 10px; padding: 8px 11px; margin-bottom: 9px; color: #63b3ed; font-size: 11px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
-.editing-banner .btn-back { background: rgba(255,255,255,0.1); color: #fff; border: none; border-radius: 7px; padding: 4px 10px; font-size: 10.5px; font-weight: 700; cursor: pointer; }
+.editing-banner {
+  background: linear-gradient(135deg, rgba(99,179,237,0.16), rgba(167,139,250,0.16));
+  border: 1px solid rgba(125,180,250,0.35);
+  border-radius: 12px;
+  padding: 11px 15px;
+  margin-bottom: 12px;
+  color: #93c5fd;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.editing-banner .btn-back {
+  background: rgba(255,255,255,0.10);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
 
-.record-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed rgba(255,255,255,0.08); gap: 6px; }
-.record-beneficiary { font-size: 14px; font-weight: 800; color: #fff; }
-.record-ref { font-size: 10px; color: #f6e05e; font-weight: 700; margin-top: 2px; }
-.edit-btn { padding: 5px 11px; background: linear-gradient(135deg,#63b3ed,#4299e1); color: #fff; border: none; border-radius: 7px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
-.edit-btn.active { background: linear-gradient(135deg,#fc8181,#e53e3e); }
+/* ============ RECORD HEADER ============ */
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed rgba(140,170,255,0.18);
+  gap: 8px;
+}
+.record-beneficiary { font-size: 16px; font-weight: 800; color: #f1f5ff; letter-spacing: 0.15px; }
+.record-ref { font-size: 12px; color: #fbbf24; font-weight: 700; margin-top: 3px; letter-spacing: 0.2px; }
+.edit-btn {
+  padding: 7px 14px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+  border: none;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(59,130,246,0.3);
+}
+.edit-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(59,130,246,0.45); }
+.edit-btn.active { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 3px 10px rgba(239,68,68,0.3); }
 
-.readonly-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 9px; margin-bottom: 7px; }
-.ro-item { font-size: 11px; }
-.ro-label { color: #a0aec0; font-size: 8.5px; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 1px; }
-.ro-value { color: #e2e8f0; font-weight: 600; word-break: break-word; font-size: 11.5px; }
+/* ============ READONLY GRID ============ */
+.readonly-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; margin-bottom: 10px; }
+.ro-item { font-size: 12.5px; }
+.ro-label {
+  color: #93a5c8;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+  font-weight: 700;
+}
+.ro-value { color: #dbe4fa; font-weight: 600; word-break: break-word; font-size: 13.5px; line-height: 1.35; }
 
+/* ============ NREGA SECTION ============ */
 .nrega-section {
-  margin-top: 9px;
-  padding: 9px 10px;
-  border-radius: 10px;
-  background: rgba(99,179,237,0.06);
-  border: 1px solid rgba(99,179,237,0.2);
+  margin-top: 12px;
+  padding: 13px 14px;
+  border-radius: 12px;
+  background: rgba(96,165,250,0.07);
+  border: 1px solid rgba(96,165,250,0.22);
   animation: slideDown 0.25s ease;
 }
-.nrega-section.nrega-hit  { background: rgba(72,187,120,0.07); border-color: rgba(72,187,120,0.28); }
-.nrega-section.nrega-miss { background: rgba(229,62,62,0.06); border-color: rgba(229,62,62,0.25); }
+.nrega-section.nrega-hit { background: rgba(52,211,153,0.08); border-color: rgba(52,211,153,0.30); }
+.nrega-section.nrega-miss { background: rgba(248,113,113,0.07); border-color: rgba(248,113,113,0.28); }
 .nrega-title {
-  font-size: 10px;
+  font-size: 11.5px;
   font-weight: 800;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
-  color: #63b3ed;
-  margin-bottom: 6px;
+  color: #93c5fd;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-.nrega-section.nrega-hit  .nrega-title { color: #68d391; }
-.nrega-section.nrega-miss .nrega-title { color: #fc8181; }
+.nrega-section.nrega-hit .nrega-title { color: #6ee7b7; }
+.nrega-section.nrega-miss .nrega-title { color: #fca5a5; }
 .nrega-badge {
-  background: rgba(72,187,120,0.2);
-  color: #68d391;
-  font-size: 8.5px;
-  padding: 2px 6px;
-  border-radius: 5px;
-  letter-spacing: 0.4px;
+  background: rgba(52,211,153,0.22);
+  color: #6ee7b7;
+  font-size: 10.5px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  font-weight: 800;
 }
-.nrega-empty { font-size: 11px; color: #a0aec0; padding: 4px 0; line-height: 1.4; }
+.nrega-empty { font-size: 13px; color: #93a5c8; padding: 6px 0; line-height: 1.5; }
 .nrega-section .readonly-grid { margin-bottom: 0; }
 
 .nrega-applicant {
-  background: rgba(0,0,0,0.18);
-  border-radius: 8px;
-  padding: 8px 9px;
-  margin-top: 6px;
+  background: rgba(10,15,32,0.35);
+  border-radius: 10px;
+  padding: 11px 12px;
+  margin-top: 8px;
+  border: 1px solid rgba(140,170,255,0.08);
 }
 .nrega-applicant:first-of-type { margin-top: 0; }
 .nrega-applicant-head {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 6px;
-  padding-bottom: 5px;
-  border-bottom: 1px dashed rgba(255,255,255,0.08);
+  gap: 8px;
+  margin-bottom: 9px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed rgba(140,170,255,0.14);
 }
 .nrega-applicant-num {
-  background: rgba(99,179,237,0.2);
-  color: #63b3ed;
-  font-size: 9px;
+  background: rgba(96,165,250,0.22);
+  color: #93c5fd;
+  font-size: 11px;
   font-weight: 800;
-  padding: 2px 6px;
-  border-radius: 4px;
-  letter-spacing: 0.3px;
+  padding: 3px 8px;
+  border-radius: 5px;
+  letter-spacing: 0.4px;
 }
-.nrega-sansad-tag { color: #f6e05e; font-size: 9.5px; font-weight: 700; }
+.nrega-sansad-tag { color: #fbbf24; font-size: 12px; font-weight: 700; }
 .nrega-status-tag {
   margin-left: auto;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 800;
-  padding: 2px 7px;
-  border-radius: 4px;
-  background: rgba(72,187,120,0.18);
-  color: #68d391;
-  letter-spacing: 0.3px;
+  padding: 3px 10px;
+  border-radius: 5px;
+  background: rgba(52,211,153,0.20);
+  color: #6ee7b7;
+  letter-spacing: 0.4px;
 }
-.nrega-status-tag.deleted { background: rgba(229,62,62,0.18); color: #fc8181; }
+.nrega-status-tag.deleted { background: rgba(248,113,113,0.20); color: #fca5a5; }
 .nrega-applicant-body {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 5px 8px;
+  gap: 8px 12px;
 }
 
-.edit-panel { margin-top: 10px; padding-top: 10px; border-top: 2px solid rgba(99,179,237,0.2); animation: slideDown 0.25s ease; }
+/* ============ EDIT PANEL ============ */
+.edit-panel {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 2px solid rgba(125,180,250,0.28);
+  animation: slideDown 0.25s ease;
+}
 @keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
-.edit-panel h4 { color: #63b3ed; font-size: 11.5px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.edit-panel h4 {
+  color: #93c5fd;
+  font-size: 14px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-weight: 800;
+}
 
-.edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .edit-field { display: flex; flex-direction: column; }
 .edit-field.full { grid-column: 1 / -1; }
-.edit-field label { font-size: 10px; color: #a0aec0; margin-bottom: 3px; font-weight: 600; }
-.edit-field input, .edit-field select { padding: 8px 10px; font-size: 13px; }
-.edit-field input[readonly] { background: rgba(246,224,94,0.08); color: #f6e05e; font-weight: 700; font-family: monospace; letter-spacing: 0.5px; }
+.edit-field label {
+  font-size: 11.5px;
+  color: #a5b4d4;
+  margin-bottom: 5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+.edit-field input, .edit-field select { padding: 11px 12px; font-size: 14.5px; }
+.edit-field input[readonly] {
+  background: rgba(251,191,36,0.10);
+  color: #fbbf24;
+  font-weight: 700;
+  font-family: 'SF Mono', Consolas, monospace;
+  letter-spacing: 0.5px;
+  border-color: rgba(251,191,36,0.22);
+}
 
-/* 🔒 disabled-field hint */
-.edit-field.locked label { color: #6b7280; }
+/* 🔒 locked field hint */
+.edit-field.locked label { color: #64748b; }
 .edit-field.locked::after {
   content: '🔒 auto-disabled';
   display: block;
-  font-size: 8.5px;
-  color: #6b7280;
-  margin-top: 3px;
+  font-size: 10px;
+  color: #64748b;
+  margin-top: 4px;
   letter-spacing: 0.3px;
 }
 
-/* ⚠️ validation error hint */
+/* ⚠️ invalid field */
 .edit-field.invalid input,
 .edit-field.invalid select {
-  border-color: #fc8181 !important;
-  background: rgba(229,62,62,0.06) !important;
+  border-color: #f87171 !important;
+  background: rgba(248,113,113,0.08) !important;
 }
-.edit-field.invalid label { color: #fc8181; }
+.edit-field.invalid label { color: #fca5a5; }
 
-/* ✅ applicant picker highlight */
-.edit-field.picker-active label { color: #68d391; }
+/* ✅ picker active */
+.edit-field.picker-active label { color: #6ee7b7; }
 .edit-field.picker-active select {
-  border-color: rgba(72,187,120,0.5);
-  background: rgba(72,187,120,0.06);
+  border-color: rgba(52,211,153,0.55);
+  background: rgba(52,211,153,0.08);
 }
 .applicant-note {
-  font-size: 9px;
-  margin-top: 3px;
+  font-size: 11px;
+  margin-top: 4px;
   display: block;
-  color: #68d391;
-  line-height: 1.3;
+  color: #6ee7b7;
+  line-height: 1.4;
+  font-weight: 600;
 }
-.applicant-note.warn { color: #f6ad55; }
-.applicant-note.miss { color: #fc8181; }
+.applicant-note.warn { color: #fdba74; }
+.applicant-note.miss { color: #fca5a5; }
 
-/* ✅ auto-filled-from-record hint */
 .autofill-hint {
-  font-size: 9px;
-  margin-top: 3px;
+  font-size: 11px;
+  margin-top: 4px;
   display: block;
-  color: #63b3ed;
-  line-height: 1.3;
+  color: #93c5fd;
+  line-height: 1.4;
+  font-weight: 600;
 }
 
-.photo-upload { border: 1.5px dashed rgba(255,255,255,0.15); border-radius: 9px; padding: 8px; text-align: center; cursor: pointer; background: rgba(255,255,255,0.02); position: relative; min-height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s ease; overflow: hidden; }
-.photo-upload:hover { border-color: rgba(99,179,237,0.4); background: rgba(99,179,237,0.04); }
-.photo-upload.uploading { border-color: #f6ad55; background: rgba(237,137,54,0.06); pointer-events: none; }
-.photo-upload.success { border-color: #48bb78; background: rgba(72,187,120,0.08); }
-.photo-upload.success .ph-text { color: #68d391; font-weight: 700; }
-.photo-upload img { max-width: 100%; max-height: 80px; border-radius: 5px; }
-.photo-upload .ph-icon { font-size: 20px; }
-.photo-upload .ph-text { font-size: 9.5px; color: rgba(255,255,255,0.4); margin-top: 3px; }
-.photo-remove { position: absolute; top: -6px; right: -6px; background: rgba(229,62,62,0.9); color: #fff; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; cursor: pointer; font-weight: 700; display: flex; align-items: center; justify-content: center; z-index: 3; }
-.upload-progress-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(255,255,255,0.08); overflow: hidden; }
-.upload-progress-bar .fill { width: 0%; height: 100%; background: linear-gradient(90deg, #f6ad55, #48bb78); transition: width 0.3s ease; }
-.upload-spinner { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 26px; height: 26px; border: 3px solid rgba(246,224,94,0.2); border-top-color: #f6e05e; border-radius: 50%; animation: spin 0.8s linear infinite; z-index: 2; }
-.upload-check { position: absolute; top: 5px; right: 5px; background: #48bb78; color: #fff; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; z-index: 3; }
+/* ============ PHOTO UPLOAD ============ */
+.photo-upload {
+  border: 2px dashed rgba(140,170,255,0.22);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  background: rgba(255,255,255,0.03);
+  position: relative;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+.photo-upload:hover { border-color: rgba(125,180,250,0.55); background: rgba(96,165,250,0.06); }
+.photo-upload.uploading { border-color: #fdba74; background: rgba(251,146,60,0.08); pointer-events: none; }
+.photo-upload.success { border-color: #34d399; background: rgba(52,211,153,0.10); }
+.photo-upload.success .ph-text { color: #6ee7b7; font-weight: 700; }
+.photo-upload img { max-width: 100%; max-height: 90px; border-radius: 6px; }
+.photo-upload .ph-icon { font-size: 24px; }
+.photo-upload .ph-text { font-size: 11.5px; color: rgba(190,205,235,0.55); margin-top: 5px; font-weight: 600; }
+.photo-remove {
+  position: absolute;
+  top: -8px; right: -8px;
+  background: rgba(239,68,68,0.92);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 24px; height: 24px;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 3;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+}
+.upload-progress-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: rgba(255,255,255,0.08); overflow: hidden; }
+.upload-progress-bar .fill { width: 0%; height: 100%; background: linear-gradient(90deg, #fdba74, #34d399); transition: width 0.3s ease; }
+.upload-spinner {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30px; height: 30px;
+  border: 3px solid rgba(251,191,36,0.25);
+  border-top-color: #fbbf24;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  z-index: 2;
+}
+.upload-check {
+  position: absolute;
+  top: 6px; right: 6px;
+  background: #34d399;
+  color: #fff;
+  border-radius: 50%;
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  z-index: 3;
+}
 
-.mandatory-photo-label { display: flex; align-items: center; gap: 4px; }
-.mandatory-photo-label .dot { width: 6px; height: 6px; border-radius: 50%; background: #fc8181; animation: dotPulse 1.5s ease infinite; }
-.mandatory-photo-label .dot.ok { background: #48bb78; animation: none; }
+.mandatory-photo-label { display: flex; align-items: center; gap: 6px; }
+.mandatory-photo-label .dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #f87171;
+  animation: dotPulse 1.5s ease infinite;
+}
+.mandatory-photo-label .dot.ok { background: #34d399; animation: none; }
 @keyframes dotPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
 
-.required-banner { background: rgba(237,137,54,0.12); border: 1px solid rgba(237,137,54,0.3); border-radius: 9px; padding: 7px 10px; margin-bottom: 9px; font-size: 10.5px; color: #f6ad55; font-weight: 600; }
+/* ============ BANNERS ============ */
+.required-banner {
+  background: rgba(251,146,60,0.12);
+  border: 1px solid rgba(251,146,60,0.30);
+  border-radius: 10px;
+  padding: 10px 13px;
+  margin-bottom: 12px;
+  font-size: 12.5px;
+  color: #fdba74;
+  font-weight: 600;
+  line-height: 1.5;
+}
 
-.meta-info { font-size: 9px; color: rgba(255,255,255,0.35); margin-top: 8px; padding-top: 7px; border-top: 1px dashed rgba(255,255,255,0.06); display: flex; justify-content: space-between; }
-.save-row { display: flex; gap: 7px; margin-top: 10px; }
-.save-row .submit-btn { margin-top: 0; flex: 1; font-size: 13px; padding: 10px; }
-.save-row .btn-cancel { padding: 10px 14px; font-size: 12px; }
+/* ============ META ============ */
+.meta-info {
+  font-size: 11.5px;
+  color: rgba(160,180,215,0.55);
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(140,170,255,0.14);
+  display: flex;
+  justify-content: space-between;
+}
 
-.no-records { text-align: center; padding: 24px 16px; color: #a0aec0; font-size: 12.5px; }
-.no-records .icon { font-size: 32px; margin-bottom: 8px; }
-.no-results-search { text-align: center; padding: 24px 16px; color: #a0aec0; font-size: 12.5px; }
-.no-results-search .icon { font-size: 32px; margin-bottom: 8px; }
-.no-results-search .query { color: #f6e05e; font-weight: 700; }
+.save-row { display: flex; gap: 10px; margin-top: 14px; }
+.save-row .submit-btn { margin-top: 0; flex: 1; font-size: 14.5px; padding: 13px; }
+.save-row .btn-cancel { padding: 13px 18px; font-size: 13.5px; }
 
+/* ============ EMPTY STATES ============ */
+.no-records { text-align: center; padding: 32px 18px; color: #94a3c4; font-size: 14px; }
+.no-records .icon { font-size: 42px; margin-bottom: 10px; }
+.no-results-search { text-align: center; padding: 32px 18px; color: #94a3c4; font-size: 14px; }
+.no-results-search .icon { font-size: 42px; margin-bottom: 10px; }
+.no-results-search .query { color: #fbbf24; font-weight: 700; }
+
+/* ============ ANIMATIONS ============ */
 .shake { animation: shake 0.5s ease; }
-@keyframes shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
 
-@media (max-width: 360px) {
-  .header h1 { font-size: 15px; }
+/* ============ RESPONSIVE ============ */
+@media (max-width: 400px) {
+  .header h1 { font-size: 18px; }
   .edit-grid { grid-template-columns: 1fr; }
   .readonly-grid { grid-template-columns: 1fr; }
   .nrega-applicant-body { grid-template-columns: 1fr; }
+  .container { padding: 16px 13px 18px; }
 }
 </style>
 </head>
@@ -299,7 +637,7 @@ input:disabled, select:disabled { opacity: 0.45; cursor: not-allowed; background
 // ============================================================
 // CONFIG
 // ============================================================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzLJKVzGtt0L-jN8emEHLf14BDKDWe2gsSz35SI4NTactHPniV6PPwv1Aa5ilt7C6z4UA/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyMOAvXfKzRqFmInYIrvYmtw-AhPivY7o6LKfbnaFyLc4sMVv2PI3FTN5Ebub9v0GCHyg/exec';
 
 // ============================================================
 // APP STATE
@@ -429,12 +767,21 @@ function normalizeSansad(v) {
   return m ? String(parseInt(m[1], 10)) : '';
 }
 
-// ✅ Normalize a mobile number — keep only digits, take last 10
+function normalizeJobCardNo(v) {
+  if (v === null || v === undefined) return '';
+  return String(v)
+    .replace(/\u00A0/g, ' ')
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
+    .replace(/\s*\/\s*/g, '/')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toUpperCase();
+}
+
 function normalizeMobile(v) {
   if (v === null || v === undefined) return '';
   const digits = String(v).replace(/\D/g, '');
   if (digits.length === 0) return '';
-  // If 10+ digits, take last 10 (handles +91 prefix, leading 0, etc.)
   if (digits.length >= 10) return digits.slice(-10);
   return digits;
 }
@@ -472,7 +819,8 @@ async function syncFromServer(showToast) {
 
         nrega.data.forEach(r => {
           if (r.jobCardNo) {
-            const key = r.jobCardNo.trim();
+            const key = normalizeJobCardNo(r.jobCardNo);
+            if (!key) return;
             if (!APP.nregaJobCards.has(key)) APP.nregaJobCards.set(key, []);
             APP.nregaJobCards.get(key).push(r);
           }
@@ -631,10 +979,28 @@ function renderRecords(records) {
 }
 
 // ============================================================
-// NREGA SECTION — original working logic
+// NREGA LOOKUP — tolerant for 603/603A
 // ============================================================
+function findNregaList(jobCardNo) {
+  const key = normalizeJobCardNo(jobCardNo);
+  if (!key) return [];
+
+  let list = APP.nregaJobCards.get(key);
+  if (list) return list;
+
+  const stripTrailingLetters = s => s.replace(/(\/\d+)[A-Z]+$/, '$1');
+  const keyBase = stripTrailingLetters(key);
+
+  for (const [k, v] of APP.nregaJobCards.entries()) {
+    if (stripTrailingLetters(k) === keyBase) return v;
+  }
+
+  return [];
+}
+
 function renderNregaSection(rec) {
-  const jc = (rec.jobCardNo || '').trim();
+  const jcRaw = (rec.jobCardNo || '').trim();
+  const jc = normalizeJobCardNo(jcRaw);
 
   if (!jc) {
     return `
@@ -645,13 +1011,13 @@ function renderNregaSection(rec) {
     `;
   }
 
-  const nregaList = APP.nregaJobCards.get(jc) || [];
+  const nregaList = findNregaList(jc);
 
   if (nregaList.length === 0) {
     return `
       <div class="nrega-section nrega-miss">
         <div class="nrega-title">📋 NREGA Jobcard Details</div>
-        <div class="nrega-empty">❌ <strong>${esc(jc)}</strong> not found in NREGAJOBCARD sheet.</div>
+        <div class="nrega-empty">❌ <strong>${esc(jcRaw)}</strong> not found in NREGAJOBCARD sheet.</div>
       </div>
     `;
   }
@@ -710,7 +1076,6 @@ function buildCard(rec) {
   const sansadNumVal = sansadMatch ? sansadMatch[1] : '';
   const serialVal = extractSerial(rec.jobCardNo);
 
-  // ✅ Saved mobile (already stored) vs default from mobileNumber column
   const savedMobile = (rec.mobileNo || '').trim();
   const defaultMobile = normalizeMobile(rec.mobileNumber || '');
   const prefilledMobile = savedMobile || defaultMobile;
@@ -745,7 +1110,7 @@ function buildCard(rec) {
       <div class="edit-grid">
 
         <div class="edit-field">
-          <label>DOES JOB CARD MATCH BBG? <span style="color:#fc8181;">*</span></label>
+          <label>DOES JOB CARD MATCH BBG? <span style="color:#fca5a5;">*</span></label>
           <select id="matchbbg-${rec.rowIndex}" onchange="onMatchBBGChange(${rec.rowIndex})">${buildYesNoOptions(rec.matchBBG)}</select>
         </div>
         <div class="edit-field" id="hasjcField-${rec.rowIndex}">
@@ -762,21 +1127,21 @@ function buildCard(rec) {
         </div>
 
         <div class="edit-field">
-          <label>SANSAD <span style="color:#fc8181;">*</span></label>
+          <label>SANSAD <span style="color:#fca5a5;">*</span></label>
           <select id="sansadsel-${rec.rowIndex}" onchange="onSansadSelectChange(${rec.rowIndex})">
             <option value="">-- Select --</option>
             ${buildSansadOptions(sansadNumVal)}
           </select>
         </div>
         <div class="edit-field">
-          <label>SERIAL NO <span style="color:#fc8181;">*</span></label>
-          <input type="number" min="1" id="serialnum-${rec.rowIndex}" value="${esc(serialVal)}" placeholder="e.g. 15" oninput="onSerialChange(${rec.rowIndex})">
+          <label>SERIAL NO <span style="color:#fca5a5;">*</span></label>
+          <input type="text" id="serialnum-${rec.rowIndex}" value="${esc(serialVal)}" placeholder="e.g. 15 or 603A" oninput="onSerialChange(${rec.rowIndex})">
         </div>
 
         <div class="edit-field full">
           <label>JOB CARD NO (Auto)</label>
           <input type="text" id="jobcard-${rec.rowIndex}" value="${esc(rec.jobCardNo)}" readonly>
-          <small id="jcstatus-${rec.rowIndex}" style="font-size:9.5px;margin-top:3px;display:block;"></small>
+          <small id="jcstatus-${rec.rowIndex}" style="font-size:11px;margin-top:5px;display:block;"></small>
         </div>
 
         <div class="edit-field full" id="applicantPickerField-${rec.rowIndex}">
@@ -801,9 +1166,9 @@ function buildCard(rec) {
           <input type="text" id="epicno-${rec.rowIndex}" value="${esc(rec.epicNo)}">
         </div>
         <div class="edit-field" id="aadharnoField-${rec.rowIndex}">
-          <label>AADHAR NO <span style="color:#fc8181;">*</span></label>
+          <label>AADHAR NO <span style="color:#fca5a5;">*</span></label>
           <input type="text" id="aadharno-${rec.rowIndex}" value="${esc(rec.aadharNo)}" placeholder="12 digits" maxlength="12" oninput="onAadharInput(${rec.rowIndex})">
-          <small id="aadharhint-${rec.rowIndex}" style="font-size:9px;margin-top:2px;display:block;color:#a0aec0;"></small>
+          <small id="aadharhint-${rec.rowIndex}" style="font-size:11px;margin-top:4px;display:block;color:#94a3c4;"></small>
         </div>
 
         <div class="edit-field">
@@ -816,27 +1181,27 @@ function buildCard(rec) {
         </div>
 
         <div class="edit-field" id="mobilenoField-${rec.rowIndex}">
-          <label>MOBILE NO <span style="color:#fc8181;">*</span></label>
+          <label>MOBILE NO <span style="color:#fca5a5;">*</span></label>
           <input type="text" id="mobileno-${rec.rowIndex}" value="${esc(prefilledMobile)}" placeholder="10 digits" maxlength="10" oninput="onMobileInput(${rec.rowIndex})">
-          <small id="mobilehint-${rec.rowIndex}" style="font-size:9px;margin-top:2px;display:block;color:#a0aec0;"></small>
+          <small id="mobilehint-${rec.rowIndex}" style="font-size:11px;margin-top:4px;display:block;color:#94a3c4;"></small>
           ${showAutofillHint ? `<small class="autofill-hint">ℹ️ Auto-filled from record · you can edit</small>` : ''}
         </div>
 
         <div class="edit-field" id="remarkField-${rec.rowIndex}">
-          <label>REMARK <span style="color:#fc8181;">*</span></label>
+          <label>REMARK <span style="color:#fca5a5;">*</span></label>
           <select id="remark-${rec.rowIndex}">${buildRemarkOptions(rec.remark)}</select>
-          <small id="remarkhint-${rec.rowIndex}" style="font-size:9px;margin-top:2px;display:block;color:#a0aec0;"></small>
+          <small id="remarkhint-${rec.rowIndex}" style="font-size:11px;margin-top:4px;display:block;color:#94a3c4;"></small>
         </div>
 
         <div class="edit-field">
-          <label class="mandatory-photo-label">EPIC PHOTO <span style="color:#fc8181;">*</span><span class="dot ${hasEpic ? 'ok' : ''}" id="epicdot-${rec.rowIndex}"></span></label>
+          <label class="mandatory-photo-label">EPIC PHOTO <span style="color:#fca5a5;">*</span><span class="dot ${hasEpic ? 'ok' : ''}" id="epicdot-${rec.rowIndex}"></span></label>
           <div class="photo-upload ${hasEpic ? 'success' : ''}" id="epicarea-${rec.rowIndex}" onclick="triggerPhotoUpload(${rec.rowIndex}, 'epic')">
             ${epicPreview}
             <input type="file" id="epicinput-${rec.rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rec.rowIndex},'epic')" style="display:none;">
           </div>
         </div>
         <div class="edit-field">
-          <label class="mandatory-photo-label">AADHAR PHOTO <span style="color:#fc8181;">*</span><span class="dot ${hasAadhar ? 'ok' : ''}" id="aadhardot-${rec.rowIndex}"></span></label>
+          <label class="mandatory-photo-label">AADHAR PHOTO <span style="color:#fca5a5;">*</span><span class="dot ${hasAadhar ? 'ok' : ''}" id="aadhardot-${rec.rowIndex}"></span></label>
           <div class="photo-upload ${hasAadhar ? 'success' : ''}" id="aadhararea-${rec.rowIndex}" onclick="triggerPhotoUpload(${rec.rowIndex}, 'aadhar')">
             ${aadharPreview}
             <input type="file" id="aadharinput-${rec.rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rec.rowIndex},'aadhar')" style="display:none;">
@@ -870,9 +1235,10 @@ function buildSansadOptions(selectedNum) {
   }
   return html;
 }
+
 function extractSerial(jobCardNo) {
   if (!jobCardNo) return '';
-  const m = String(jobCardNo).match(/\/(\d+)$/);
+  const m = String(jobCardNo).match(/\/(\d+[A-Za-z]*)\s*$/);
   return m ? m[1] : '';
 }
 
@@ -917,7 +1283,7 @@ function populateApplicantPicker(rowIndex, rec) {
   if (!picker || !note || !field) return;
 
   const jc = (rec.jobCardNo || '').trim();
-  const list = jc ? (APP.nregaJobCards.get(jc) || []) : [];
+  const list = jc ? findNregaList(jc) : [];
 
   if (!jc || list.length === 0) {
     picker.innerHTML = `<option value="">-- Select Applicant --</option>`;
@@ -987,7 +1353,7 @@ function onApplicantPickerChange(rowIndex) {
   if (!rec) return;
 
   const jc = (rec.jobCardNo || '').trim();
-  const list = jc ? (APP.nregaJobCards.get(jc) || []) : [];
+  const list = jc ? findNregaList(jc) : [];
   const n = list[idx];
   if (!n) return;
 
@@ -1047,11 +1413,11 @@ function onMobileInput(rowIndex) {
     field.classList.remove('invalid');
   } else if (v.length === 10) {
     hint.textContent = '✓ Valid mobile number';
-    hint.style.color = '#68d391';
+    hint.style.color = '#6ee7b7';
     field.classList.remove('invalid');
   } else {
     hint.textContent = `⚠️ ${v.length}/10 digits`;
-    hint.style.color = '#f6ad55';
+    hint.style.color = '#fdba74';
     field.classList.add('invalid');
   }
 }
@@ -1069,11 +1435,11 @@ function onAadharInput(rowIndex) {
     field.classList.remove('invalid');
   } else if (v.length === 12) {
     hint.textContent = '✓ Valid Aadhar number';
-    hint.style.color = '#68d391';
+    hint.style.color = '#6ee7b7';
     field.classList.remove('invalid');
   } else {
     hint.textContent = `⚠️ ${v.length}/12 digits`;
-    hint.style.color = '#f6ad55';
+    hint.style.color = '#fdba74';
     field.classList.add('invalid');
   }
 }
@@ -1085,23 +1451,25 @@ function lookupNregaJobCard(rowIndex) {
   const jcInput = document.getElementById('jobcard-' + rowIndex);
   if (!jcInput) return;
 
-  const jc = (jcInput.value || '').trim();
+  const jcRaw = (jcInput.value || '').trim();
   const statusEl = document.getElementById('jcstatus-' + rowIndex);
 
-  if (!jc) {
+  if (!jcRaw) {
     if (statusEl) statusEl.textContent = '';
     jcInput.style.borderColor = '';
     return;
   }
 
-  const list = APP.nregaJobCards.get(jc) || [];
+  const list = findNregaList(jcRaw);
 
   if (list.length === 0) {
     if (statusEl) {
       statusEl.textContent = `❌ Not found in NREGAJOBCARD`;
-      statusEl.style.color = '#fc8181';
+      statusEl.style.color = '#fca5a5';
     }
-    jcInput.style.borderColor = '#fc8181';
+    jcInput.style.borderColor = '#f87171';
+    const rec = APP.allRecords.find(r => r.rowIndex === rowIndex);
+    if (rec) populateApplicantPicker(rowIndex, { ...rec, jobCardNo: jcRaw });
     return;
   }
 
@@ -1112,9 +1480,9 @@ function lookupNregaJobCard(rowIndex) {
       const names = list.map(r => r.nameOfApplicant).filter(Boolean).slice(0, 3).join(', ');
       statusEl.textContent = `✅ Found ${list.length} applicants: ${names}${list.length > 3 ? '…' : ''}`;
     }
-    statusEl.style.color = '#68d391';
+    statusEl.style.color = '#6ee7b7';
   }
-  jcInput.style.borderColor = '#48bb78';
+  jcInput.style.borderColor = '#34d399';
 
   if (list.length === 1) {
     const nameJcEl     = document.getElementById('namejc-' + rowIndex);
@@ -1124,7 +1492,7 @@ function lookupNregaJobCard(rowIndex) {
   }
 
   const rec = APP.allRecords.find(r => r.rowIndex === rowIndex);
-  if (rec) populateApplicantPicker(rowIndex, { ...rec, jobCardNo: jc });
+  if (rec) populateApplicantPicker(rowIndex, { ...rec, jobCardNo: jcRaw });
 }
 
 // ============================================================
@@ -1215,21 +1583,27 @@ function onSerialChange(rowIndex) {
 }
 function generateJobCard(rowIndex) {
   const sansadNum = parseInt(document.getElementById('sansadsel-' + rowIndex).value);
-  const serialNum = parseInt(document.getElementById('serialnum-' + rowIndex).value);
-  if (!sansadNum || !serialNum) return;
-  const sansadPadded = String(sansadNum).padStart(3, '0');
-  const jobCard = `WB-09-003-002-${sansadPadded}/${serialNum}`;
-  document.getElementById('jobcard-' + rowIndex).value = jobCard;
-
+  const serialRaw = (document.getElementById('serialnum-' + rowIndex).value || '').trim();
   const jcInput = document.getElementById('jobcard-' + rowIndex);
+  if (!jcInput) return;
+
+  if (!sansadNum || !serialRaw) { jcInput.value = ''; return; }
+
+  const serialClean = serialRaw.replace(/\s+/g, '').toUpperCase();
+  if (!/^\d+[A-Z]*$/.test(serialClean)) { jcInput.value = ''; return; }
+
+  const sansadPadded = String(sansadNum).padStart(3, '0');
+  const jobCard = `WB-09-003-002-${sansadPadded}/${serialClean}`;
+  jcInput.value = jobCard;
+
   let duplicateRow = null;
   for (const rec of APP.allRecords) {
     if (rec.rowIndex === rowIndex) continue;
-    if (rec.jobCardNo === jobCard) { duplicateRow = rec.rowIndex; break; }
+    if (normalizeJobCardNo(rec.jobCardNo) === jobCard) { duplicateRow = rec.rowIndex; break; }
   }
   if (duplicateRow) {
     showMessage('⚠️ Job Card already exists (Row ' + duplicateRow + ')', 'warning');
-    jcInput.style.borderColor = '#fc8181';
+    jcInput.style.borderColor = '#f87171';
   } else {
     jcInput.style.borderColor = '';
   }
@@ -1272,7 +1646,7 @@ async function handlePhoto(event, rowIndex, type) {
   area.innerHTML = `
     <div class="upload-spinner"></div>
     <span class="ph-icon" style="opacity:0.3;">📷</span>
-    <span class="ph-text" style="color:#f6ad55;font-weight:700;">Compressing & uploading...</span>
+    <span class="ph-text" style="color:#fdba74;font-weight:700;">Compressing & uploading...</span>
     <div class="upload-progress-bar"><div class="fill" id="progress-${rowIndex}-${type}"></div></div>
     <input type="file" id="${type}input-${rowIndex}" accept="image/*" capture="environment" onchange="handlePhoto(event,${rowIndex},'${type}')" style="display:none;">
   `;
@@ -1474,7 +1848,7 @@ async function saveRecord(rowIndex) {
         const newCard = document.getElementById('card-' + rowIndex);
         if (newCard) {
           newCard.style.transition = 'box-shadow 0.3s';
-          newCard.style.boxShadow = '0 0 0 2px rgba(72,187,120,0.6)';
+          newCard.style.boxShadow = '0 0 0 3px rgba(52,211,153,0.55)';
           setTimeout(() => { newCard.style.boxShadow = ''; }, 1500);
         }
       }, 100);
@@ -1501,7 +1875,7 @@ function shakeBoth(rowIndex) {
   setTimeout(() => shakePhoto(rowIndex, 'aadhar'), 150);
 }
 
-console.log('✅ Field Survey module v3.2 loaded — mobile auto-fill from record');
+console.log('✅ Field Survey module v3.5 loaded — professional theme');
 </script>
 </body>
 </html>
